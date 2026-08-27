@@ -1,0 +1,22 @@
+[
+  {
+    "id": "user-fernando",
+    "name": "Fernando",
+    "username": "fernando",
+    "password": "romeuejulieta",
+    "role": "admin",
+    "avatar": "👑",
+    "biometricCredentials": [],
+    "createdAt": "2026-08-27T10:00:00.000Z"
+  },
+  {
+    "id": "user-luana",
+    "name": "Luana",
+    "username": "luana",
+    "password": "luana123",
+    "role": "seller",
+    "avatar": "🍫",
+    "biometricCredentials": [],
+    "createdAt": "2026-08-27T10:00:00.000Z"
+  }
+]

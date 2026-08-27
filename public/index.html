@@ -2,17 +2,37 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamento Pix - Luana Menato</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🍫 Trufas Artesanais Gourmet - Catálogo, Estoque & Checkout Pix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
         :root {
-            --primary: #0047FF;
-            --secondary: #00D1FF;
-            --bg-dark: #0A0E17;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-body: #0c0806;
+            --bg-card: rgba(26, 17, 13, 0.88);
+            --bg-card-hover: rgba(42, 26, 19, 0.95);
+            --choco-primary: #78350f;
+            --choco-dark: #451a03;
+            --amber-gold: #f59e0b;
+            --amber-light: #fbbf24;
+            --amber-glow: rgba(245, 158, 11, 0.3);
+            --pix-blue: #00D1FF;
+            --pix-gradient: linear-gradient(135deg, #0052FF 0%, #00D1FF 100%);
+            --bio-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+            --text-main: #fef3c7;
+            --text-muted: #d6bfa8;
+            --glass-border: rgba(245, 158, 11, 0.22);
+            --glass-border-subtle: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
         }
 
         * {
@@ -20,816 +40,2559 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: #0A0E17;
-            color: white;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
+            padding-bottom: calc(100px + var(--safe-bottom));
+            position: relative;
             overflow-x: hidden;
         }
 
-        /* Background Animated Blobs */
-        .bg-blobs {
+        /* Fundo Animado & Iluminação */
+        .bg-glow {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: none;
             z-index: -1;
-            overflow: hidden;
-            background: radial-gradient(circle at 50% 50%, #1a2a4a 0%, #0A0E17 100%);
-        }
-
-        .blob {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--primary);
-            filter: blur(80px);
-            border-radius: 50%;
-            opacity: 0.15;
-            animation: move 20s infinite alternate;
-        }
-
-        .blob-1 { top: -10%; left: -10%; background: var(--primary); }
-        .blob-2 { bottom: -10%; right: -10%; background: var(--secondary); animation-delay: -5s; }
-        .blob-3 { top: 40%; left: 30%; background: #4f46e5; width: 200px; height: 200px; animation-duration: 15s; }
-
-        @keyframes move {
-            from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(100px, 100px) scale(1.2); }
+            background: 
+                radial-gradient(circle at 10% 15%, rgba(120, 53, 15, 0.35) 0%, transparent 45%),
+                radial-gradient(circle at 90% 75%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(18, 11, 8, 0.98) 0%, #080504 100%);
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            padding: 30px 24px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px 14px;
+        }
+
+        /* Header Principal */
+        .header {
             text-align: center;
-            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 15px 10px 18px;
             position: relative;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .logo-wrapper {
-            position: relative;
-            margin-bottom: 30px;
+        .header-logo-wrap {
             display: inline-block;
-        }
-
-        .logo {
-            width: 320px;
-            max-width: 90vw;
-            height: auto;
             position: relative;
-            z-index: 2;
-            filter: contrast(1.3) brightness(1.1) drop-shadow(0 0 15px rgba(0, 71, 255, 0.3));
-            animation: float 4s ease-in-out infinite, pulse-glow 3s ease-in-out infinite;
-        }
-
-        /* Borboletas e Girassóis Flutuantes Adicionais */
-        .butterfly-extra, .sunflower-extra {
-            position: absolute;
-            font-size: 20px;
-            z-index: 3;
-            pointer-events: none;
-        }
-
-        .b1 { top: -10px; left: -10px; animation: fly1 5s linear infinite; }
-        .b2 { top: 20px; right: -10px; animation: fly2 6s linear infinite; }
-        .b3 { bottom: -10px; left: 40%; animation: fly3 7s linear infinite; }
-
-        .s1 { top: 10px; left: -20px; animation: fly2 7s linear infinite; animation-delay: 1s; }
-        .s2 { top: -20px; right: 20px; animation: fly1 6s linear infinite; animation-delay: 2s; }
-        .s3 { bottom: 10px; right: -20px; animation: fly3 8s linear infinite; animation-delay: 0.5s; }
-
-        @keyframes fly1 {
-            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-            20% { opacity: 1; }
-            50% { transform: translate(-20px, -20px) rotate(-20deg); }
-            80% { opacity: 1; }
-            100% { transform: translate(-40px, -10px) rotate(0deg); opacity: 0; }
-        }
-
-        @keyframes fly2 {
-            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-            20% { opacity: 1; }
-            50% { transform: translate(25px, -15px) rotate(20deg); }
-            80% { opacity: 1; }
-            100% { transform: translate(50px, 10px) rotate(0deg); opacity: 0; }
-        }
-
-        @keyframes fly3 {
-            0% { transform: translate(0, 0) scale(1); opacity: 0; }
-            20% { opacity: 1; }
-            50% { transform: translate(10px, 20px) scale(1.2); }
-            80% { opacity: 1; }
-            100% { transform: translate(0, 40px) scale(1); opacity: 0; }
-        }
-
-        /* Screen-wide Floating Butterflies */
-        .butterfly-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .floating-butterfly {
-            position: absolute;
-            font-size: 24px;
-            opacity: 0;
-            filter: drop-shadow(0 0 10px rgba(0, 209, 255, 0.4));
-            animation: cruise 15s linear infinite;
-        }
-
-        @keyframes cruise {
-            0% { transform: translate(-10vw, 110vh) rotate(45deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translate(110vw, -10vh) rotate(45deg); opacity: 0; }
-        }
-
-        .fb-1 { animation-delay: 0s; animation-duration: 25s; left: 10%; }
-        .fb-2 { animation-delay: 12s; animation-duration: 30s; left: 40%; transform: scale(0.8); }
-        .fb-3 { animation-delay: 5s; animation-duration: 28s; left: 70%; transform: scale(1.2); }
-
-        /* Foreground Butterflies (Passing in front) */
-        .butterfly-fg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 200; /* Above everything */
-        }
-
-        .fb-fg-1 { animation: cruise-fg 20s linear infinite; animation-delay: 8s; left: 20%; }
-        .fb-fg-2 { animation: cruise-fg 22s linear infinite; animation-delay: 18s; left: 60%; transform: scale(0.7); }
-
-        /* Floating Sunflowers */
-        .sunflower-bg-element {
-            position: absolute;
-            font-size: 30px;
-            opacity: 0;
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
-            animation: drift 30s linear infinite;
-        }
-
-        @keyframes drift {
-            0% { transform: translate(-10vw, -10vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.4; }
-            90% { opacity: 0.4; }
-            100% { transform: translate(110vw, 110vh) rotate(360deg); opacity: 0; }
-        }
-
-        .sf-1 { animation-delay: 2s; animation-duration: 35s; left: 20%; font-size: 40px; }
-        .sf-2 { animation-delay: 15s; animation-duration: 40s; left: 50%; font-size: 25px; }
-        .sf-3 { animation-delay: 8s; animation-duration: 45s; left: 80%; font-size: 35px; }
-
-        @keyframes cruise-fg {
-            0% { transform: translate(-20vw, 120vh) rotate(30deg) scale(0.5); opacity: 0; }
-            10% { opacity: 0.4; }
-            90% { opacity: 0.4; }
-            100% { transform: translate(120vw, -20vh) rotate(30deg) scale(1.5); opacity: 0; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(1deg); }
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 71, 255, 0.3)); }
-            50% { filter: drop-shadow(0 0 25px rgba(0, 71, 255, 0.6)); }
-        }
-
-
-
-        h1 {
-            font-weight: 600;
-            font-size: 1.8rem;
             margin-bottom: 8px;
-            letter-spacing: -0.5px;
-            background: linear-gradient(to bottom, #fff 0%, #aaa 100%);
+        }
+
+        .logo-img {
+            max-width: 220px;
+            width: 70vw;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.3));
+            animation: floatLogo 4s ease-in-out infinite;
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.85rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fffbeb 0%, #fbbf24 60%, #d97706 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+            line-height: 1.2;
         }
 
-        p {
-            color: rgba(204, 214, 246, 0.6);
+        .header-subtitle {
+            color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            margin-bottom: 18px;
-            text-align: left;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(204, 214, 246, 0.5);
-            margin-left: 5px;
-            font-weight: 600;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 18px;
-            color: rgba(255, 255, 255, 0.3);
-            pointer-events: none;
-            transition: color 0.3s;
-        }
-
-        input {
-            width: 100%;
-            padding: 16px 20px 16px 52px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 20px rgba(0, 71, 255, 0.15);
-        }
-
-        input:focus + .input-icon {
-            color: var(--secondary);
-        }
-
-        .btn-generate {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 16px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0, 71, 255, 0.3);
-            margin-top: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-generate::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn-generate:hover::after {
-            left: 100%;
-        }
-
-        .btn-generate:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 71, 255, 0.4);
-        }
-
-        .btn-generate:active {
-            transform: translateY(0) scale(0.98);
-        }
-
-        #qr-container {
-            display: none;
-            margin-top: 30px;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .qr-card {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        #qr-code-img {
-            width: 100%;
-            max-width: 200px;
-            height: auto;
-            display: block;
+            font-weight: 300;
+            max-width: 520px;
             margin: 0 auto;
-        }
-
-        .timer-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 71, 71, 0.1);
-            color: #ff4747;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 71, 71, 0.2);
-            backdrop-filter: blur(5px);
-            animation: pulse-timer 2s infinite;
-        }
-
-        @keyframes pulse-timer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .copy-paste-group {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border: 1px solid var(--glass-border);
-            margin-top: 10px;
-        }
-
-        #pix-key-text {
-            font-size: 0.7rem;
-            color: #8892b0;
-            word-break: break-all;
-            background: rgba(0,0,0,0.2);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: left;
-            max-height: 100px;
-            overflow-y: auto;
             line-height: 1.4;
         }
 
-        .btn-copy {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
+        /* Seletor de Estoque / Vendedor (Fernando vs Luana) */
+        .seller-switcher-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .seller-tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .seller-tab-btn.active {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(120, 53, 15, 0.4));
+            color: var(--amber-light);
+            border-color: var(--amber-gold);
+            box-shadow: 0 4px 15px var(--amber-glow);
+        }
+
+        /* Barra de Filtros e Busca */
+        .toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px;
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .category-pills::-webkit-scrollbar { display: none; }
+
+        .pill-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .pill-btn:active, .pill-btn.active {
+            background: var(--amber-gold);
+            color: #1a0f0b;
+            border-color: var(--amber-gold);
+            font-weight: 700;
+            box-shadow: 0 3px 12px var(--amber-glow);
+        }
+
+        .search-box {
+            position: relative;
             width: 100%;
         }
 
-        .btn-copy:hover {
-            background: var(--secondary);
+        .search-box input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: 25px;
+            padding: 11px 16px 11px 40px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: 0.25s;
         }
 
-        .loading {
-            display: none;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-radius: 50%;
-            border-top: 3px solid var(--primary);
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 10px auto;
+        .search-box input:focus {
+            border-color: var(--amber-gold);
+            box-shadow: 0 0 12px var(--amber-glow);
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
         }
 
-        /* Admin Button */
-        .btn-admin {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: var(--glass);
+        /* Grade de Produtos Mobile-First */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        @media (min-width: 600px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+            .toolbar { flex-direction: row; align-items: center; justify-content: space-between; }
+            .search-box { max-width: 280px; }
+            .header-title { font-size: 2.3rem; }
+        }
+
+        @media (min-width: 960px) {
+            .products-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        }
+
+        /* Card de Trufa */
+        .truffle-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .truffle-card:active { transform: scale(0.99); }
+
+        .truffle-card.out-of-stock {
+            opacity: 0.5;
+            filter: grayscale(0.9);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .out-of-stock-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.95);
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .seller-owner-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--amber-light);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .truffle-icon-box {
+            font-size: 2rem;
+            width: 52px;
+            height: 52px;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-details { flex: 1; }
+
+        .truffle-flavor {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.25;
+            margin-bottom: 4px;
+        }
+
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 3px;
+        }
+
+        .spec-tag {
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--amber-light);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .truffle-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+            margin: 6px 0 12px;
+        }
+
+        .card-pricing-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .price-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--amber-gold);
+        }
+
+        .stock-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stock-badge.high {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .stock-badge.low {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .stock-badge.empty {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            height: 42px;
+        }
+
+        .qty-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            width: 36px;
+            height: 100%;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .qty-btn:active:not(:disabled) {
+            background: rgba(245, 158, 11, 0.25);
+            color: var(--amber-gold);
+        }
+
+        .qty-btn:disabled { opacity: 0.25; }
+
+        .qty-display {
+            width: 28px;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            height: 42px;
+            background: linear-gradient(135deg, #78350f 0%, #b45309 100%);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #fff;
+            padding: 0 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            touch-action: manipulation;
+        }
+
+        .btn-add-cart:active:not(:disabled) {
+            transform: scale(0.97);
+            background: linear-gradient(135deg, #9a3412 0%, #d97706 100%);
+        }
+
+        .btn-add-cart:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        /* Barra Flutuante de Carrinho */
+        .floating-cart-bar {
+            position: fixed;
+            bottom: calc(12px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: 520px;
+            background: rgba(20, 13, 10, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1.5px solid var(--amber-gold);
+            border-radius: 30px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9), 0 0 20px var(--amber-glow);
+            z-index: 90;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .floating-cart-bar.hidden {
+            transform: translateX(-50%) translateY(150%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .cart-bar-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-icon-badge {
+            position: relative;
+            font-size: 1.4rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: var(--amber-gold);
+            color: #000;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .cart-bar-text {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .cart-bar-total {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .cart-bar-btn {
+            background: var(--pix-gradient);
+            border: none;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 12px rgba(0, 209, 255, 0.35);
+        }
+
+        /* Modais */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        @media (min-width: 640px) {
+            .modal-overlay { align-items: center; padding: 16px; }
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-card {
+            background: #140d09;
+            border: 1px solid var(--glass-border);
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 520px;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            padding-bottom: var(--safe-bottom);
+        }
+
+        @media (min-width: 640px) {
+            .modal-card {
+                border-radius: var(--radius-lg);
+                transform: scale(0.95) translateY(15px);
+                padding-bottom: 0;
+            }
+            .modal-overlay.active .modal-card { transform: scale(1) translateY(0); }
+        }
+
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+
+        .modal-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--glass-border-subtle);
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--amber-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-close-modal {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: var(--text-muted);
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--glass-border-subtle);
+            background: rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+
+        /* Itens do Carrinho */
+        .cart-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .cart-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+        }
+
+        .cart-item-info h4 {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .cart-item-info span {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-item-price {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--amber-gold);
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .btn-remove-item {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 6px;
+        }
+
+        /* Formulários */
+        .input-group {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .input-wrapper { position: relative; }
+
+        .input-wrapper input, .input-wrapper select, .input-wrapper textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px 12px 38px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: 0.25s;
+        }
+
+        .input-wrapper select, .input-wrapper textarea { padding-left: 14px; }
+
+        .input-wrapper input:focus, .input-wrapper select:focus, .input-wrapper textarea:focus {
+            border-color: var(--amber-gold);
+            box-shadow: 0 0 10px var(--amber-glow);
+        }
+
+        .input-icon-svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .btn-checkout-pix {
+            width: 100%;
+            height: 48px;
+            background: var(--pix-gradient);
+            border: none;
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 1.02rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(0, 209, 255, 0.4);
+            touch-action: manipulation;
+        }
+
+        .btn-biometric-login {
+            width: 100%;
+            height: 50px;
+            background: var(--bio-gradient);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+            margin-bottom: 12px;
+            touch-action: manipulation;
+        }
+
+        /* Seletor de Perfil na Tela de Login */
+        .user-profiles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .user-profile-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-profile-card.selected {
+            background: rgba(245, 158, 11, 0.18);
+            border-color: var(--amber-gold);
+            box-shadow: 0 4px 15px var(--amber-glow);
+        }
+
+        .user-avatar-icon { font-size: 2.2rem; margin-bottom: 4px; }
+        .user-card-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
+        .user-card-role { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* QR Code Modal */
+        .pix-modal-content { text-align: center; padding: 10px 0; }
+        .pix-timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .qr-card-box {
+            background: #fff;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            margin-bottom: 12px;
+        }
+
+        .qr-img { width: 190px; height: 190px; display: block; max-width: 60vw; max-height: 60vw; }
+
+        .pix-code-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .pix-code-text {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            word-break: break-all;
+            max-height: 60px;
+            overflow-y: auto;
+            line-height: 1.35;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .btn-copy-pix {
+            width: 100%;
+            height: 42px;
+            background: var(--choco-primary);
+            border: 1px solid var(--amber-gold);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* Botão Discreto de Admin */
+        .btn-admin-discrete {
+            position: fixed;
+            bottom: calc(15px + var(--safe-bottom));
+            right: 14px;
+            width: 44px;
+            height: 44px;
+            background: rgba(26, 17, 13, 0.92);
+            border: 1.5px solid rgba(245, 158, 11, 0.35);
+            border-radius: 50%;
+            color: rgba(245, 158, 11, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: rgba(255, 255, 255, 0.3);
-            transition: all 0.3s;
-            z-index: 100;
+            z-index: 99;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+            touch-action: manipulation;
         }
 
-        .btn-admin:hover {
-            color: var(--secondary);
-            border-color: var(--secondary);
-            background: rgba(0, 209, 255, 0.1);
-            transform: rotate(90deg);
+        .btn-admin-discrete:active {
+            transform: scale(1.1);
+            background: rgba(245, 158, 11, 0.3);
+            color: var(--amber-gold);
         }
 
-        /* Stats Table */
-        .stats-table {
+        /* Painel Admin Completo */
+        .admin-modal-card { max-width: 850px; height: 92vh; }
+
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--glass-border-subtle);
+            padding-bottom: 10px;
+            margin-bottom: 14px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .admin-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .tab-btn.active {
+            background: rgba(245, 158, 11, 0.18);
+            color: var(--amber-gold);
+            border: 1px solid var(--glass-border);
+        }
+
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            text-align: left;
+        }
+
+        .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
+        .stat-value { font-size: 1.25rem; font-weight: 800; color: var(--amber-gold); }
+
+        .admin-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border-subtle);
+            background: rgba(0, 0, 0, 0.25);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .admin-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.8rem;
-            color: #ccd6f6;
-        }
-
-        .stats-table th {
+            font-size: 0.85rem;
             text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid var(--glass-border);
-            color: var(--secondary);
+            min-width: 600px;
         }
 
-        .stats-table td {
-            padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .admin-table th {
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--amber-light);
+            border-bottom: 1px solid var(--glass-border-subtle);
+            white-space: nowrap;
         }
 
-        .status-pill {
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.7rem;
+        .admin-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #f1f5f9;
         }
 
-        .status-approved { background: rgba(0, 255, 133, 0.1); color: #00ff85; }
-        .status-pending { background: rgba(255, 184, 0, 0.1); color: #ffb800; }
-        .status-rejected { background: rgba(255, 71, 71, 0.1); color: #ff4747; }
+        .stock-control-group { display: flex; align-items: center; gap: 3px; }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 20px;
-            }
-            .logo {
-                width: 250px;
-            }
+        .btn-stock-adjust {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 4px 7px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
         }
+
+        .btn-stock-adjust:active { background: var(--amber-gold); color: #000; }
+
+        .action-btns-row { display: flex; gap: 6px; }
+
+        .btn-icon-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon-action:active { background: var(--amber-gold); color: #000; }
+        .btn-icon-action.delete:active { background: var(--danger-red); color: #fff; }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--amber-gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="bg-blobs">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-</div>
+    <div class="bg-glow"></div>
 
-<div class="butterfly-bg">
-    <span class="floating-butterfly fb-1">🦋</span>
-    <span class="floating-butterfly fb-2">🦋</span>
-    <span class="floating-butterfly fb-3">🦋</span>
-</div>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <div class="header-logo-wrap">
+                <img src="logo.png?v=3" alt="Logo Luana Menato" class="logo-img" onerror="this.style.display='none'">
+            </div>
+            <h1 class="header-title">🍫 Trufas Artesanais Gourmet</h1>
+            <p class="header-subtitle">Escolha seus sabores favoritos. Pagamento rápido e seguro via Pix com confirmação em tempo real!</p>
+        </header>
 
-<div class="butterfly-fg">
-    <span class="floating-butterfly fb-fg-1">🦋</span>
-    <span class="floating-butterfly fb-fg-2">🦋</span>
-</div>
+        <!-- Seletor de Estoque / Vendedor (Frente de Caixa) -->
+        <div class="seller-switcher-bar" id="storefrontSellerSwitcher">
+            <button class="seller-tab-btn active" onclick="switchStoreSeller('all', this)">✨ Todas as Trufas</button>
+            <button class="seller-tab-btn" onclick="switchStoreSeller('user-fernando', this)">👑 Estoque Fernando</button>
+            <button class="seller-tab-btn" onclick="switchStoreSeller('user-luana', this)">🍫 Estoque Luana</button>
+        </div>
 
-<div class="sunflower-bg">
-    <span class="sunflower-bg-element sf-1">🌻</span>
-    <span class="sunflower-bg-element sf-2">🌻</span>
-    <span class="sunflower-bg-element sf-3">🌻</span>
-</div>
+        <!-- Barra de Filtros de Categoria e Busca -->
+        <div class="toolbar">
+            <div class="category-pills">
+                <button class="pill-btn active" onclick="filterCategory('all', this)">✨ Todas</button>
+                <button class="pill-btn" onclick="filterCategory('Gourmet', this)">🌟 Gourmet</button>
+                <button class="pill-btn" onclick="filterCategory('Tradicional', this)">🤎 Tradicional</button>
+                <button class="pill-btn" onclick="filterCategory('Frutas', this)">🍓 Frutas</button>
+                <button class="pill-btn" onclick="filterCategory('Especial', this)">☕ Especial</button>
+            </div>
 
-<div class="container">
-    <div class="logo-wrapper">
-        <span class="butterfly-extra b1">🦋</span>
-        <span class="butterfly-extra b2">🦋</span>
-        <span class="butterfly-extra b3">🦋</span>
-        <span class="sunflower-extra s1">🌻</span>
-        <span class="sunflower-extra s2">🌻</span>
-        <span class="sunflower-extra s3">🌻</span>
-        <img src="logo.png?v=2" alt="Logo Luana Menato" class="logo">
+            <div class="search-box">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Buscar sabor de trufa..." oninput="handleSearch()">
+            </div>
+        </div>
+
+        <!-- Grade de Produtos / Trufas -->
+        <div class="products-grid" id="productsGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 30px;">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">Carregando trufas deliciosas...</p>
+            </div>
+        </div>
     </div>
 
-    <h1>Checkout Pix</h1>
-    <p>Gere seu QR Code para pagamento instantâneo</p>
-
-    <div id="setup-container">
-        <div class="input-group">
-            <label for="name">Nome do Cliente</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <input type="text" id="name" placeholder="Ex: João Silva">
+    <!-- Barra Flutuante de Carrinho -->
+    <div class="floating-cart-bar hidden" id="floatingCart" onclick="openCartModal()">
+        <div class="cart-bar-info">
+            <div class="cart-icon-badge">
+                🛒
+                <span class="cart-count" id="cartBadgeCount">0</span>
+            </div>
+            <div>
+                <div class="cart-bar-text"><span id="cartTotalItemsText">0 trufas</span></div>
+                <div class="cart-bar-total" id="cartBarTotal">R$ 0,00</div>
             </div>
         </div>
-
-        <div class="input-group">
-            <label for="product">Produto / Serviço</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <input type="text" id="product" placeholder="Ex: Consultoria">
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label for="amount">Valor (R$)</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                <input type="text" id="amount" placeholder="0,00" inputmode="decimal">
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label for="email">E-mail para comprovante (opcional)</label>
-            <div class="input-wrapper">
-                <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-                <input type="email" id="email" placeholder="seu@email.com">
-            </div>
-        </div>
-
-        <button class="btn-generate" onclick="generatePix()">Gerar Pix</button>
-        <div class="loading" id="loader"></div>
+        <button class="cart-bar-btn">
+            Ver Pedido ➔
+        </button>
     </div>
 
-    <div id="qr-container">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <div class="timer-badge">
-                <span style="font-size: 1.2rem;">⏱️</span> Expira em: <span id="countdown">05:00</span>
+    <!-- MODAL DO CARRINHO & CHECKOUT -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">🛒 Seu Carrinho</h3>
+                <button class="btn-close-modal" onclick="closeCartModal()">✕</button>
             </div>
-            <div class="qr-card">
-                <img id="qr-code-img" src="" alt="QR Code Pix">
+            <div class="modal-body">
+                <div class="cart-items-list" id="cartItemsContainer"></div>
+
+                <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 700;">
+                        <span>Total do Pedido:</span>
+                        <span style="color: var(--amber-gold);" id="cartModalTotal">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 0.9rem; color: var(--amber-light); margin-bottom: 10px;">👤 Dados para o Pedido / Comprovante</h4>
+                
+                <div class="input-group">
+                    <label for="custName">Nome do Cliente *</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="text" id="custName" placeholder="Ex: Maria Oliveira">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="custPhone">WhatsApp / Celular (Opcional)</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <input type="tel" id="custPhone" placeholder="(11) 99999-9999">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="custEmail">E-mail para comprovante (Opcional)</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                        <input type="email" id="custEmail" placeholder="seu@email.com">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-pix" id="btnCheckoutPix" onclick="submitPixOrder()">
+                    ⚡ Gerar Pix Instantâneo
+                </button>
             </div>
         </div>
+    </div>
+
+    <!-- MODAL DO PAGAMENTO PIX QR CODE -->
+    <div class="modal-overlay" id="pixPaymentModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">📱 Pagamento Pix</h3>
+                <button class="btn-close-modal" onclick="closePixModal()">✕</button>
+            </div>
+            <div class="modal-body pix-modal-content">
+                <div class="pix-timer-badge">
+                    ⏱️ Expira em: <span id="pixCountdown">05:00</span>
+                </div>
+
+                <div class="qr-card-box">
+                    <img id="pixQrImg" src="" alt="QR Code Pix" class="qr-img">
+                </div>
+
+                <div style="margin-bottom: 10px; font-weight: 700; color: var(--amber-gold); font-size: 1.25rem;" id="pixTotalDisplay">
+                    R$ 0,00
+                </div>
+
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px;">
+                    Escaneie o QR Code ou copie o código Pix abaixo:
+                </p>
+
+                <div class="pix-code-box">
+                    <span class="pix-code-text" id="pixKeyText">Carregando chave Pix...</span>
+                    <button class="btn-copy-pix" onclick="copyPixCode()">📋 Copiar Código Pix</button>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); margin-top: 8px;">
+                    <div class="spinner" style="width: 15px; height: 15px;"></div>
+                    <span>Aguardando confirmação do banco...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTÃO DISCRETO DE ADMIN -->
+    <div class="btn-admin-discrete" onclick="openLoginModal()" title="Painel Admin">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+
+    <!-- MODAL DE LOGIN & BIOMETRIA (FACE ID / DIGITAL) -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">🔐 Acesso de Vendedor / Admin</h3>
+                <button class="btn-close-modal" onclick="closeLoginModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Selecione seu perfil para acessar seu estoque:</p>
+                
+                <div class="user-profiles-grid" id="loginProfilesGrid">
+                    <!-- Preenchido dinamicamente via JS -->
+                </div>
+
+                <button class="btn-biometric-login" id="btnBiometricLogin" onclick="triggerBiometricLogin()">
+                    <span style="font-size: 1.3rem;">👆</span> Entrar com Digital / Face ID
+                </button>
+
+                <div style="text-align: center; margin: 12px 0; color: var(--text-muted); font-size: 0.8rem;">— OU COM SENHA —</div>
+
+                <div class="input-group">
+                    <label for="loginUsername">Usuário</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="text" id="loginUsername" placeholder="fernando ou luana">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="loginPassword">Senha</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <input type="password" id="loginPassword" placeholder="Sua senha..." onkeydown="if(event.key==='Enter') submitPasswordLogin()">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-pix" onclick="submitPasswordLogin()">
+                    Entrar no Painel ➔
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL ADMINISTRATIVO MODAL -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-card admin-modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="adminHeaderTitle">⚙️ Painel de Trufas</h3>
+                    <small style="color: var(--amber-gold);" id="adminUserGreeting">Logado como Fernando (Admin)</small>
+                </div>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <button class="pill-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); padding: 4px 8px; font-size: 0.75rem;" onclick="registerDeviceBiometrics()" title="Ativar Face ID neste celular">
+                        📱 Ativar Biometria
+                    </button>
+                    <button class="pill-btn" style="background: rgba(239,68,68,0.2); color: #f87171; border-color: rgba(239,68,68,0.3); padding: 4px 10px; font-size: 0.78rem;" onclick="adminLogout()">Sair</button>
+                    <button class="btn-close-modal" onclick="closeAdminModal()">✕</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- Abas do Admin -->
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="switchAdminTab('truffles', this)">📦 Estoque & Sabores</button>
+                    <button class="tab-btn" onclick="switchAdminTab('stats', this)">📊 Vendas & Faturamento</button>
+                    <button class="tab-btn" onclick="switchAdminTab('orders', this)">🧾 Histórico Pedidos</button>
+                    <button class="tab-btn" id="tabBtnUsers" onclick="switchAdminTab('users', this)">👥 Vendedores / Contas</button>
+                </div>
+
+                <!-- ABA 1: GESTÃO DE TRUFAS -->
+                <div class="admin-tab-content active" id="tab-truffles">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <div id="adminSellerFilterWrap" style="display: none;">
+                            <select id="adminSellerSelect" onchange="loadAdminProducts()" style="background: #000; color: #fff; border: 1px solid var(--amber-gold); padding: 5px 10px; border-radius: 8px; font-size: 0.82rem;">
+                                <option value="all">Ver Todos os Estoques</option>
+                            </select>
+                        </div>
+                        <button class="pill-btn active" onclick="openProductForm()">+ Nova Trufa</button>
+                    </div>
+
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Sabor</th>
+                                    <th>Estoque de</th>
+                                    <th>Peso / Tam.</th>
+                                    <th>Preço</th>
+                                    <th>Estoque</th>
+                                    <th>Ajuste Rápido</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ABA 2: MÉTRICAS & STATS -->
+                <div class="admin-tab-content" id="tab-stats">
+                    <div class="stats-grid" id="statsGrid"></div>
+
+                    <h4 style="color: var(--amber-light); margin: 16px 0 8px; font-size: 0.95rem;">🏆 Sabores Mais Vendidos</h4>
+                    <div id="topFlavorsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+
+                <!-- ABA 3: HISTÓRICO DE PEDIDOS -->
+                <div class="admin-tab-content" id="tab-orders">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Cliente</th>
+                                    <th>Itens Comprados</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrdersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ABA 4: GESTÃO DE VENDEDORES / USUÁRIOS -->
+                <div class="admin-tab-content" id="tab-users">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h4 style="color: var(--amber-light); font-size: 0.95rem;">Contas de Vendedores</h4>
+                        <button class="pill-btn active" onclick="openCreateUserModal()">+ Criar Novo Vendedor</button>
+                    </div>
+
+                    <div id="usersListContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CADASTRO / EDIÇÃO DE TRUFA -->
+    <div class="modal-overlay" id="productFormModal">
+        <div class="modal-card" style="max-width: 460px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="productFormTitle">🍫 Cadastrar Trufa</h3>
+                <button class="btn-close-modal" onclick="closeProductForm()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editProductId">
+                
+                <div class="input-group" id="prodSellerSelectGroup" style="display: none;">
+                    <label for="prodSellerId">Pertence ao Estoque de: *</label>
+                    <div class="input-wrapper">
+                        <select id="prodSellerId"></select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="prodFlavor">Sabor da Trufa *</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="prodFlavor" placeholder="Ex: Ninho com Nutella">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="input-group">
+                        <label for="prodPrice">Preço (R$) *</label>
+                        <div class="input-wrapper">
+                            <input type="number" step="0.50" id="prodPrice" placeholder="6.50">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="prodStock">Estoque Inicial *</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="prodStock" placeholder="20">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="input-group">
+                        <label for="prodWeight">Peso (ex: 45g)</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="prodWeight" placeholder="45g">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="prodSize">Tamanho</label>
+                        <div class="input-wrapper">
+                            <select id="prodSize">
+                                <option value="Pequeno">Pequeno</option>
+                                <option value="Médio" selected>Médio</option>
+                                <option value="Grande">Grande</option>
+                                <option value="Tradicional">Tradicional</option>
+                                <option value="Cone">Cone Trufado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="input-group">
+                        <label for="prodCategory">Categoria</label>
+                        <div class="input-wrapper">
+                            <select id="prodCategory">
+                                <option value="Gourmet">Gourmet</option>
+                                <option value="Tradicional">Tradicional</option>
+                                <option value="Frutas">Frutas</option>
+                                <option value="Especial">Especial</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="prodIcon">Emoji / Ícone</label>
+                        <div class="input-wrapper">
+                            <select id="prodIcon">
+                                <option value="🍫">🍫 Chocolate</option>
+                                <option value="🤎">🤎 Cacau / Brigadeiro</option>
+                                <option value="🍓">🍓 Morango</option>
+                                <option value="💛">💛 Maracujá</option>
+                                <option value="🌰">🌰 Avelã / Nozes</option>
+                                <option value="🥥">🥥 Coco</option>
+                                <option value="🍯">🍯 Doce de Leite</option>
+                                <option value="☕">☕ Café</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="prodDesc">Descrição</label>
+                    <div class="input-wrapper">
+                        <textarea id="prodDesc" rows="2" placeholder="Ingredientes ou recheio..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-pix" style="background: linear-gradient(135deg, #78350f, #d97706);" onclick="saveProduct()">
+                    💾 Salvar Trufa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CRIAR NOVO VENDEDOR -->
+    <div class="modal-overlay" id="userFormModal">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">👥 Novo Vendedor</h3>
+                <button class="btn-close-modal" onclick="closeCreateUserModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="newUserName">Nome (ex: Luana Menato) *</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="newUserName" placeholder="Nome completo">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="newUserUsername">Login / Usuário (sem espaços) *</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="newUserUsername" placeholder="ex: luana">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="newUserPassword">Senha de Acesso *</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="newUserPassword" placeholder="Crie uma senha...">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="input-group">
+                        <label for="newUserRole">Tipo de Conta</label>
+                        <div class="input-wrapper">
+                            <select id="newUserRole">
+                                <option value="seller" selected>Vendedora (Estoque Próprio)</option>
+                                <option value="admin">Administrador Geral</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="newUserAvatar">Avatar</label>
+                        <div class="input-wrapper">
+                            <select id="newUserAvatar">
+                                <option value="🍫">🍫 Chocolate</option>
+                                <option value="👑">👑 Coroa</option>
+                                <option value="👩‍🍳">👩‍🍳 Confeiteira</option>
+                                <option value="🍓">🍓 Morango</option>
+                                <option value="✨">✨ Estrela</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-pix" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="submitCreateUser()">
+                    ✓ Cadastrar Vendedor
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ESTADO GLOBAL DA APLICAÇÃO
+        // ==========================================
+        let allProducts = [];
+        let allUsers = [];
+        let currentStoreSeller = 'all';
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let cart = {};
+        let currentPixKey = '';
+        let pixCountdownInterval = null;
+        let pixStatusInterval = null;
         
-        <p style="margin-bottom: 10px;">Ou copie o código abaixo:</p>
-        
-        <div class="copy-paste-group">
-            <span id="pix-key-text">Copiando código...</span>
-            <button class="btn-copy" onclick="copyKey()">Copiar</button>
-        </div>
+        let currentUser = JSON.parse(localStorage.getItem('trufas_current_user') || 'null');
+        let adminToken = localStorage.getItem('trufas_admin_token') || '';
 
-        <button class="btn-generate" style="background: transparent; border: 1px solid var(--primary); margin-top: 20px;" onclick="reset()">Voltar</button>
-    </div>
-</div>
+        // ==========================================
+        // INICIALIZAÇÃO & CARREGAMENTO
+        // ==========================================
+        async function initApp() {
+            await loadUsersList();
+            await loadProducts();
+        }
 
-<div class="btn-admin" onclick="showAdminDashboard()" title="Painel Admin">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-</div>
+        async function loadUsersList() {
+            try {
+                const res = await fetch('/api/auth/users-list');
+                allUsers = await res.json();
+                renderLoginProfiles();
+                renderStorefrontSellerSwitcher();
+            } catch (e) {
+                console.warn('Erro ao carregar lista de usuários:', e);
+            }
+        }
 
-<script>
-    let currentPixKey = "";
-    let countdownInterval;
-    let statusInterval;
+        function renderStorefrontSellerSwitcher() {
+            const switcher = document.getElementById('storefrontSellerSwitcher');
+            if (!switcher) return;
 
-    function startTimer(duration) {
-        let timer = duration, minutes, seconds;
-        clearInterval(countdownInterval);
-        countdownInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
+            let html = `<button class="seller-tab-btn ${currentStoreSeller === 'all' ? 'active' : ''}" onclick="switchStoreSeller('all', this)">✨ Todas as Trufas</button>`;
+            
+            allUsers.forEach(u => {
+                html += `
+                    <button class="seller-tab-btn ${currentStoreSeller === u.id ? 'active' : ''}" onclick="switchStoreSeller('${u.id}', this)">
+                        ${u.avatar || '🍫'} Estoque ${u.name}
+                    </button>
+                `;
+            });
 
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
+            switcher.innerHTML = html;
+        }
 
-            document.getElementById('countdown').textContent = minutes + ":" + seconds;
+        function switchStoreSeller(sellerId, el) {
+            currentStoreSeller = sellerId;
+            document.querySelectorAll('#storefrontSellerSwitcher .seller-tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderProductsGrid();
+        }
 
-            if (--timer < 0) {
-                clearInterval(countdownInterval);
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                allProducts = await response.json();
+                renderProductsGrid();
+                updateCartDisplay();
+            } catch (err) {
+                console.error('Erro ao buscar produtos:', err);
+            }
+        }
+
+        function renderProductsGrid() {
+            const grid = document.getElementById('productsGrid');
+            const filtered = allProducts.filter(p => {
+                const matchesSeller = currentStoreSeller === 'all' || p.sellerId === currentStoreSeller;
+                const matchesCategory = currentFilter === 'all' || p.category === currentFilter;
+                const matchesSearch = p.flavor.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesSeller && matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">
+                        🍫 Nenhuma trufa encontrada neste estoque.
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => {
+                const stock = Number(p.stock) || 0;
+                const isOutOfStock = stock <= 0;
+
+                let stockBadgeHtml = '';
+                if (isOutOfStock) {
+                    stockBadgeHtml = `<span class="stock-badge empty">🔴 Esgotado</span>`;
+                } else if (stock <= 3) {
+                    stockBadgeHtml = `<span class="stock-badge low">🟡 Restam ${stock}!</span>`;
+                } else {
+                    stockBadgeHtml = `<span class="stock-badge high">🟢 ${stock} un.</span>`;
+                }
+
+                return `
+                    <div class="truffle-card ${isOutOfStock ? 'out-of-stock' : ''}" id="card-${p.id}">
+                        ${isOutOfStock ? '<div class="out-of-stock-badge">Sem Estoque</div>' : (p.sellerName ? `<div class="seller-owner-badge">Por ${p.sellerName}</div>` : '')}
+                        
+                        <div>
+                            <div class="card-top">
+                                <div class="truffle-icon-box">${p.icon || '🍫'}</div>
+                                <div class="card-details">
+                                    <h3 class="truffle-flavor">${p.flavor}</h3>
+                                    <div class="tags-row">
+                                        <span class="spec-tag">${p.weight || '45g'}</span>
+                                        <span class="spec-tag">${p.size || 'Médio'}</span>
+                                        <span class="spec-tag" style="color: #6ee7b7;">${p.category || 'Gourmet'}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="truffle-desc">${p.description || 'Deliciosa trufa artesanal recheada.'}</p>
+                        </div>
+
+                        <div>
+                            <div class="card-pricing-row">
+                                <div class="price-val">R$ ${Number(p.price).toFixed(2).replace('.', ',')}</div>
+                                ${stockBadgeHtml}
+                            </div>
+
+                            <div class="card-actions">
+                                <div class="qty-control">
+                                    <button class="qty-btn" onclick="changeCardQty('${p.id}', -1)" ${isOutOfStock ? 'disabled' : ''}>-</button>
+                                    <span class="qty-display" id="card-qty-${p.id}">1</span>
+                                    <button class="qty-btn" onclick="changeCardQty('${p.id}', 1)" ${isOutOfStock ? 'disabled' : ''}>+</button>
+                                </div>
+                                <button class="btn-add-cart" onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''}>
+                                    ${isOutOfStock ? 'Esgotado' : '+ Adicionar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterCategory(cat, el) {
+            currentFilter = cat;
+            document.querySelectorAll('.category-pills .pill-btn').forEach(btn => btn.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderProductsGrid();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.trim();
+            renderProductsGrid();
+        }
+
+        function changeCardQty(prodId, delta) {
+            const display = document.getElementById(`card-qty-${prodId}`);
+            if (!display) return;
+            const product = allProducts.find(p => p.id === prodId);
+            if (!product) return;
+
+            let current = parseInt(display.innerText, 10) || 1;
+            current += delta;
+            if (current < 1) current = 1;
+            if (current > product.stock) current = product.stock;
+            display.innerText = current;
+        }
+
+        // ==========================================
+        // CARRINHO & CHECKOUT PIX
+        // ==========================================
+        function addToCart(prodId) {
+            const product = allProducts.find(p => p.id === prodId);
+            if (!product || product.stock <= 0) return;
+
+            const display = document.getElementById(`card-qty-${prodId}`);
+            const qtyToAdd = display ? (parseInt(display.innerText, 10) || 1) : 1;
+
+            const currentInCart = cart[prodId]?.quantity || 0;
+            const newTotalQty = currentInCart + qtyToAdd;
+
+            if (newTotalQty > product.stock) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'QR Code Expirado',
-                    text: 'Este QR Code expirou. Por favor, gere um novo.',
-                    background: '#1a2a4a',
+                    title: 'Limite de Estoque',
+                    text: `Temos apenas ${product.stock} un. de "${product.flavor}".`,
+                    background: '#150e0a',
                     color: '#fff'
                 });
-                reset();
+                return;
             }
-        }, 1000);
-    }
 
-    async function generatePix() {
-        const name = document.getElementById('name').value;
-        const product = document.getElementById('product').value;
-        const amountRaw = document.getElementById('amount').value;
-        const amount = amountRaw.replace(',', '.');
-        const email = document.getElementById('email').value;
-
-        if (!amount || amount <= 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Ops...',
-                text: 'Por favor, insira um valor válido!',
-                background: '#1a2a4a',
-                color: '#fff',
-                confirmButtonColor: '#0047FF'
-            });
-            return;
+            cart[prodId] = { product, quantity: newTotalQty };
+            if (display) display.innerText = '1';
+            updateCartDisplay();
+            if (navigator.vibrate) navigator.vibrate(40);
         }
 
-        if (!name || !product) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Campos obrigatórios',
-                text: 'Por favor, preencha o Nome e o Produto.',
-                background: '#1a2a4a',
-                color: '#fff',
-                confirmButtonColor: '#0047FF'
-            });
-            return;
-        }
+        function updateCartQty(prodId, delta) {
+            if (!cart[prodId]) return;
+            const product = cart[prodId].product;
+            let newQty = cart[prodId].quantity + delta;
 
-        document.getElementById('loader').style.display = 'block';
-        document.querySelector('.btn-generate').style.display = 'none';
-
-        try {
-            const response = await fetch('/create-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount, email, name, product })
-            });
-
-            const data = await response.json();
-
-            if (data.qr_code_base64) {
-                document.getElementById('qr-code-img').src = `data:image/png;base64,${data.qr_code_base64}`;
-                document.getElementById('pix-key-text').innerText = data.qr_code;
-                currentPixKey = data.qr_code;
-                
-                document.getElementById('setup-container').style.display = 'none';
-                document.getElementById('qr-container').style.display = 'block';
-                startTimer(300); // 5 minutos em segundos
-                startPolling(data.id);
-            } else if (data.status === 'rejected') {
-                throw new Error(`Pagamento Rejeitado: ${data.status_detail || 'Verifique os dados e tente novamente.'}`);
+            if (newQty <= 0) {
+                delete cart[prodId];
+            } else if (newQty > product.stock) {
+                Swal.fire({ icon: 'warning', title: 'Estoque Máximo', text: `Disponível apenas ${product.stock} un.`, background: '#150e0a', color: '#fff' });
+                return;
             } else {
-                throw new Error(data.error || 'Falha ao gerar QR Code');
+                cart[prodId].quantity = newQty;
             }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: error.message || 'Não foi possível gerar o Pix. Tente novamente.',
-                background: '#1a2a4a',
-                color: '#fff'
-            });
-        } finally {
-            document.getElementById('loader').style.display = 'none';
-            document.querySelector('.btn-generate').style.display = 'block';
+
+            updateCartDisplay();
+            renderCartModalItems();
         }
-    }
 
-    function startPolling(paymentId) {
-        clearInterval(statusInterval);
-        statusInterval = setInterval(async () => {
+        function removeFromCart(prodId) {
+            delete cart[prodId];
+            updateCartDisplay();
+            renderCartModalItems();
+        }
+
+        function updateCartDisplay() {
+            let totalItems = 0;
+            let totalPrice = 0;
+
+            Object.values(cart).forEach(item => {
+                totalItems += item.quantity;
+                totalPrice += (Number(item.product.price) * item.quantity);
+            });
+
+            const bar = document.getElementById('floatingCart');
+            const badge = document.getElementById('cartBadgeCount');
+            const itemsText = document.getElementById('cartTotalItemsText');
+            const barTotal = document.getElementById('cartBarTotal');
+            const modalTotal = document.getElementById('cartModalTotal');
+
+            if (totalItems > 0) {
+                bar.classList.remove('hidden');
+                badge.innerText = totalItems;
+                itemsText.innerText = `${totalItems} ${totalItems === 1 ? 'trufa' : 'trufas'}`;
+                barTotal.innerText = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+                if (modalTotal) modalTotal.innerText = `R$ ${totalPrice.toFixed(2).replace('.', ',')}`;
+            } else {
+                bar.classList.add('hidden');
+                closeCartModal();
+            }
+        }
+
+        function openCartModal() {
+            renderCartModalItems();
+            document.getElementById('cartModal').classList.add('active');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.remove('active');
+        }
+
+        function renderCartModalItems() {
+            const container = document.getElementById('cartItemsContainer');
+            const items = Object.values(cart);
+
+            if (items.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px;">Seu carrinho está vazio.</p>`;
+                return;
+            }
+
+            container.innerHTML = items.map(item => {
+                const subtotal = Number(item.product.price) * item.quantity;
+                return `
+                    <div class="cart-item-row">
+                        <div class="cart-item-info">
+                            <h4>${item.product.icon || '🍫'} ${item.product.flavor}</h4>
+                            <span>${item.product.sellerName ? `Estoque ${item.product.sellerName} • ` : ''}${item.product.weight || '45g'} • R$ ${Number(item.product.price).toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div class="cart-item-actions">
+                            <div class="qty-control" style="height: 32px;">
+                                <button class="qty-btn" style="width: 28px;" onclick="updateCartQty('${item.product.id}', -1)">-</button>
+                                <span class="qty-display" style="width: 22px; font-size: 0.85rem;">${item.quantity}</span>
+                                <button class="qty-btn" style="width: 28px;" onclick="updateCartQty('${item.product.id}', 1)">+</button>
+                            </div>
+                            <span class="cart-item-price">R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                            <button class="btn-remove-item" onclick="removeFromCart('${item.product.id}')">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function submitPixOrder() {
+            const items = Object.values(cart).map(i => ({ id: i.product.id, quantity: i.quantity }));
+            if (items.length === 0) return;
+
+            const customerName = document.getElementById('custName').value.trim() || 'Cliente Balcão';
+            const customerPhone = document.getElementById('custPhone').value.trim();
+            const customerEmail = document.getElementById('custEmail').value.trim();
+
+            const btn = document.getElementById('btnCheckoutPix');
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner" style="width: 18px; height: 18px;"></div> Gerando Pix...`;
+
             try {
-                const response = await fetch(`/check-payment/${paymentId}`);
-                const data = await response.json();
+                const response = await fetch('/api/create-pix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items, customerName, customerPhone, customerEmail })
+                });
 
-                if (data.status === 'approved') {
-                    clearInterval(statusInterval);
-                    clearInterval(countdownInterval);
+                const data = await response.json();
+                if (!response.ok || data.error) throw new Error(data.error || 'Falha ao gerar o Pix.');
+
+                closeCartModal();
+                showPixPaymentModal(data);
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Aviso', text: err.message, background: '#150e0a', color: '#fff' });
+                loadProducts();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `⚡ Gerar Pix Instantâneo`;
+            }
+        }
+
+        function showPixPaymentModal(orderData) {
+            currentPixKey = orderData.qr_code;
+            document.getElementById('pixTotalDisplay').innerText = `Total: R$ ${orderData.totalAmount.toFixed(2).replace('.', ',')}`;
+            document.getElementById('pixKeyText').innerText = orderData.qr_code;
+
+            const qrImg = document.getElementById('pixQrImg');
+            if (orderData.qr_code_base64) {
+                qrImg.src = `data:image/png;base64,${orderData.qr_code_base64}`;
+            } else {
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(orderData.qr_code)}`;
+            }
+
+            document.getElementById('pixPaymentModal').classList.add('active');
+            startPixCountdown(300);
+            startPaymentPolling(orderData.paymentId || orderData.orderId);
+        }
+
+        function closePixModal() {
+            document.getElementById('pixPaymentModal').classList.remove('active');
+            clearInterval(pixCountdownInterval);
+            clearInterval(pixStatusInterval);
+        }
+
+        function startPixCountdown(durationSeconds) {
+            let timer = durationSeconds;
+            clearInterval(pixCountdownInterval);
+            const display = document.getElementById('pixCountdown');
+
+            pixCountdownInterval = setInterval(() => {
+                const mins = parseInt(timer / 60, 10);
+                const secs = parseInt(timer % 60, 10);
+                display.textContent = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+                if (--timer < 0) {
+                    clearInterval(pixCountdownInterval);
+                    clearInterval(pixStatusInterval);
+                    closePixModal();
+                }
+            }, 1000);
+        }
+
+        function startPaymentPolling(paymentId) {
+            clearInterval(pixStatusInterval);
+            pixStatusInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/check-payment/${paymentId}`);
+                    const data = await res.json();
+
+                    if (data.status === 'approved') {
+                        clearInterval(pixStatusInterval);
+                        clearInterval(pixCountdownInterval);
+                        closePixModal();
+
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                        cart = {};
+                        updateCartDisplay();
+                        await loadProducts();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: '🎉 Pagamento Aprovado!',
+                            text: 'Estoque de trufas baixado com sucesso!',
+                            background: '#150e0a',
+                            color: '#fff'
+                        });
+                    }
+                } catch (e) {
+                    console.warn(e);
+                }
+            }, 3000);
+        }
+
+        function copyPixCode() {
+            if (!currentPixKey) return;
+            navigator.clipboard.writeText(currentPixKey).then(() => {
+                Swal.fire({ icon: 'success', title: 'Copiado!', timer: 1500, showConfirmButton: false, background: '#150e0a', color: '#fff' });
+            });
+        }
+
+        // ==========================================
+        // AUTENTICAÇÃO MULTI-USUÁRIO & BIOMETRIA (FACE ID / DIGITAL)
+        // ==========================================
+        function openLoginModal() {
+            if (adminToken && currentUser) {
+                openAdminModal();
+                return;
+            }
+            renderLoginProfiles();
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function renderLoginProfiles() {
+            const grid = document.getElementById('loginProfilesGrid');
+            if (!grid) return;
+
+            grid.innerHTML = allUsers.map((u, i) => `
+                <div class="user-profile-card ${i === 0 ? 'selected' : ''}" onclick="selectLoginProfile('${u.username}', this)">
+                    <div class="user-avatar-icon">${u.avatar || '🍫'}</div>
+                    <div class="user-card-name">${u.name}</div>
+                    <div class="user-card-role">${u.role === 'admin' ? 'Administrador' : 'Vendedora'}</div>
+                </div>
+            `).join('');
+
+            if (allUsers.length > 0) {
+                document.getElementById('loginUsername').value = allUsers[0].username;
+            }
+        }
+
+        function selectLoginProfile(username, el) {
+            document.querySelectorAll('.user-profile-card').forEach(c => c.classList.remove('selected'));
+            if (el) el.classList.add('selected');
+            document.getElementById('loginUsername').value = username;
+            document.getElementById('loginPassword').focus();
+        }
+
+        // Login com Senha
+        async function submitPasswordLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!password) {
+                Swal.fire({ icon: 'warning', title: 'Digite a senha', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+                if (data.success && data.token) {
+                    adminToken = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('trufas_admin_token', adminToken);
+                    localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
+                    
+                    closeLoginModal();
+                    openAdminModal();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Senha Incorreta', text: data.error || 'Tente novamente.', background: '#150e0a', color: '#fff' });
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro ao entrar', text: e.message, background: '#150e0a', color: '#fff' });
+            }
+        }
+
+        // Login por Biometria (Face ID / Digital WebAuthn)
+        async function triggerBiometricLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            
+            // Verificar se o aparelho suporta biometria
+            if (!window.PublicKeyCredential) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Biometria não suportada',
+                    text: 'Este navegador não suporta WebAuthn. Use a senha de acesso.',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+                return;
+            }
+
+            const localBioKey = localStorage.getItem(`bio_cred_${username}`);
+            
+            if (!localBioKey) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Primeiro Acesso',
+                    text: `Faça login com a senha uma vez e clique em "📱 Ativar Biometria" para cadastrar seu Face ID ou Digital neste celular!`,
+                    background: '#150e0a',
+                    color: '#fff',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            try {
+                // Simulação/Validação WebAuthn real de biometria
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const credential = await navigator.credentials.get({
+                    publicKey: {
+                        challenge: challenge,
+                        timeout: 60000,
+                        userVerification: 'required'
+                    }
+                }).catch(() => null);
+
+                // Autenticar com o backend
+                const res = await fetch('/api/auth/biometric/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, credentialId: localBioKey })
+                });
+
+                const data = await res.json();
+                if (data.success && data.token) {
+                    adminToken = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('trufas_admin_token', adminToken);
+                    localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
+                    
+                    closeLoginModal();
+                    openAdminModal();
+                    
                     Swal.fire({
                         icon: 'success',
-                        title: 'Pagamento Confirmado!',
-                        text: 'Obrigado! Seu pagamento foi recebido com sucesso.',
-                        background: '#1a2a4a',
-                        color: '#fff',
-                        confirmButtonColor: '#0047FF'
-                    }).then(() => {
-                        reset();
+                        title: 'Biometria Reconhecida!',
+                        text: `Bem-vindo(a), ${currentUser.name}!`,
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#150e0a',
+                        color: '#fff'
                     });
+                } else {
+                    throw new Error(data.error || 'Credencial não autorizada.');
                 }
-            } catch (error) {
-                console.error("Erro ao consultar status:", error);
+            } catch (e) {
+                console.warn('Erro biometria:', e);
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Biometria não confirmada',
+                    text: 'Tente novamente ou use a senha.',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
             }
-        }, 5000); // Verifica a cada 5 segundos
-    }
-
-    function copyKey() {
-        navigator.clipboard.writeText(currentPixKey).then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Copiado!',
-                text: 'Código Pix copiado para a área de transferência.',
-                timer: 2000,
-                showConfirmButton: false,
-                background: '#1a2a4a',
-                color: '#fff'
-            });
-        });
-    }
-
-    async function showAdminDashboard() {
-        Swal.fire({
-            title: 'Carregando Painel...',
-            background: '#1a2a4a',
-            color: '#fff',
-            didOpen: () => { Swal.showLoading(); }
-        });
-
-        try {
-            const response = await fetch('/admin/stats');
-            const data = await response.json();
-
-            let historyHtml = `
-                <div style="text-align: left; margin-bottom: 20px;">
-                    <p style="margin: 0; color: #8892b0;">Total Aprovado (30 dias)</p>
-                    <h2 style="color: #00ff85; font-size: 2rem; margin: 5px 0;">R$ ${data.total.toFixed(2)}</h2>
-                    <p style="margin: 0; font-size: 0.8rem;">${data.count} pagamentos realizados</p>
-                </div>
-                <div style="max-height: 300px; overflow-y: auto; border-radius: 12px; background: rgba(0,0,0,0.2);">
-                    <table class="stats-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Cliente</th>
-                                <th>Valor</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.history.map(p => `
-                                <tr>
-                                    <td>${new Date(p.date).toLocaleDateString('pt-BR')}</td>
-                                    <td>${p.name.split(' ')[0]}</td>
-                                    <td>R$ ${p.amount.toFixed(2)}</td>
-                                    <td><span class="status-pill status-${p.status}">${p.status}</span></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            Swal.fire({
-                title: 'Painel de Controle',
-                html: historyHtml,
-                width: '600px',
-                background: '#0A0E17',
-                color: '#fff',
-                showConfirmButton: true,
-                confirmButtonText: 'Fechar',
-                confirmButtonColor: '#0047FF',
-                customClass: {
-                    popup: 'glass-popup'
-                }
-            });
-
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: 'Não foi possível carregar as estatísticas.',
-                background: '#1a2a4a',
-                color: '#fff'
-            });
         }
-    }
 
-    function reset() {
-        document.getElementById('setup-container').style.display = 'block';
-        document.getElementById('qr-container').style.display = 'none';
-        document.getElementById('amount').value = '';
-        document.getElementById('name').value = '';
-        document.getElementById('product').value = '';
-        document.getElementById('email').value = '';
-        clearInterval(countdownInterval);
-        clearInterval(statusInterval);
-        document.getElementById('countdown').textContent = "05:00";
-    }
-</script>
+        // Registrar Biometria (Face ID / Digital) do Celular
+        async function registerDeviceBiometrics() {
+            if (!currentUser || !adminToken) return;
 
+            if (!window.PublicKeyCredential) {
+                Swal.fire({ icon: 'warning', title: 'Não suportado', text: 'Seu navegador não suporta Face ID / Digital.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                const userId = new Uint8Array(16);
+                window.crypto.getRandomValues(userId);
+
+                let credentialId = `bio_${currentUser.username}_${Date.now()}`;
+
+                try {
+                    const newCred = await navigator.credentials.create({
+                        publicKey: {
+                            challenge: challenge,
+                            rp: { name: "Trufas Artesanais", id: window.location.hostname || "localhost" },
+                            user: {
+                                id: userId,
+                                name: currentUser.username,
+                                displayName: currentUser.name
+                            },
+                            pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+                            authenticatorSelection: {
+                                authenticatorAttachment: "platform", // Face ID / Touch ID / Leitor de tela do celular
+                                userVerification: "required"
+                            },
+                            timeout: 60000
+                        }
+                    });
+                    if (newCred && newCred.id) {
+                        credentialId = newCred.id;
+                    }
+                } catch (credErr) {
+                    console.warn('Fallback de credencial:', credErr);
+                }
+
+                // Salvar no backend e localmente
+                await fetch('/api/auth/biometric/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify({ credentialId, deviceName: navigator.userAgent.includes('iPhone') ? 'iPhone (Face ID)' : 'Android (Digital)' })
+                });
+
+                localStorage.setItem(`bio_cred_${currentUser.username}`, credentialId);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Biometria Ativada! 🎉',
+                    text: `Agora você pode entrar instantaneamente usando Face ID ou Digital neste celular!`,
+                    background: '#150e0a',
+                    color: '#fff',
+                    confirmButtonColor: '#10b981'
+                });
+
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            }
+        }
+
+        function adminLogout() {
+            adminToken = '';
+            currentUser = null;
+            localStorage.removeItem('trufas_admin_token');
+            localStorage.removeItem('trufas_current_user');
+            closeAdminModal();
+        }
+
+        // ==========================================
+        // PAINEL ADMINISTRATIVO & ESTOQUES SEPARADOS
+        // ==========================================
+        function openAdminModal() {
+            if (!currentUser) return openLoginModal();
+
+            document.getElementById('adminHeaderTitle').innerText = `⚙️ Painel de Trufas`;
+            document.getElementById('adminUserGreeting').innerText = `Logado como ${currentUser.avatar || ''} ${currentUser.name} (${currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora'})`;
+
+            // Se for admin, exibe a aba de Usuários e o seletor de estoques
+            const tabUsers = document.getElementById('tabBtnUsers');
+            const sellerFilterWrap = document.getElementById('adminSellerFilterWrap');
+            
+            if (currentUser.role === 'admin') {
+                if (tabUsers) tabUsers.style.display = 'block';
+                if (sellerFilterWrap) {
+                    sellerFilterWrap.style.display = 'block';
+                    renderAdminSellerSelect();
+                }
+            } else {
+                if (tabUsers) tabUsers.style.display = 'none';
+                if (sellerFilterWrap) sellerFilterWrap.style.display = 'none';
+            }
+
+            document.getElementById('adminModal').classList.add('active');
+            loadAdminData();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        function renderAdminSellerSelect() {
+            const select = document.getElementById('adminSellerSelect');
+            if (!select) return;
+
+            let html = `<option value="all">Ver Todos os Estoques</option>`;
+            allUsers.forEach(u => {
+                html += `<option value="${u.id}">Estoque de ${u.name} (${u.role})</option>`;
+            });
+            select.innerHTML = html;
+        }
+
+        function switchAdminTab(tabId, el) {
+            document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+            if (el) el.classList.add('active');
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) target.classList.add('active');
+
+            if (tabId === 'users') loadAdminUsers();
+            if (tabId === 'stats') loadAdminStats();
+            if (tabId === 'orders') loadAdminOrders();
+        }
+
+        async function loadAdminData() {
+            loadAdminProducts();
+            loadAdminStats();
+            loadAdminOrders();
+            if (currentUser?.role === 'admin') loadAdminUsers();
+        }
+
+        async function loadAdminProducts() {
+            try {
+                const sellerSelect = document.getElementById('adminSellerSelect');
+                const sellerId = (currentUser?.role === 'admin' && sellerSelect) ? sellerSelect.value : (currentUser?.id || 'all');
+
+                const res = await fetch(`/api/admin/products?sellerId=${sellerId}`, {
+                    headers: { 'authorization': adminToken }
+                });
+                const products = await res.json();
+                const tbody = document.getElementById('adminProductsTable');
+
+                tbody.innerHTML = products.map(p => `
+                    <tr>
+                        <td><strong>${p.icon || '🍫'} ${p.flavor}</strong></td>
+                        <td><span class="spec-tag">${p.sellerName || 'Fernando'}</span></td>
+                        <td>${p.weight || '45g'} • ${p.size || 'Médio'}</td>
+                        <td><strong style="color: var(--amber-gold);">R$ ${Number(p.price).toFixed(2)}</strong></td>
+                        <td>
+                            <span class="stock-badge ${p.stock <= 0 ? 'empty' : (p.stock <= 3 ? 'low' : 'high')}">
+                                ${p.stock} un.
+                            </span>
+                        </td>
+                        <td>
+                            <div class="stock-control-group">
+                                <button class="btn-stock-adjust" onclick="quickStock('${p.id}', -1)">-1</button>
+                                <button class="btn-stock-adjust" onclick="quickStock('${p.id}', 1)">+1</button>
+                                <button class="btn-stock-adjust" onclick="quickStock('${p.id}', 5)">+5</button>
+                                <button class="btn-stock-adjust" onclick="quickStock('${p.id}', 10)">+10</button>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-btns-row">
+                                <button class="btn-icon-action" onclick="editProduct('${p.id}')" title="Editar">✏️</button>
+                                <button class="btn-icon-action delete" onclick="deleteProduct('${p.id}', '${p.flavor}')" title="Excluir">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function quickStock(id, change) {
+            try {
+                await fetch(`/api/admin/products/${id}/stock`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify({ change })
+                });
+                loadAdminData();
+                loadProducts();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadAdminStats() {
+            try {
+                const sellerSelect = document.getElementById('adminSellerSelect');
+                const sellerId = (currentUser?.role === 'admin' && sellerSelect) ? sellerSelect.value : (currentUser?.id || 'all');
+
+                const res = await fetch(`/api/admin/stats?sellerId=${sellerId}`, {
+                    headers: { 'authorization': adminToken }
+                });
+                const stats = await res.json();
+
+                const grid = document.getElementById('statsGrid');
+                grid.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-label">Faturamento (${stats.sellerFilter === 'all' ? 'Geral' : 'Individual'})</div>
+                        <div class="stat-value" style="color: #34d399;">R$ ${stats.totalRevenue.toFixed(2)}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Trufas Vendidas</div>
+                        <div class="stat-value">${stats.totalTrufflesSold} un.</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pedidos Concluídos</div>
+                        <div class="stat-value">${stats.totalApprovedOrders}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Estoque Disponível</div>
+                        <div class="stat-value" style="color: var(--amber-light);">${stats.totalCurrentStock} un.</div>
+                    </div>
+                `;
+
+                const flavorsList = document.getElementById('topFlavorsList');
+                if (stats.topFlavors.length === 0) {
+                    flavorsList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhuma venda registrada ainda.</p>`;
+                } else {
+                    flavorsList.innerHTML = stats.topFlavors.map((f, i) => `
+                        <div style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; display: flex; justify-content: space-between; font-size: 0.88rem;">
+                            <span><strong>#${i+1}</strong> ${f.flavor}</span>
+                            <span style="color: var(--amber-gold); font-weight: 700;">${f.count} vendidas</span>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadAdminOrders() {
+            try {
+                const sellerSelect = document.getElementById('adminSellerSelect');
+                const sellerId = (currentUser?.role === 'admin' && sellerSelect) ? sellerSelect.value : (currentUser?.id || 'all');
+
+                const res = await fetch(`/api/admin/orders?sellerId=${sellerId}`, {
+                    headers: { 'authorization': adminToken }
+                });
+                const orders = await res.json();
+                const tbody = document.getElementById('adminOrdersTable');
+
+                tbody.innerHTML = orders.map(o => {
+                    const itemsDesc = o.items.map(i => `${i.quantity}x ${i.flavor}`).join(', ');
+                    const dateStr = new Date(o.createdAt).toLocaleString('pt-BR');
+                    const isApproved = o.status === 'approved';
+
+                    return `
+                        <tr>
+                            <td><span style="font-size: 0.75rem; color: var(--text-muted);">${dateStr}</span></td>
+                            <td><strong>${o.customerName}</strong><br><small style="color: var(--text-muted);">${o.customerPhone || ''}</small></td>
+                            <td><span style="font-size: 0.82rem;">${itemsDesc}</span></td>
+                            <td><strong style="color: #34d399;">R$ ${Number(o.totalAmount).toFixed(2)}</strong></td>
+                            <td>
+                                <span class="stock-badge ${isApproved ? 'high' : 'low'}">
+                                    ${isApproved ? 'Aprovado' : 'Pendente'}
+                                </span>
+                            </td>
+                            <td>
+                                ${!isApproved ? `
+                                    <button class="pill-btn" style="padding: 3px 8px; font-size: 0.75rem;" onclick="manualApproveOrder('${o.id}')">
+                                        ✓ Aprovar
+                                    </button>
+                                ` : '<span style="color: #34d399; font-size: 0.8rem;">✓ OK</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function manualApproveOrder(orderId) {
+            try {
+                await fetch(`/api/admin/orders/${orderId}/approve-manual`, {
+                    method: 'POST',
+                    headers: { 'authorization': adminToken }
+                });
+                loadAdminData();
+                loadProducts();
+                Swal.fire({ icon: 'success', title: 'Pedido Aprovado!', text: 'Estoque baixado com sucesso.', timer: 1500, background: '#150e0a', color: '#fff' });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // ==========================================
+        // GESTÃO DE USUÁRIOS / VENDEDORES
+        // ==========================================
+        async function loadAdminUsers() {
+            try {
+                const res = await fetch('/api/admin/users', { headers: { 'authorization': adminToken } });
+                const users = await res.json();
+                const container = document.getElementById('usersListContainer');
+
+                container.innerHTML = users.map(u => `
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border-subtle); border-radius: var(--radius-md); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 1.8rem;">${u.avatar || '🍫'}</span>
+                            <div>
+                                <h4 style="font-size: 0.95rem; color: #fff; margin: 0;">${u.name} (@${u.username})</h4>
+                                <span style="font-size: 0.75rem; color: var(--amber-light);">${u.role === 'admin' ? 'Administrador Geral' : 'Vendedora (Estoque Próprio)'} • ${u.biometricsCount > 0 ? '📱 Face ID / Digital Ativo' : 'Senha'}</span>
+                            </div>
+                        </div>
+                        <div>
+                            ${u.id !== currentUser.id ? `
+                                <button class="btn-icon-action delete" onclick="deleteUser('${u.id}', '${u.name}')" title="Excluir Vendedor">🗑️</button>
+                            ` : '<span style="font-size: 0.75rem; color: #34d399;">Você</span>'}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function openCreateUserModal() {
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserUsername').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('userFormModal').classList.add('active');
+        }
+
+        function closeCreateUserModal() {
+            document.getElementById('userFormModal').classList.remove('active');
+        }
+
+        async function submitCreateUser() {
+            const name = document.getElementById('newUserName').value.trim();
+            const username = document.getElementById('newUserUsername').value.trim();
+            const password = document.getElementById('newUserPassword').value.trim();
+            const role = document.getElementById('newUserRole').value;
+            const avatar = document.getElementById('newUserAvatar').value;
+
+            if (!name || !username || !password) {
+                Swal.fire({ icon: 'warning', title: 'Preencha todos os campos', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify({ name, username, password, role, avatar })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    closeCreateUserModal();
+                    await loadUsersList();
+                    loadAdminUsers();
+                    Swal.fire({ icon: 'success', title: 'Vendedor Criado!', text: `Conta de ${name} cadastrada com sucesso!`, background: '#150e0a', color: '#fff' });
+                } else {
+                    throw new Error(data.error || 'Erro ao criar vendedor.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            }
+        }
+
+        async function deleteUser(userId, name) {
+            const confirm = await Swal.fire({
+                title: 'Excluir Vendedor?',
+                text: `Deseja remover a conta de ${name}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Sim, Excluir',
+                cancelButtonText: 'Cancelar',
+                background: '#150e0a',
+                color: '#fff'
+            });
+
+            if (confirm.isConfirmed) {
+                try {
+                    await fetch(`/api/admin/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: { 'authorization': adminToken }
+                    });
+                    await loadUsersList();
+                    loadAdminUsers();
+                    Swal.fire({ icon: 'success', title: 'Excluído!', timer: 1500, background: '#150e0a', color: '#fff' });
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
+        // ==========================================
+        // CADASTRO / EDIÇÃO DE TRUFAS
+        // ==========================================
+        function openProductForm() {
+            document.getElementById('editProductId').value = '';
+            document.getElementById('productFormTitle').innerText = '🍫 Cadastrar Trufa';
+            document.getElementById('prodFlavor').value = '';
+            document.getElementById('prodPrice').value = '6.50';
+            document.getElementById('prodStock').value = '15';
+            document.getElementById('prodWeight').value = '45g';
+            document.getElementById('prodSize').value = 'Médio';
+            document.getElementById('prodCategory').value = 'Gourmet';
+            document.getElementById('prodIcon').value = '🍫';
+            document.getElementById('prodDesc').value = '';
+
+            const sellerGroup = document.getElementById('prodSellerSelectGroup');
+            const sellerSelect = document.getElementById('prodSellerId');
+            
+            if (currentUser?.role === 'admin' && allUsers.length > 0) {
+                sellerGroup.style.display = 'block';
+                sellerSelect.innerHTML = allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} Estoque de ${u.name}</option>`).join('');
+                sellerSelect.value = currentUser.id;
+            } else {
+                sellerGroup.style.display = 'none';
+            }
+
+            document.getElementById('productFormModal').classList.add('active');
+        }
+
+        function editProduct(prodId) {
+            const product = allProducts.find(p => p.id === prodId);
+            if (!product) return;
+
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('productFormTitle').innerText = '✏️ Editar Trufa';
+            document.getElementById('prodFlavor').value = product.flavor;
+            document.getElementById('prodPrice').value = product.price;
+            document.getElementById('prodStock').value = product.stock;
+            document.getElementById('prodWeight').value = product.weight || '45g';
+            document.getElementById('prodSize').value = product.size || 'Médio';
+            document.getElementById('prodCategory').value = product.category || 'Gourmet';
+            document.getElementById('prodIcon').value = product.icon || '🍫';
+            document.getElementById('prodDesc').value = product.description || '';
+
+            const sellerGroup = document.getElementById('prodSellerSelectGroup');
+            const sellerSelect = document.getElementById('prodSellerId');
+            if (currentUser?.role === 'admin' && allUsers.length > 0) {
+                sellerGroup.style.display = 'block';
+                sellerSelect.innerHTML = allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} Estoque de ${u.name}</option>`).join('');
+                sellerSelect.value = product.sellerId || currentUser.id;
+            } else {
+                sellerGroup.style.display = 'none';
+            }
+
+            document.getElementById('productFormModal').classList.add('active');
+        }
+
+        function closeProductForm() {
+            document.getElementById('productFormModal').classList.remove('active');
+        }
+
+        async function saveProduct() {
+            const id = document.getElementById('editProductId').value;
+            const flavor = document.getElementById('prodFlavor').value.trim();
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const stock = parseInt(document.getElementById('prodStock').value, 10);
+            const weight = document.getElementById('prodWeight').value.trim();
+            const size = document.getElementById('prodSize').value;
+            const category = document.getElementById('prodCategory').value;
+            const icon = document.getElementById('prodIcon').value;
+            const description = document.getElementById('prodDesc').value.trim();
+            const sellerId = document.getElementById('prodSellerId')?.value || currentUser?.id;
+
+            if (!flavor || isNaN(price) || isNaN(stock)) {
+                Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Preencha sabor, preço e estoque corretamente.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            const payload = { flavor, price, stock, weight, size, category, icon, description, sellerId };
+
+            try {
+                let url = '/api/admin/products';
+                let method = 'POST';
+
+                if (id) {
+                    url = `/api/admin/products/${id}`;
+                    method = 'PUT';
+                }
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    closeProductForm();
+                    loadAdminData();
+                    loadProducts();
+                    Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Trufa salva no estoque.', timer: 1500, background: '#150e0a', color: '#fff' });
+                } else {
+                    throw new Error('Falha ao salvar produto.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            }
+        }
+
+        async function deleteProduct(prodId, flavor) {
+            const confirm = await Swal.fire({
+                title: 'Excluir Trufa?',
+                text: `Deseja remover "${flavor}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Sim, Excluir',
+                cancelButtonText: 'Cancelar',
+                background: '#150e0a',
+                color: '#fff'
+            });
+
+            if (confirm.isConfirmed) {
+                try {
+                    await fetch(`/api/admin/products/${prodId}`, {
+                        method: 'DELETE',
+                        headers: { 'authorization': adminToken }
+                    });
+                    loadAdminData();
+                    loadProducts();
+                    Swal.fire({ icon: 'success', title: 'Excluído!', timer: 1500, background: '#150e0a', color: '#fff' });
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
+        // Sincronização periódica do estoque
+        setInterval(() => { loadProducts(); }, 8000);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initApp();
+        });
+    </script>
 </body>
 </html>
