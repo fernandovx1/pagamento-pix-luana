@@ -2017,10 +2017,86 @@
             }, 3000);
         }
 
-        function copyPixCode() {
-            if (!currentPixKey) return;
-            navigator.clipboard.writeText(currentPixKey).then(() => {
-                Swal.fire({ icon: 'success', title: 'Copiado!', timer: 1500, showConfirmButton: false, background: '#150e0a', color: '#fff' });
+        async function copyPixCode() {
+            const textToCopy = (currentPixKey || document.getElementById('pixKeyText')?.innerText || '').trim();
+            if (!textToCopy || textToCopy === 'Carregando chave Pix...') {
+                Swal.fire({ icon: 'warning', title: 'Aguarde', text: 'O código Pix ainda está sendo gerado...', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            let copied = false;
+
+            // 1. Tentar com Clipboard API moderna
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    copied = true;
+                } catch (err) {
+                    console.warn('Falha no navigator.clipboard, usando fallback:', err);
+                }
+            }
+
+            // 2. Fallback universal (compatível com Safari iOS, Chrome Android, WebViews)
+            if (!copied) {
+                try {
+                    const tempTextarea = document.createElement('textarea');
+                    tempTextarea.value = textToCopy;
+                    tempTextarea.style.position = 'fixed';
+                    tempTextarea.style.left = '-9999px';
+                    tempTextarea.style.top = '0';
+                    tempTextarea.setAttribute('readonly', '');
+                    document.body.appendChild(tempTextarea);
+
+                    if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+                        const editable = tempTextarea.contentEditable;
+                        const readOnly = tempTextarea.readOnly;
+                        tempTextarea.contentEditable = 'true';
+                        tempTextarea.readOnly = false;
+                        const range = document.createRange();
+                        range.selectNodeContents(tempTextarea);
+                        const sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        tempTextarea.setSelectionRange(0, 999999);
+                        tempTextarea.contentEditable = editable;
+                        tempTextarea.readOnly = readOnly;
+                    } else {
+                        tempTextarea.select();
+                        tempTextarea.setSelectionRange(0, 999999);
+                    }
+
+                    copied = document.execCommand('copy');
+                    document.body.removeChild(tempTextarea);
+                } catch (fallbackErr) {
+                    console.error('Erro no fallback execCommand:', fallbackErr);
+                }
+            }
+
+            // Vibração tátil no celular se suportado
+            if (navigator.vibrate) navigator.vibrate(40);
+
+            // Efeito visual no botão
+            const btn = document.querySelector('.btn-copy-pix');
+            if (btn) {
+                const originalHtml = btn.innerHTML;
+                btn.style.background = '#10b981';
+                btn.style.borderColor = '#34d399';
+                btn.innerHTML = `✅ Código Pix Copiado!`;
+                setTimeout(() => {
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                    btn.innerHTML = originalHtml;
+                }, 3000);
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Código Copiado! 📋',
+                text: 'Cole no aplicativo do seu banco na opção "Pix Copia e Cola" para pagar.',
+                timer: 2200,
+                showConfirmButton: false,
+                background: '#150e0a',
+                color: '#fff'
             });
         }
 
