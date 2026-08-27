@@ -284,7 +284,25 @@ const transporter = nodemailer.createTransport({
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
-app.use(express.static('public'));
+
+// Middleware Anti-Cache Global (Força o navegador e celular a baixar a versão mais recente sempre)
+app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+});
+
+app.use(express.static('public', {
+    etag: false,
+    lastModified: false,
+    maxAge: 0,
+    setHeaders: (res) => {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+}));
 
 // Gerenciamento de Sessão / Tokens
 const activeSessions = new Map(); // token -> userObject

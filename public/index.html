@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>🍫 Trufas Artesanais Gourmet - Catálogo & Checkout Pix</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1875,7 +1878,7 @@
 
         async function loadUsersList() {
             try {
-                const res = await fetch('/api/auth/users-list');
+                const res = await fetch(`/api/auth/users-list?_t=${Date.now()}`);
                 allUsers = await res.json();
                 renderLoginProfiles();
                 renderStorefrontSellerSwitcher();
@@ -1910,7 +1913,7 @@
 
         async function loadProducts() {
             try {
-                const response = await fetch('/api/products');
+                const response = await fetch(`/api/products?_t=${Date.now()}`);
                 allProducts = await response.json();
                 renderProductsGrid();
                 updateCartDisplay();
@@ -2788,7 +2791,7 @@
 
         async function loadAdminProducts() {
             try {
-                const res = await fetch(`/api/admin/products`, {
+                const res = await fetch(`/api/admin/products?_t=${Date.now()}`, {
                     headers: { 'authorization': adminToken }
                 });
                 const products = await res.json();
@@ -3023,7 +3026,7 @@
 
         async function loadAdminTransfers() {
             try {
-                const res = await fetch('/api/admin/stock/transfers', {
+                const res = await fetch(`/api/admin/stock/transfers?_t=${Date.now()}`, {
                     headers: { 'authorization': adminToken }
                 });
                 const transfers = await res.json();
@@ -3058,7 +3061,7 @@
                 const sellerSelect = document.getElementById('adminSellerSelect');
                 const sellerId = (currentUser?.role === 'admin' && sellerSelect) ? sellerSelect.value : (currentUser?.id || 'all');
 
-                const res = await fetch(`/api/admin/stats?sellerId=${sellerId}`, {
+                const res = await fetch(`/api/admin/stats?sellerId=${sellerId}&_t=${Date.now()}`, {
                     headers: { 'authorization': adminToken }
                 });
                 const stats = await res.json();
@@ -3104,7 +3107,7 @@
                 const sellerSelect = document.getElementById('adminSellerSelect');
                 const sellerId = (currentUser?.role === 'admin' && sellerSelect) ? sellerSelect.value : (currentUser?.id || 'all');
 
-                const res = await fetch(`/api/admin/orders?sellerId=${sellerId}`, {
+                const res = await fetch(`/api/admin/orders?sellerId=${sellerId}&_t=${Date.now()}`, {
                     headers: { 'authorization': adminToken }
                 });
                 const orders = await res.json();
