@@ -1866,6 +1866,9 @@
         // ==========================================
         async function initApp() {
             startButterflySystem();
+            if (currentUser && currentUser.id) {
+                currentStoreSeller = currentUser.id;
+            }
             await loadUsersList();
             await loadProducts();
         }
@@ -2548,6 +2551,10 @@
                     localStorage.setItem('trufas_admin_token', adminToken);
                     localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
                     
+                    currentStoreSeller = currentUser.id;
+                    renderStorefrontSellerSwitcher();
+                    renderProductsGrid();
+
                     closeLoginModal();
                     openAdminModal();
                 } else {
@@ -2717,16 +2724,15 @@
         function openAdminModal() {
             if (!currentUser) return openLoginModal();
 
-            document.getElementById('adminHeaderTitle').innerText = `🌻 Painel de Trufas`;
-            document.getElementById('adminUserGreeting').innerText = `Logado como ${currentUser.avatar || ''} ${currentUser.name} (${currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora'})`;
+            document.getElementById('adminHeaderTitle').innerText = `🌻 Estoque de ${currentUser.name}`;
+            document.getElementById('adminUserGreeting').innerText = `Logado como ${currentUser.avatar || ''} ${currentUser.name} (${currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora'}) • Visualizando apenas o seu estoque`;
 
             const tabUsers = document.getElementById('tabBtnUsers');
             const sellerFilterWrap = document.getElementById('adminSellerFilterWrap');
             
-            // Ambos conseguem filtrar e ver estoques de todos
+            // Oculta o seletor misto para focar exclusivamente no estoque próprio
             if (sellerFilterWrap) {
-                sellerFilterWrap.style.display = 'block';
-                renderAdminSellerSelect();
+                sellerFilterWrap.style.display = 'none';
             }
 
             if (currentUser.role === 'admin') {
@@ -2782,19 +2788,21 @@
 
         async function loadAdminProducts() {
             try {
-                const sellerSelect = document.getElementById('adminSellerSelect');
-                const sellerId = sellerSelect ? sellerSelect.value : 'all';
-
-                const res = await fetch(`/api/admin/products?sellerId=${sellerId}`, {
+                const res = await fetch(`/api/admin/products`, {
                     headers: { 'authorization': adminToken }
                 });
                 const products = await res.json();
                 const tbody = document.getElementById('adminProductsTable');
 
+                if (!products || products.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">Você ainda não possui trufas cadastradas no seu estoque. Clique em "+ Nova Trufa" para adicionar.</td></tr>`;
+                    return;
+                }
+
                 tbody.innerHTML = products.map(p => `
                     <tr>
                         <td><strong>${p.icon || '🍫'} ${p.flavor}</strong></td>
-                        <td><span class="spec-tag">${p.sellerName || 'Geral'}</span></td>
+                        <td><span class="spec-tag" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: var(--amber-gold);">${p.sellerName || currentUser.name}</span></td>
                         <td>${p.weight || '45g'} • ${p.size || 'Médio'}</td>
                         <td><strong style="color: var(--amber-gold);">R$ ${Number(p.price).toFixed(2).replace('.', ',')}</strong></td>
                         <td>
@@ -3291,7 +3299,7 @@
         // ==========================================
         function openProductForm() {
             document.getElementById('editProductId').value = '';
-            document.getElementById('productFormTitle').innerText = '🍫 Cadastrar Trufa';
+            document.getElementById('productFormTitle').innerText = `🍫 Cadastrar Trufa (${currentUser?.name || 'Meu Estoque'})`;
             document.getElementById('prodFlavor').value = '';
             document.getElementById('prodPrice').value = '6.50';
             document.getElementById('prodStock').value = '15';
@@ -3303,13 +3311,10 @@
 
             const sellerGroup = document.getElementById('prodSellerSelectGroup');
             const sellerSelect = document.getElementById('prodSellerId');
-            
-            if (currentUser?.role === 'admin' && allUsers.length > 0) {
-                sellerGroup.style.display = 'block';
-                sellerSelect.innerHTML = allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} Estoque de ${u.name}</option>`).join('');
+            if (sellerGroup) sellerGroup.style.display = 'none';
+            if (sellerSelect && currentUser) {
+                sellerSelect.innerHTML = `<option value="${currentUser.id}" selected>${currentUser.avatar || ''} Estoque de ${currentUser.name}</option>`;
                 sellerSelect.value = currentUser.id;
-            } else {
-                sellerGroup.style.display = 'none';
             }
 
             document.getElementById('productFormModal').classList.add('active');

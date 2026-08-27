@@ -611,14 +611,12 @@ app.get('/api/products', (req, res) => {
     res.json(products);
 });
 
-// Listar produtos para o painel de quem está logado (permite alternar entre Meu Estoque, Parceiro ou Todos)
+// Listar produtos para o painel de quem está logado (Estoque estritamente individual)
 app.get('/api/admin/products', authenticateUser, (req, res) => {
-    const { sellerId } = req.query;
     let products = getProducts();
 
-    if (sellerId && sellerId !== 'all') {
-        products = products.filter(p => p.sellerId === sellerId);
-    }
+    // Cada vendedor (Fernando ou Luana) acessa estritamente apenas o seu próprio estoque
+    products = products.filter(p => p.sellerId === req.user.id);
 
     res.json(products);
 });
