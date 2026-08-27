@@ -840,6 +840,56 @@
             touch-action: manipulation;
         }
 
+        .btn-checkout-direct {
+            width: 100%;
+            height: 46px;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+        }
+
+        .btn-checkout-direct:active {
+            transform: scale(0.98);
+        }
+
+        .btn-pix-discrete {
+            position: fixed;
+            top: calc(12px + var(--safe-top));
+            right: 66px;
+            height: 44px;
+            padding: 0 14px;
+            background: rgba(20, 13, 9, 0.88);
+            border: 1.5px solid rgba(0, 209, 255, 0.45);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 10px rgba(0, 209, 255, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            touch-action: manipulation;
+        }
+
+        .btn-pix-discrete:active {
+            transform: scale(0.95);
+            border-color: #00D1FF;
+            box-shadow: 0 0 18px rgba(0, 209, 255, 0.6);
+        }
+
         .btn-biometric-login {
             width: 100%;
             height: 50px;
@@ -1091,6 +1141,14 @@
     <!-- CAMADA DE BORBOLETAS SUAVES -->
     <div class="butterfly-canvas-layer" id="butterflyLayer"></div>
 
+    <!-- BOTÃO DISCRETO DE COBRANÇA PIX AVULSA (DESENHO DO PIX) -->
+    <div class="btn-pix-discrete" onclick="openCustomPixModal()" title="Gerar Cobrança Pix Avulsa">
+        <span style="font-weight: 800; font-size: 0.92rem; color: #00D1FF; display: flex; align-items: center; gap: 4px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#00D1FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Pix
+        </span>
+    </div>
+
     <!-- BOTÃO DISCRETO DE ADMIN (GIRASSOL NO CANTO SUPERIOR DIREITO) -->
     <div class="btn-admin-discrete" onclick="openLoginModal()" title="Painel Admin (Girassol)">
         <span style="display: block; line-height: 1; filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.7));">🌻</span>
@@ -1196,9 +1254,63 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display: flex; flex-direction: column; gap: 8px;">
                 <button class="btn-checkout-pix" id="btnCheckoutPix" onclick="submitPixOrder()">
                     ⚡ Gerar Pix Instantâneo
+                </button>
+                <button class="btn-checkout-direct" id="btnCheckoutDirect" onclick="submitDirectCashOrder()">
+                    💵 Pago no Balcão / Dinheiro (Baixar Estoque)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE COBRANÇA PIX AVULSA / PERSONALIZADA -->
+    <div class="modal-overlay" id="customPixModal">
+        <div class="modal-card" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 class="modal-title">⚡ Cobrança Pix Avulsa</h3>
+                <button class="btn-close-modal" onclick="closeCustomPixModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Gere um QR Code Pix na hora com qualquer valor, nome e descrição:
+                </p>
+
+                <div class="input-group">
+                    <label for="customPixAmount">Valor a Cobrar (R$) *</label>
+                    <div class="input-wrapper">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--amber-gold); font-weight: 800; font-size: 1.1rem;">R$</span>
+                        <input type="number" id="customPixAmount" step="0.50" min="0.50" placeholder="Ex: 25.00" style="padding-left: 44px; font-size: 1.2rem; font-weight: 700; color: var(--amber-gold);">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="customPixCustomerName">Nome do Cliente (Opcional)</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="text" id="customPixCustomerName" placeholder="Ex: Lucas Silva">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="customPixDesc">Descrição / Sabores (Opcional)</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <input type="text" id="customPixDesc" placeholder="Ex: 3 Trufas Sortidas">
+                    </div>
+                </div>
+
+                <div class="input-group" id="customPixSellerGroup">
+                    <label for="customPixSellerId">Vendedor(a) Responsável</label>
+                    <div class="input-wrapper">
+                        <select id="customPixSellerId"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-pix" onclick="submitCustomPixOrder()">
+                    ⚡ Gerar QR Code Pix
                 </button>
             </div>
         </div>
@@ -1942,6 +2054,164 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `⚡ Gerar Pix Instantâneo`;
+            }
+        }
+
+        // Venda Presencial / Dinheiro / Balcão com Baixa Imediata
+        async function submitDirectCashOrder() {
+            const items = Object.values(cart).map(i => ({
+                id: i.product.id,
+                productId: i.product.id,
+                flavor: i.product.flavor,
+                quantity: i.quantity
+            }));
+
+            if (items.length === 0) {
+                Swal.fire({ icon: 'warning', title: 'Carrinho Vazio', text: 'Adicione trufas ao carrinho primeiro.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            const totalQty = items.reduce((s, i) => s + i.quantity, 0);
+            const totalVal = calculateCartTotal();
+            const customerName = document.getElementById('custName').value.trim() || 'Cliente Balcão';
+            const customerPhone = document.getElementById('custPhone').value.trim();
+            const customerEmail = document.getElementById('custEmail').value.trim();
+
+            const confirm = await Swal.fire({
+                title: '💵 Confirmar Pagamento',
+                html: `
+                    <div style="text-align: left; font-size: 0.95rem; color: #ddd;">
+                        <p><strong>Total:</strong> <span style="color: #f59e0b; font-size: 1.1rem; font-weight: 700;">R$ ${totalVal.toFixed(2).replace('.', ',')}</span> (${totalQty} trufas)</p>
+                        <p style="margin-top: 8px;"><strong>Cliente:</strong> ${customerName}</p>
+                        <div style="margin-top: 12px;">
+                            <label style="font-size: 0.85rem; color: #94a3b8;">Forma de Pagamento:</label>
+                            <select id="directPaymentMethodSelect" style="width: 100%; margin-top: 4px; padding: 10px; background: #261b14; border: 1px solid #f59e0b; border-radius: 8px; color: #fff;">
+                                <option value="Dinheiro">💵 Dinheiro (À Vista)</option>
+                                <option value="Cartão de Débito">💳 Cartão de Débito</option>
+                                <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+                                <option value="Pix Pago no Balcão">⚡ Pix Transferência Direta</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '✅ Confirmar e Baixar Estoque',
+                cancelButtonText: 'Cancelar',
+                background: '#150e0a',
+                color: '#fff',
+                preConfirm: () => {
+                    return document.getElementById('directPaymentMethodSelect').value;
+                }
+            });
+
+            if (!confirm.isConfirmed) return;
+            const chosenMethod = confirm.value || 'Dinheiro / Balcão';
+
+            const btn = document.getElementById('btnCheckoutDirect');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<div class="spinner" style="width: 16px; height: 16px;"></div> Baixando estoque...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/create-direct-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items,
+                        customerName,
+                        customerPhone,
+                        customerEmail,
+                        paymentMethod: chosenMethod
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    closeCartModal();
+                    cart = {};
+                    updateCartDisplay();
+                    await loadProducts();
+
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '🎉 Venda Concluída!',
+                        html: `
+                            <p style="font-size: 1rem;">Estoque de <strong>${totalQty} trufas</strong> baixado com sucesso!</p>
+                            <p style="font-size: 0.85rem; color: #10b981; margin-top: 6px;">Forma: <strong>${chosenMethod}</strong> • Total: <strong>R$ ${totalVal.toFixed(2).replace('.', ',')}</strong></p>
+                        `,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
+                } else {
+                    throw new Error(data.error || 'Erro ao registrar venda no balcão.');
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: err.message, background: '#150e0a', color: '#fff' });
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // Modal de Cobrança Pix Avulsa / Rápida
+        function openCustomPixModal() {
+            document.getElementById('customPixAmount').value = '';
+            document.getElementById('customPixCustomerName').value = '';
+            document.getElementById('customPixDesc').value = '';
+
+            const sellerSelect = document.getElementById('customPixSellerId');
+            if (sellerSelect && allUsers.length > 0) {
+                sellerSelect.innerHTML = allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} Vendedor(a) ${u.name}</option>`).join('');
+            }
+
+            document.getElementById('customPixModal').classList.add('active');
+            setTimeout(() => {
+                const amountInput = document.getElementById('customPixAmount');
+                if (amountInput) amountInput.focus();
+            }, 300);
+        }
+
+        function closeCustomPixModal() {
+            document.getElementById('customPixModal').classList.remove('active');
+        }
+
+        async function submitCustomPixOrder() {
+            const amount = parseFloat(document.getElementById('customPixAmount').value);
+            const customerName = document.getElementById('customPixCustomerName').value.trim() || 'Cliente Pix';
+            const description = document.getElementById('customPixDesc').value.trim() || 'Trufas Gourmet';
+            const sellerId = document.getElementById('customPixSellerId')?.value || 'user-fernando';
+
+            if (isNaN(amount) || amount <= 0) {
+                Swal.fire({ icon: 'warning', title: 'Valor Inválido', text: 'Informe um valor maior que zero para a cobrança.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/create-custom-pix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount,
+                        customerName,
+                        description,
+                        sellerId
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.qr_code) {
+                    closeCustomPixModal();
+                    showPixPaymentModal(data);
+                } else {
+                    throw new Error(data.error || 'Falha ao gerar QR Code Pix.');
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: err.message, background: '#150e0a', color: '#fff' });
             }
         }
 

@@ -873,6 +873,197 @@ app.post('/api/create-pix', async (req, res) => {
     }
 });
 
+// Venda Presencial / Dinheiro / Balcão (Baixa Imediata no Estoque e Histórico)
+app.post('/api/create-direct-order', (req, res) => {
+    const { items, customerName, customerEmail, customerPhone, paymentMethod } = req.body;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'O carrinho está vazio.' });
+    }
+
+    const products = getProducts();
+    const orderItems = [];
+    let calculatedTotal = 0;
+    let totalQty = 0;
+
+    for (const cartItem of items) {
+        const product = products.find(p => p.id === cartItem.id || p.id === cartItem.productId);
+        if (!product) {
+            return res.status(400).json({ error: `Trufa não encontrada: ${cartItem.flavor || cartItem.id}` });
+        }
+
+        const requestedQty = parseInt(cartItem.quantity, 10) || 1;
+        if (requestedQty <= 0) continue;
+
+        if (product.stock < requestedQty) {
+            return res.status(400).json({
+                error: `Estoque insuficiente para "${product.flavor}". Temos apenas ${product.stock} un. disponíveis.`
+            });
+        }
+
+        const unitPrice = Number(product.price);
+        const subtotal = unitPrice * requestedQty;
+        calculatedTotal += subtotal;
+        totalQty += requestedQty;
+
+        orderItems.push({
+            productId: product.id,
+            sellerId: product.sellerId || 'user-fernando',
+            sellerName: product.sellerName || 'Fernando',
+            flavor: product.flavor,
+            weight: product.weight || '45g',
+            size: product.size || 'Médio',
+            unitPrice: unitPrice,
+            quantity: requestedQty,
+            subtotal: subtotal
+        });
+    }
+
+    if (orderItems.length === 0 || calculatedTotal <= 0) {
+        return res.status(400).json({ error: 'Nenhum item válido no carrinho.' });
+    }
+
+    const orderId = `BALCAO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const newOrder = {
+        id: orderId,
+        paymentId: `DIR-${Date.now()}`,
+        paymentMethod: paymentMethod || 'Dinheiro / Balcão',
+        customerName: customerName || 'Cliente Balcão',
+        customerEmail: customerEmail || '',
+        customerPhone: customerPhone || '',
+        items: orderItems,
+        totalAmount: Number(calculatedTotal.toFixed(2)),
+        totalQuantity: totalQty,
+        status: 'approved',
+        stockDeducted: false,
+        createdAt: new Date().toISOString(),
+        paidAt: new Date().toISOString()
+    };
+
+    // Baixa imediata de estoque
+    deductStockForOrder(newOrder);
+
+    const orders = getOrders();
+    orders.unshift(newOrder);
+    saveOrders(orders);
+
+    console.log(`[VENDA PRESENCIAL] Pedido ${orderId} concluído com sucesso. Total: R$ ${newOrder.totalAmount.toFixed(2)} - Método: ${newOrder.paymentMethod}`);
+    res.json({
+        success: true,
+        message: 'Venda presencial registrada com sucesso! Estoque baixado.',
+        order: newOrder
+    });
+});
+
+// Cobrança Pix Avulsa (Nome, Valor, Descrição Personalizada)
+app.post('/api/create-custom-pix', async (req, res) => {
+    const { customerName, customerEmail, customerPhone, amount, description, sellerId } = req.body;
+
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+        return res.status(400).json({ error: 'Informe um valor válido maior que zero.' });
+    }
+
+    const users = getUsers();
+    let assignedSellerId = sellerId || 'user-fernando';
+    let assignedSellerName = 'Fernando';
+    const targetUser = users.find(u => u.id === assignedSellerId);
+    if (targetUser) {
+        assignedSellerId = targetUser.id;
+        assignedSellerName = targetUser.name;
+    }
+
+    const orderId = `PIX-AVULSO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const descText = (description || 'Trufas Artesanais Gourmet').trim();
+
+    try {
+        let qrCode = '';
+        let qrCodeBase64 = '';
+        let mpPaymentId = '';
+        let status = 'pending';
+
+        if (paymentClient) {
+            const mpBody = {
+                transaction_amount: Number(numAmount.toFixed(2)),
+                description: `Trufas: ${descText}`.slice(0, 120),
+                payment_method_id: 'pix',
+                payer: {
+                    email: customerEmail || 'cliente@trufasdelicia.com.br',
+                    first_name: customerName || 'Cliente Trufas',
+                    identification: {
+                        type: 'CPF',
+                        number: '43741961884'
+                    }
+                },
+                metadata: {
+                    order_id: orderId,
+                    customer_name: customerName,
+                    customer_phone: customerPhone,
+                    seller_id: assignedSellerId,
+                    seller_name: assignedSellerName,
+                    custom_pix: true
+                }
+            };
+
+            const paymentResult = await paymentClient.create({ body: mpBody });
+            mpPaymentId = String(paymentResult.id);
+            qrCode = paymentResult.point_of_interaction?.transaction_data?.qr_code || '';
+            qrCodeBase64 = paymentResult.point_of_interaction?.transaction_data?.qr_code_base64 || '';
+            status = paymentResult.status || 'pending';
+        } else {
+            mpPaymentId = `SIM-${Date.now()}`;
+            qrCode = `00020126580014br.gov.bcb.pix0136pix-trufas-${orderId}520400005303986540${numAmount.toFixed(2)}5802BR5925TRUFAS GOURMET6009SAO PAULO62070503***6304`;
+            status = 'pending';
+        }
+
+        const newOrder = {
+            id: orderId,
+            paymentId: mpPaymentId,
+            customerName: customerName || 'Cliente Pix Avulso',
+            customerEmail: customerEmail || '',
+            customerPhone: customerPhone || '',
+            items: [{
+                productId: 'custom-item',
+                sellerId: assignedSellerId,
+                sellerName: assignedSellerName,
+                flavor: descText,
+                weight: 'Avulso',
+                size: 'Personalizado',
+                unitPrice: numAmount,
+                quantity: 1,
+                subtotal: numAmount
+            }],
+            totalAmount: Number(numAmount.toFixed(2)),
+            totalQuantity: 1,
+            status: status,
+            stockDeducted: true, // Item avulso não decrementa estoque físico específico
+            isCustomPix: true,
+            createdAt: new Date().toISOString(),
+            paidAt: null
+        };
+
+        const orders = getOrders();
+        orders.unshift(newOrder);
+        saveOrders(orders);
+
+        console.log(`[PIX AVULSO] Criado para ${newOrder.customerName} - R$ ${numAmount.toFixed(2)} (${assignedSellerName})`);
+        res.json({
+            orderId: orderId,
+            paymentId: mpPaymentId,
+            qr_code: qrCode,
+            qr_code_base64: qrCodeBase64,
+            status: status,
+            totalAmount: numAmount,
+            customerName: newOrder.customerName,
+            description: descText
+        });
+
+    } catch (error) {
+        console.error('[PIX AVULSO] Erro ao criar cobrança:', error);
+        res.status(500).json({ error: 'Erro ao gerar Pix avulso no Mercado Pago', details: error.message });
+    }
+});
+
 // Consultar Status do Pagamento (Polling)
 app.get('/api/check-payment/:id', async (req, res) => {
     const { id } = req.params;
