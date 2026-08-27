@@ -2028,12 +2028,14 @@
         // AUTENTICAÇÃO MULTI-USUÁRIO & BIOMETRIA
         // ==========================================
         function openLoginModal() {
-            if (adminToken && currentUser) {
-                openAdminModal();
-                return;
-            }
+            // Sempre solicita usuário e senha ao clicar no Girassol
             renderLoginProfiles();
+            document.getElementById('loginPassword').value = '';
             document.getElementById('loginModal').classList.add('active');
+            setTimeout(() => {
+                const passInput = document.getElementById('loginPassword');
+                if (passInput) passInput.focus();
+            }, 300);
         }
 
         function closeLoginModal() {
@@ -2705,13 +2707,23 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (res.ok) {
+                const data = await res.json().catch(() => ({}));
+
+                if (res.status === 401 || res.status === 403) {
+                    closeProductForm();
+                    closeAdminModal();
+                    openLoginModal();
+                    Swal.fire({ icon: 'warning', title: 'Sessão Expirada', text: 'Por favor, faça login novamente para salvar.', background: '#150e0a', color: '#fff' });
+                    return;
+                }
+
+                if (res.ok && (data.success || data.product)) {
                     closeProductForm();
                     loadAdminData();
                     loadProducts();
                     Swal.fire({ icon: 'success', title: 'Sucesso!', text: 'Trufa salva no estoque.', timer: 1500, background: '#150e0a', color: '#fff' });
                 } else {
-                    throw new Error('Falha ao salvar produto.');
+                    throw new Error(data.error || 'Falha ao salvar produto.');
                 }
             } catch (e) {
                 Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });

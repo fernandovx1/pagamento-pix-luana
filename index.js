@@ -86,6 +86,160 @@ function saveOrders(orders) {
     }
 }
 
+// Inicialização Automática de Dados Padrão (Garante que nunca fique vazio no cloud)
+function initDefaultData() {
+    // 1. Usuários Padrão
+    const users = getUsers();
+    if (!users || users.length === 0) {
+        const defaultUsers = [
+            {
+                id: "user-fernando",
+                name: "Fernando",
+                username: "fernando",
+                password: "romeuejulieta",
+                role: "admin",
+                avatar: "👑",
+                biometricCredentials: [],
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: "user-luana",
+                name: "Luana",
+                username: "luana",
+                password: "luana123",
+                role: "seller",
+                avatar: "🍫",
+                biometricCredentials: [],
+                createdAt: new Date().toISOString()
+            }
+        ];
+        saveUsers(defaultUsers);
+        console.log('[INIT] Usuários padrão (Fernando e Luana) criados automaticamente.');
+    }
+
+    // 2. Catálogo Padrão de Trufas
+    const products = getProducts();
+    if (!products || products.length === 0) {
+        const defaultProducts = [
+            {
+                id: "trufa-1",
+                sellerId: "user-fernando",
+                sellerName: "Fernando",
+                flavor: "Ninho com Nutella",
+                price: 6.50,
+                weight: "45g",
+                size: "Médio",
+                stock: 15,
+                category: "Gourmet",
+                description: "Recheio cremoso de Leite Ninho coberto com pura Nutella e chocolate nobre.",
+                icon: "🍫",
+                active: true
+            },
+            {
+                id: "trufa-2",
+                sellerId: "user-fernando",
+                sellerName: "Fernando",
+                flavor: "Brigadeiro Belga Tradicional",
+                price: 5.50,
+                weight: "40g",
+                size: "Médio",
+                stock: 20,
+                category: "Tradicional",
+                description: "Brigadeiro artesanal feito com cacau 50% e granulado belga crocante.",
+                icon: "🤎",
+                active: true
+            },
+            {
+                id: "trufa-3",
+                sellerId: "user-fernando",
+                sellerName: "Fernando",
+                flavor: "Maracujá Trufado",
+                price: 6.00,
+                weight: "45g",
+                size: "Médio",
+                stock: 12,
+                category: "Frutas",
+                description: "Ganache intensa de maracujá com redução da fruta fresca.",
+                icon: "💛",
+                active: true
+            },
+            {
+                id: "trufa-4",
+                sellerId: "user-fernando",
+                sellerName: "Fernando",
+                flavor: "Ferrero Rocher",
+                price: 7.00,
+                weight: "50g",
+                size: "Grande",
+                stock: 10,
+                category: "Gourmet",
+                description: "Creme de avelã com pedaços de avelã tostada e casquinha crocante.",
+                icon: "🌰",
+                active: true
+            },
+            {
+                id: "trufa-5",
+                sellerId: "user-luana",
+                sellerName: "Luana",
+                flavor: "Morango com Chocolate Nobre",
+                price: 6.50,
+                weight: "45g",
+                size: "Médio",
+                stock: 15,
+                category: "Frutas",
+                description: "Mousse aveludado de morango envolto em chocolate meio amargo.",
+                icon: "🍓",
+                active: true
+            },
+            {
+                id: "trufa-6",
+                sellerId: "user-luana",
+                sellerName: "Luana",
+                flavor: "Doce de Leite com Nozes Selecionadas",
+                price: 6.50,
+                weight: "45g",
+                size: "Médio",
+                stock: 14,
+                category: "Gourmet",
+                description: "Doce de leite suave com pedacinhos selecionados de nozes.",
+                icon: "🍯",
+                active: true
+            },
+            {
+                id: "trufa-7",
+                sellerId: "user-luana",
+                sellerName: "Luana",
+                flavor: "Beijinho Gourmet de Coco",
+                price: 5.50,
+                weight: "40g",
+                size: "Médio",
+                stock: 18,
+                category: "Tradicional",
+                description: "Coco ralado úmido artesanal com casquinha de chocolate branco.",
+                icon: "🥥",
+                active: true
+            },
+            {
+                id: "trufa-8",
+                sellerId: "user-luana",
+                sellerName: "Luana",
+                flavor: "Café Espresso Trufado",
+                price: 6.00,
+                weight: "45g",
+                size: "Médio",
+                stock: 10,
+                category: "Especial",
+                description: "Chocolate amargo com toque marcante de café arábica e canela.",
+                icon: "☕",
+                active: true
+            }
+        ];
+        saveProducts(defaultProducts);
+        console.log('[INIT] Catálogo padrão de 8 trufas inicializado com sucesso.');
+    }
+}
+initDefaultData();
+
 // Configuração Mercado Pago
 let paymentClient = null;
 if (process.env.MP_ACCESS_TOKEN) {
@@ -110,7 +264,7 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
-// Gerenciamento de Sessão / Tokens Simples
+// Gerenciamento de Sessão / Tokens
 const activeSessions = new Map(); // token -> userObject
 
 function generateUserToken(user) {
@@ -127,7 +281,7 @@ function generateUserToken(user) {
     return token;
 }
 
-// Middleware de Autenticação
+// Middleware de Autenticação Robusto (Sobrevive a reinicializações de servidor no cloud)
 function authenticateUser(req, res, next) {
     const authHeader = req.headers['authorization'] || req.headers['x-admin-token'];
     
@@ -138,12 +292,38 @@ function authenticateUser(req, res, next) {
     }
 
     const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '') : null;
-    if (token && activeSessions.has(token)) {
+    if (!token) {
+        return res.status(401).json({ error: 'Não autorizado. Faça login para continuar.' });
+    }
+
+    // 1. Verificar em memória
+    if (activeSessions.has(token)) {
         req.user = activeSessions.get(token);
         return next();
     }
 
-    return res.status(401).json({ error: 'Não autorizado. Faça login para continuar.' });
+    // 2. Se o servidor reiniciou (Square Cloud / Hospedagem), validar token tok_<userId>_<random>
+    if (token.startsWith('tok_')) {
+        const parts = token.split('_');
+        const userId = parts[1];
+        const users = getUsers();
+        const user = users.find(u => u.id === userId);
+        if (user) {
+            const sessionData = {
+                id: user.id,
+                name: user.name,
+                username: user.username,
+                role: user.role || 'seller',
+                avatar: user.avatar || '🍫',
+                createdAt: Date.now()
+            };
+            activeSessions.set(token, sessionData);
+            req.user = sessionData;
+            return next();
+        }
+    }
+
+    return res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
 }
 
 function requireAdmin(req, res, next) {
