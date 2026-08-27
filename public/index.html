@@ -1167,11 +1167,6 @@
             <p class="header-subtitle">Escolha seus sabores favoritos. Pagamento rápido e seguro via Pix com confirmação em tempo real!</p>
         </header>
 
-        <!-- Seletor de Estoque / Vendedor (Frente de Caixa) -->
-        <div class="seller-switcher-bar" id="storefrontSellerSwitcher">
-            <button class="seller-tab-btn active" onclick="switchStoreSeller('all', this)">✨ Todas as Trufas</button>
-        </div>
-
         <!-- Barra de Filtros de Categoria e Busca -->
         <div class="toolbar">
             <div class="category-pills">
@@ -1869,9 +1864,7 @@
         // ==========================================
         async function initApp() {
             startButterflySystem();
-            if (currentUser && currentUser.id) {
-                currentStoreSeller = currentUser.id;
-            }
+            currentStoreSeller = 'all';
             await loadUsersList();
             await loadProducts();
         }
@@ -1881,34 +1874,9 @@
                 const res = await fetch(`/api/auth/users-list?_t=${Date.now()}`);
                 allUsers = await res.json();
                 renderLoginProfiles();
-                renderStorefrontSellerSwitcher();
             } catch (e) {
                 console.warn('Erro ao carregar lista de usuários:', e);
             }
-        }
-
-        function renderStorefrontSellerSwitcher() {
-            const switcher = document.getElementById('storefrontSellerSwitcher');
-            if (!switcher) return;
-
-            let html = `<button class="seller-tab-btn ${currentStoreSeller === 'all' ? 'active' : ''}" onclick="switchStoreSeller('all', this)">✨ Todas as Trufas</button>`;
-            
-            allUsers.forEach(u => {
-                html += `
-                    <button class="seller-tab-btn ${currentStoreSeller === u.id ? 'active' : ''}" onclick="switchStoreSeller('${u.id}', this)">
-                        ${u.avatar || '🍫'} Estoque ${u.name}
-                    </button>
-                `;
-            });
-
-            switcher.innerHTML = html;
-        }
-
-        function switchStoreSeller(sellerId, el) {
-            currentStoreSeller = sellerId;
-            document.querySelectorAll('#storefrontSellerSwitcher .seller-tab-btn').forEach(btn => btn.classList.remove('active'));
-            if (el) el.classList.add('active');
-            renderProductsGrid();
         }
 
         async function loadProducts() {
@@ -1925,17 +1893,16 @@
         function renderProductsGrid() {
             const grid = document.getElementById('productsGrid');
             const filtered = allProducts.filter(p => {
-                const matchesSeller = currentStoreSeller === 'all' || p.sellerId === currentStoreSeller;
                 const matchesCategory = currentFilter === 'all' || p.category === currentFilter;
                 const matchesSearch = p.flavor.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                       (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
-                return matchesSeller && matchesCategory && matchesSearch;
+                return matchesCategory && matchesSearch;
             });
 
             if (filtered.length === 0) {
                 grid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">
-                        🍫 Nenhuma trufa encontrada neste estoque.
+                        🍫 Nenhuma trufa encontrada com esses filtros.
                     </div>
                 `;
                 return;
@@ -1965,7 +1932,6 @@
                                         <span class="spec-tag">${p.weight || '45g'}</span>
                                         <span class="spec-tag">${p.size || 'Médio'}</span>
                                         <span class="spec-tag category-tag">${p.category || 'Gourmet'}</span>
-                                        ${p.sellerName ? `<span class="spec-tag seller-tag">Por ${p.sellerName}</span>` : ''}
                                         ${isOutOfStock ? `<span class="spec-tag out-tag">Sem Estoque</span>` : ''}
                                     </div>
                                 </div>
@@ -2126,7 +2092,7 @@
                     <div class="cart-item-row">
                         <div class="cart-item-info">
                             <h4>${item.product.icon || '🍫'} ${item.product.flavor}</h4>
-                            <span>${item.product.sellerName ? `Estoque ${item.product.sellerName} • ` : ''}${item.product.weight || '45g'} • R$ ${Number(item.product.price).toFixed(2).replace('.', ',')}</span>
+                            <span>${item.product.weight || '45g'} • ${item.product.category || 'Gourmet'} • R$ ${Number(item.product.price).toFixed(2).replace('.', ',')}</span>
                         </div>
                         <div class="cart-item-actions">
                             <div class="qty-control" style="height: 32px;">
@@ -2554,10 +2520,6 @@
                     localStorage.setItem('trufas_admin_token', adminToken);
                     localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
                     
-                    currentStoreSeller = currentUser.id;
-                    renderStorefrontSellerSwitcher();
-                    renderProductsGrid();
-
                     closeLoginModal();
                     openAdminModal();
                 } else {
