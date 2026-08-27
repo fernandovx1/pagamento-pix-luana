@@ -16,6 +16,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
 const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
+const TRANSFERS_FILE = path.join(DATA_DIR, 'transfers.json');
 
 // Garantir diretório e arquivos de dados
 if (!fs.existsSync(DATA_DIR)) {
@@ -82,6 +83,27 @@ function saveOrders(orders) {
         return true;
     } catch (e) {
         console.error('Erro ao salvar orders.json:', e);
+        return false;
+    }
+}
+
+function getTransfers() {
+    try {
+        if (!fs.existsSync(TRANSFERS_FILE)) return [];
+        const raw = fs.readFileSync(TRANSFERS_FILE, 'utf-8');
+        return JSON.parse(raw || '[]');
+    } catch (e) {
+        console.error('Erro ao ler transfers.json:', e);
+        return [];
+    }
+}
+
+function saveTransfers(transfers) {
+    try {
+        fs.writeFileSync(TRANSFERS_FILE, JSON.stringify(transfers, null, 2), 'utf-8');
+        return true;
+    } catch (e) {
+        console.error('Erro ao salvar transfers.json:', e);
         return false;
     }
 }
@@ -589,15 +611,12 @@ app.get('/api/products', (req, res) => {
     res.json(products);
 });
 
-// Listar produtos para o painel de quem está logado
+// Listar produtos para o painel de quem está logado (permite alternar entre Meu Estoque, Parceiro ou Todos)
 app.get('/api/admin/products', authenticateUser, (req, res) => {
     const { sellerId } = req.query;
     let products = getProducts();
 
-    // Se for admin e não especificou sellerId, traz todos. Se for vendedor, traz só os dele.
-    if (req.user.role !== 'admin') {
-        products = products.filter(p => p.sellerId === req.user.id);
-    } else if (sellerId && sellerId !== 'all') {
+    if (sellerId && sellerId !== 'all') {
         products = products.filter(p => p.sellerId === sellerId);
     }
 
@@ -739,6 +758,125 @@ app.delete('/api/admin/products/:id', authenticateUser, (req, res) => {
     products = products.filter(p => p.id !== id);
     saveProducts(products);
     res.json({ success: true, message: 'Trufa excluída.' });
+});
+
+// ==========================================
+// TRANSFERÊNCIA E SOLICITAÇÃO DE ESTOQUE (FERNANDO <-> LUANA)
+// ==========================================
+
+// Listar histórico de transferências de estoque
+app.get('/api/admin/stock/transfers', authenticateUser, (req, res) => {
+    const transfers = getTransfers();
+    res.json(transfers);
+});
+
+// Realizar Transferência / Repasse de Estoque
+app.post('/api/admin/stock/transfer', authenticateUser, (req, res) => {
+    const { fromSellerId, toSellerId, productId, flavor, quantity } = req.body;
+    const qty = parseInt(quantity, 10);
+
+    if (isNaN(qty) || qty <= 0) {
+        return res.status(400).json({ error: 'A quantidade transferida deve ser maior que zero.' });
+    }
+
+    if (!fromSellerId || !toSellerId) {
+        return res.status(400).json({ error: 'Informe o vendedor de origem e de destino.' });
+    }
+
+    if (fromSellerId === toSellerId) {
+        return res.status(400).json({ error: 'A conta de origem e destino não podem ser a mesma.' });
+    }
+
+    const users = getUsers();
+    const fromUser = users.find(u => u.id === fromSellerId);
+    const toUser = users.find(u => u.id === toSellerId);
+
+    if (!fromUser || !toUser) {
+        return res.status(404).json({ error: 'Vendedor de origem ou destino não encontrado.' });
+    }
+
+    // Permissão: precisa ser admin OU o próprio usuário remetente/destinatário
+    if (req.user.role !== 'admin' && req.user.id !== fromSellerId && req.user.id !== toSellerId) {
+        return res.status(403).json({ error: 'Permissão negada para esta transferência.' });
+    }
+
+    const products = getProducts();
+    let sourceProduct = products.find(p => p.id === productId && p.sellerId === fromSellerId);
+
+    if (!sourceProduct && flavor) {
+        sourceProduct = products.find(p => p.flavor.toLowerCase().trim() === flavor.toLowerCase().trim() && p.sellerId === fromSellerId);
+    }
+
+    if (!sourceProduct) {
+        return res.status(404).json({ error: `Trufa não encontrada no estoque de ${fromUser.name}.` });
+    }
+
+    if (sourceProduct.stock < qty) {
+        return res.status(400).json({
+            error: `Estoque insuficiente em ${fromUser.name}. Disponível apenas ${sourceProduct.stock} un.`
+        });
+    }
+
+    // 1. Subtrai da Origem
+    sourceProduct.stock -= qty;
+
+    // 2. Incrementa no Destino (se não existir no catálogo da pessoa, cria cópia)
+    let destProduct = products.find(p => 
+        p.sellerId === toSellerId && 
+        p.flavor.toLowerCase().trim() === sourceProduct.flavor.toLowerCase().trim()
+    );
+
+    if (destProduct) {
+        destProduct.stock = (Number(destProduct.stock) || 0) + qty;
+        destProduct.active = true;
+    } else {
+        destProduct = {
+            id: `trufa-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            sellerId: toUser.id,
+            sellerName: toUser.name,
+            flavor: sourceProduct.flavor,
+            price: sourceProduct.price,
+            weight: sourceProduct.weight || '45g',
+            size: sourceProduct.size || 'Médio',
+            stock: qty,
+            category: sourceProduct.category || 'Gourmet',
+            description: sourceProduct.description || '',
+            icon: sourceProduct.icon || '🍫',
+            active: true
+        };
+        products.push(destProduct);
+    }
+
+    saveProducts(products);
+
+    // 3. Registra no Histórico de Transferências
+    const transferRecord = {
+        id: `TRANSF-${Date.now()}`,
+        fromSellerId: fromUser.id,
+        fromSellerName: fromUser.name,
+        toSellerId: toUser.id,
+        toSellerName: toUser.name,
+        flavor: sourceProduct.flavor,
+        icon: sourceProduct.icon || '🍫',
+        quantity: qty,
+        unitPrice: sourceProduct.price,
+        timestamp: new Date().toISOString(),
+        author: req.user.name
+    };
+
+    const transfers = getTransfers();
+    transfers.unshift(transferRecord);
+    saveTransfers(transfers);
+
+    console.log(`[TRANSFERÊNCIA DE ESTOQUE] ${qty}x "${sourceProduct.flavor}" (${fromUser.name} ➔ ${toUser.name})`);
+
+    res.json({
+        success: true,
+        message: `${qty}x "${sourceProduct.flavor}" transferidas de ${fromUser.name} para ${toUser.name}!`,
+        transfer: transferRecord,
+        sourceStockRemaining: sourceProduct.stock,
+        destStockNow: destProduct.stock
+    });
 });
 
 // ==========================================

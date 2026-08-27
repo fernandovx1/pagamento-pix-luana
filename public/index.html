@@ -1415,6 +1415,7 @@
                 <!-- Abas do Admin -->
                 <div class="admin-tabs">
                     <button class="tab-btn active" onclick="switchAdminTab('truffles', this)">📦 Estoque & Sabores</button>
+                    <button class="tab-btn" onclick="switchAdminTab('transfers', this)">🔄 Repassar / Pedir Estoque</button>
                     <button class="tab-btn" onclick="switchAdminTab('stats', this)">📊 Vendas & Faturamento</button>
                     <button class="tab-btn" onclick="switchAdminTab('orders', this)">🧾 Histórico Pedidos</button>
                     <button class="tab-btn" id="tabBtnUsers" onclick="switchAdminTab('users', this)">👥 Vendedores / Contas</button>
@@ -1423,12 +1424,15 @@
                 <!-- ABA 1: GESTÃO DE TRUFAS -->
                 <div class="admin-tab-content active" id="tab-truffles">
                     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
-                        <div id="adminSellerFilterWrap" style="display: none;">
-                            <select id="adminSellerSelect" onchange="loadAdminProducts()" style="background: #000; color: #fff; border: 1px solid var(--amber-gold); padding: 5px 10px; border-radius: 8px; font-size: 0.82rem;">
-                                <option value="all">Ver Todos os Estoques</option>
+                        <div id="adminSellerFilterWrap">
+                            <select id="adminSellerSelect" onchange="loadAdminProducts()" style="background: #000; color: #fff; border: 1px solid var(--amber-gold); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem;">
+                                <option value="all">✨ Ver Todos os Estoques</option>
                             </select>
                         </div>
-                        <button class="pill-btn active" onclick="openProductForm()">+ Nova Trufa</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="pill-btn" style="background: rgba(16, 185, 129, 0.18); border-color: rgba(16, 185, 129, 0.4); color: #34d399;" onclick="openTransferStockModal()">🔄 Transferir Estoque</button>
+                            <button class="pill-btn active" onclick="openProductForm()">+ Nova Trufa</button>
+                        </div>
                     </div>
 
                     <div class="admin-table-wrap">
@@ -1441,10 +1445,66 @@
                                     <th>Preço</th>
                                     <th>Estoque</th>
                                     <th>Ajuste Rápido</th>
+                                    <th>Repassar</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="adminProductsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ABA 2: TRANSFERÊNCIAS DE ESTOQUE (FERNANDO <-> LUANA) -->
+                <div class="admin-tab-content" id="tab-transfers">
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px;">
+                        <h4 style="color: var(--amber-gold); font-size: 1.05rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span>🔄</span> Transferência Rápida entre Vendedores
+                        </h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px;">
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.82rem;">De (Quem está enviando):</label>
+                                <div class="input-wrapper">
+                                    <select id="transferFromSelect" onchange="updateTransferFlavorOptions()" style="padding-left: 10px;"></select>
+                                </div>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.82rem;">Para (Quem vai receber):</label>
+                                <div class="input-wrapper">
+                                    <select id="transferToSelect" style="padding-left: 10px;"></select>
+                                </div>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.82rem;">Sabor da Trufa:</label>
+                                <div class="input-wrapper">
+                                    <select id="transferFlavorSelect" style="padding-left: 10px;"></select>
+                                </div>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.82rem;">Quantidade (unidades):</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="transferQuantityInput" min="1" value="5" style="padding-left: 14px; font-weight: 700;">
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-checkout-direct" onclick="submitTabStockTransfer()" style="max-width: 320px; margin: 0 auto;">
+                            🚀 Confirmar e Transferir Estoque
+                        </button>
+                    </div>
+
+                    <h4 style="color: var(--amber-light); margin: 16px 0 10px; font-size: 0.95rem;">📋 Histórico de Transferências Recentes</h4>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Data / Hora</th>
+                                    <th>De (Origem)</th>
+                                    <th>Para (Destino)</th>
+                                    <th>Trufa / Sabor</th>
+                                    <th>Quantidade</th>
+                                    <th>Autorizado Por</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTransfersTable"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1652,6 +1712,58 @@
             <div class="modal-footer">
                 <button class="btn-checkout-pix" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="submitUserForm()">
                     💾 Salvar Vendedor
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE TRANSFERÊNCIA RÁPIDA DE ESTOQUE -->
+    <div class="modal-overlay" id="stockTransferModal">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">🔄 Repassar / Pedir Estoque</h3>
+                <button class="btn-close-modal" onclick="closeTransferStockModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modalTransferProductId">
+                
+                <div class="input-group">
+                    <label for="modalTransferFlavorDisplay">Sabor da Trufa</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="modalTransferFlavorDisplay" readonly style="background: rgba(255,255,255,0.06); font-weight: 700; color: var(--amber-gold);">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="input-group">
+                        <label for="modalTransferFromSelect">De (Origem)</label>
+                        <div class="input-wrapper">
+                            <select id="modalTransferFromSelect" onchange="syncModalTransferStockInfo()"></select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="modalTransferToSelect">Para (Destino)</label>
+                        <div class="input-wrapper">
+                            <select id="modalTransferToSelect"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border-subtle); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; font-size: 0.85rem;">
+                    <span style="color: var(--text-muted);">Estoque disponível na origem:</span>
+                    <strong style="color: var(--amber-gold); margin-left: 4px;" id="modalTransferAvailableStock">0 un.</strong>
+                </div>
+
+                <div class="input-group">
+                    <label for="modalTransferQtyInput">Quantidade a Transferir (unidades) *</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="modalTransferQtyInput" min="1" value="5" style="font-size: 1.15rem; font-weight: 800; color: #34d399; padding-left: 14px;">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-direct" onclick="submitStockTransferModal()">
+                    🚀 Confirmar Transferência
                 </button>
             </div>
         </div>
@@ -2611,15 +2723,16 @@
             const tabUsers = document.getElementById('tabBtnUsers');
             const sellerFilterWrap = document.getElementById('adminSellerFilterWrap');
             
+            // Ambos conseguem filtrar e ver estoques de todos
+            if (sellerFilterWrap) {
+                sellerFilterWrap.style.display = 'block';
+                renderAdminSellerSelect();
+            }
+
             if (currentUser.role === 'admin') {
                 if (tabUsers) tabUsers.style.display = 'block';
-                if (sellerFilterWrap) {
-                    sellerFilterWrap.style.display = 'block';
-                    renderAdminSellerSelect();
-                }
             } else {
                 if (tabUsers) tabUsers.style.display = 'none';
-                if (sellerFilterWrap) sellerFilterWrap.style.display = 'none';
             }
 
             document.getElementById('adminModal').classList.add('active');
@@ -2634,11 +2747,13 @@
             const select = document.getElementById('adminSellerSelect');
             if (!select) return;
 
-            let html = `<option value="all">Ver Todos os Estoques</option>`;
+            let currentVal = select.value || 'all';
+            let html = `<option value="all">✨ Ver Todos os Estoques</option>`;
             allUsers.forEach(u => {
-                html += `<option value="${u.id}">Estoque de ${u.name} (${u.role})</option>`;
+                html += `<option value="${u.id}">${u.avatar || '🍫'} Estoque de ${u.name}</option>`;
             });
             select.innerHTML = html;
+            if (currentVal) select.value = currentVal;
         }
 
         function switchAdminTab(tabId, el) {
@@ -2651,19 +2766,24 @@
             if (tabId === 'users') loadAdminUsers();
             if (tabId === 'stats') loadAdminStats();
             if (tabId === 'orders') loadAdminOrders();
+            if (tabId === 'transfers') {
+                initTransferTabDropdowns();
+                loadAdminTransfers();
+            }
         }
 
         async function loadAdminData() {
             loadAdminProducts();
             loadAdminStats();
             loadAdminOrders();
+            loadAdminTransfers();
             if (currentUser?.role === 'admin') loadAdminUsers();
         }
 
         async function loadAdminProducts() {
             try {
                 const sellerSelect = document.getElementById('adminSellerSelect');
-                const sellerId = (currentUser?.role === 'admin' && sellerSelect) ? sellerSelect.value : (currentUser?.id || 'all');
+                const sellerId = sellerSelect ? sellerSelect.value : 'all';
 
                 const res = await fetch(`/api/admin/products?sellerId=${sellerId}`, {
                     headers: { 'authorization': adminToken }
@@ -2674,9 +2794,9 @@
                 tbody.innerHTML = products.map(p => `
                     <tr>
                         <td><strong>${p.icon || '🍫'} ${p.flavor}</strong></td>
-                        <td><span class="spec-tag">${p.sellerName || 'Fernando'}</span></td>
+                        <td><span class="spec-tag">${p.sellerName || 'Geral'}</span></td>
                         <td>${p.weight || '45g'} • ${p.size || 'Médio'}</td>
-                        <td><strong style="color: var(--amber-gold);">R$ ${Number(p.price).toFixed(2)}</strong></td>
+                        <td><strong style="color: var(--amber-gold);">R$ ${Number(p.price).toFixed(2).replace('.', ',')}</strong></td>
                         <td>
                             <span class="stock-badge ${p.stock <= 0 ? 'empty' : (p.stock <= 3 ? 'low' : 'high')}">
                                 ${p.stock} un.
@@ -2689,6 +2809,11 @@
                                 <button class="btn-stock-adjust" onclick="quickStock('${p.id}', 5)">+5</button>
                                 <button class="btn-stock-adjust" onclick="quickStock('${p.id}', 10)">+10</button>
                             </div>
+                        </td>
+                        <td>
+                            <button class="pill-btn" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #34d399; font-size: 0.75rem; padding: 4px 8px;" onclick="openTransferStockModal('${p.id}', '${p.sellerId || ''}', '${(p.flavor || '').replace(/'/g, "\\'")}', ${p.stock})">
+                                🔄 Repassar
+                            </button>
                         </td>
                         <td>
                             <div class="action-btns-row">
@@ -2712,6 +2837,209 @@
                 });
                 loadAdminData();
                 loadProducts();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // ==========================================
+        // TRANSFERÊNCIAS & REPASSE DE ESTOQUE
+        // ==========================================
+        function openTransferStockModal(productId, fromSellerId, flavor, currentStock) {
+            const fromSelect = document.getElementById('modalTransferFromSelect');
+            const toSelect = document.getElementById('modalTransferToSelect');
+            const prodIdInput = document.getElementById('modalTransferProductId');
+            const flavorDisplay = document.getElementById('modalTransferFlavorDisplay');
+            const stockDisplay = document.getElementById('modalTransferAvailableStock');
+            const qtyInput = document.getElementById('modalTransferQtyInput');
+
+            prodIdInput.value = productId || '';
+            flavorDisplay.value = flavor || 'Trufa Selecionada';
+            qtyInput.value = Math.min(5, Math.max(1, currentStock || 1));
+
+            // Preenche De e Para com os vendedores existentes
+            const userOptions = allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} ${u.name}</option>`).join('');
+            fromSelect.innerHTML = userOptions;
+            toSelect.innerHTML = userOptions;
+
+            const selectedFrom = fromSellerId || currentUser?.id || allUsers[0]?.id;
+            fromSelect.value = selectedFrom;
+
+            // Seleciona automaticamente o outro parceiro no destino
+            const otherUser = allUsers.find(u => u.id !== selectedFrom);
+            if (otherUser) toSelect.value = otherUser.id;
+
+            syncModalTransferStockInfo();
+            document.getElementById('stockTransferModal').classList.add('active');
+        }
+
+        function closeTransferStockModal() {
+            document.getElementById('stockTransferModal').classList.remove('active');
+        }
+
+        function syncModalTransferStockInfo() {
+            const fromId = document.getElementById('modalTransferFromSelect').value;
+            const flavor = document.getElementById('modalTransferFlavorDisplay').value;
+            const stockDisplay = document.getElementById('modalTransferAvailableStock');
+
+            const match = allProducts.find(p => p.sellerId === fromId && p.flavor.toLowerCase().trim() === flavor.toLowerCase().trim());
+            const available = match ? match.stock : 0;
+            stockDisplay.innerText = `${available} un.`;
+        }
+
+        async function submitStockTransferModal() {
+            const productId = document.getElementById('modalTransferProductId').value;
+            const flavor = document.getElementById('modalTransferFlavorDisplay').value;
+            const fromSellerId = document.getElementById('modalTransferFromSelect').value;
+            const toSellerId = document.getElementById('modalTransferToSelect').value;
+            const quantity = parseInt(document.getElementById('modalTransferQtyInput').value, 10);
+
+            if (fromSellerId === toSellerId) {
+                Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Selecione vendedores diferentes para a transferência.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                Swal.fire({ icon: 'warning', title: 'Quantidade Inválida', text: 'Informe uma quantidade maior que zero.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/stock/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify({ productId, flavor, fromSellerId, toSellerId, quantity })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    closeTransferStockModal();
+                    loadAdminData();
+                    loadProducts();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Transferência Concluída! 🔄',
+                        text: data.message,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
+                } else {
+                    throw new Error(data.error || 'Erro ao transferir estoque.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            }
+        }
+
+        function initTransferTabDropdowns() {
+            const fromSelect = document.getElementById('transferFromSelect');
+            const toSelect = document.getElementById('transferToSelect');
+            if (!fromSelect || !toSelect || allUsers.length === 0) return;
+
+            const userOptions = allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} ${u.name}</option>`).join('');
+            fromSelect.innerHTML = userOptions;
+            toSelect.innerHTML = userOptions;
+
+            const defaultFrom = currentUser?.id || allUsers[0]?.id;
+            fromSelect.value = defaultFrom;
+
+            const otherUser = allUsers.find(u => u.id !== defaultFrom);
+            if (otherUser) toSelect.value = otherUser.id;
+
+            updateTransferFlavorOptions();
+        }
+
+        function updateTransferFlavorOptions() {
+            const fromId = document.getElementById('transferFromSelect')?.value;
+            const flavorSelect = document.getElementById('transferFlavorSelect');
+            if (!flavorSelect) return;
+
+            const sellerProds = allProducts.filter(p => p.sellerId === fromId && p.stock > 0);
+            if (sellerProds.length === 0) {
+                flavorSelect.innerHTML = `<option value="">(Sem trufas em estoque neste vendedor)</option>`;
+                return;
+            }
+
+            flavorSelect.innerHTML = sellerProds.map(p => `
+                <option value="${p.flavor}">${p.icon || '🍫'} ${p.flavor} (${p.stock} un. disponíveis)</option>
+            `).join('');
+        }
+
+        async function submitTabStockTransfer() {
+            const fromSellerId = document.getElementById('transferFromSelect').value;
+            const toSellerId = document.getElementById('transferToSelect').value;
+            const flavor = document.getElementById('transferFlavorSelect').value;
+            const quantity = parseInt(document.getElementById('transferQuantityInput').value, 10);
+
+            if (!flavor) {
+                Swal.fire({ icon: 'warning', title: 'Selecione a Trufa', text: 'Não há trufa disponível para transferir.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            if (fromSellerId === toSellerId) {
+                Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Selecione contas diferentes para origem e destino.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                Swal.fire({ icon: 'warning', title: 'Quantidade Inválida', text: 'Informe uma quantidade maior que zero.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/stock/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify({ fromSellerId, toSellerId, flavor, quantity })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    await loadAdminData();
+                    await loadProducts();
+                    updateTransferFlavorOptions();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Transferência Concluída! 🔄',
+                        text: data.message,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
+                } else {
+                    throw new Error(data.error || 'Erro ao realizar transferência.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            }
+        }
+
+        async function loadAdminTransfers() {
+            try {
+                const res = await fetch('/api/admin/stock/transfers', {
+                    headers: { 'authorization': adminToken }
+                });
+                const transfers = await res.json();
+                const tbody = document.getElementById('adminTransfersTable');
+                if (!tbody) return;
+
+                if (!transfers || transfers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 15px;">Nenhuma transferência de estoque realizada ainda.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = transfers.map(t => {
+                    const date = new Date(t.timestamp).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+                    return `
+                        <tr>
+                            <td><small>${date}</small></td>
+                            <td><span class="spec-tag">${t.fromSellerName}</span></td>
+                            <td><span class="spec-tag" style="background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: #34d399;">${t.toSellerName}</span></td>
+                            <td><strong>${t.icon || '🍫'} ${t.flavor}</strong></td>
+                            <td><strong style="color: #34d399;">${t.quantity} un.</strong></td>
+                            <td><small style="color: var(--text-muted);">${t.author || 'Admin'}</small></td>
+                        </tr>
+                    `;
+                }).join('');
             } catch (e) {
                 console.error(e);
             }
