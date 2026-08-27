@@ -1557,71 +1557,78 @@
         let adminToken = localStorage.getItem('trufas_admin_token') || '';
 
         // ==========================================
-        // SISTEMA DE BORBOLETAS (PASSAM POR CIMA DE TODAS AS TELAS)
+        // SISTEMA DE BORBOLETAS EM DUPLA (PASSAM POR CIMA DE TODAS AS TELAS)
         // ==========================================
-        function spawnButterfly() {
+        function spawnButterfly(customOffsetY = 0, delay = 0) {
             const layer = document.getElementById('butterflyLayer');
             if (!layer) return;
 
-            const b = document.createElement('div');
-            b.className = 'floating-butterfly';
-            
-            const isLeftToRight = Math.random() > 0.5;
-            const startY = Math.random() * (window.innerHeight * 0.85) + 30;
-            const endY = startY + (Math.random() * 220 - 110);
-            const duration = 12 + Math.random() * 8; // 12 a 20 segundos de voo gracioso
-            
-            const startX = isLeftToRight ? -70 : (window.innerWidth + 70);
-            const endX = isLeftToRight ? (window.innerWidth + 70) : -70;
-            const baseRotation = isLeftToRight ? 12 : 192;
-            const scale = 0.85 + Math.random() * 0.45;
-            
-            b.style.top = `${startY}px`;
-            b.style.left = `${startX}px`;
-            
-            const wingWrap = document.createElement('span');
-            wingWrap.className = 'butterfly-wing-wrap';
-            wingWrap.innerText = '🦋';
-            b.appendChild(wingWrap);
-            layer.appendChild(b);
+            setTimeout(() => {
+                const b = document.createElement('div');
+                b.className = 'floating-butterfly';
+                
+                const isLeftToRight = Math.random() > 0.45;
+                const startY = Math.random() * (window.innerHeight * 0.75) + 40 + customOffsetY;
+                const endY = startY + (Math.random() * 240 - 120);
+                const duration = 12 + Math.random() * 7; // 12 a 19 segundos
+                
+                const startX = isLeftToRight ? -80 : (window.innerWidth + 80);
+                const endX = isLeftToRight ? (window.innerWidth + 80) : -80;
+                const baseRotation = isLeftToRight ? 12 : 192;
+                const scale = 0.8 + Math.random() * 0.45;
+                
+                b.style.top = `${startY}px`;
+                b.style.left = `${startX}px`;
+                
+                const wingWrap = document.createElement('span');
+                wingWrap.className = 'butterfly-wing-wrap';
+                wingWrap.innerText = '🦋';
+                b.appendChild(wingWrap);
+                layer.appendChild(b);
 
-            const startTime = performance.now();
-            setTimeout(() => { b.style.opacity = '0.92'; }, 80);
+                const startTime = performance.now();
+                setTimeout(() => { b.style.opacity = '0.92'; }, 80);
 
-            function animate(now) {
-                const elapsed = (now - startTime) / 1000;
-                const progress = elapsed / duration;
+                function animate(now) {
+                    const elapsed = (now - startTime) / 1000;
+                    const progress = elapsed / duration;
 
-                if (progress >= 1) {
-                    b.remove();
-                    return;
-                }
+                    if (progress >= 1) {
+                        b.remove();
+                        return;
+                    }
 
-                const curX = startX + (endX - startX) * progress;
-                // Ondulação senoidal natural do bater de asas
-                const waveY = Math.sin(progress * Math.PI * 5) * 45;
-                const curY = startY + (endY - startY) * progress + waveY;
-                const tilt = Math.cos(progress * Math.PI * 5) * 14;
+                    const curX = startX + (endX - startX) * progress;
+                    // Ondulação senoidal natural do bater de asas
+                    const waveY = Math.sin(progress * Math.PI * 5.5 + customOffsetY) * 45;
+                    const curY = startY + (endY - startY) * progress + waveY;
+                    const tilt = Math.cos(progress * Math.PI * 5.5) * 14;
 
-                b.style.left = `${curX}px`;
-                b.style.top = `${curY}px`;
-                b.style.transform = `scale(${scale}) rotate(${baseRotation + tilt}deg)`;
+                    b.style.left = `${curX}px`;
+                    b.style.top = `${curY}px`;
+                    b.style.transform = `scale(${scale}) rotate(${baseRotation + tilt}deg)`;
 
-                if (progress > 0.88) {
-                    b.style.opacity = `${(1 - progress) * 8}`;
+                    if (progress > 0.88) {
+                        b.style.opacity = `${(1 - progress) * 8}`;
+                    }
+
+                    requestAnimationFrame(animate);
                 }
 
                 requestAnimationFrame(animate);
-            }
+            }, delay);
+        }
 
-            requestAnimationFrame(animate);
+        function triggerButterflyPair() {
+            spawnButterfly(0, 0);
+            spawnButterfly(Math.random() * 80 - 40, 1800 + Math.random() * 1200); // Segunda borboleta acompanhando logo atrás
         }
 
         function startButterflySystem() {
-            setTimeout(spawnButterfly, 1500); // Primeira borboleta logo após 1.5s
+            setTimeout(() => { triggerButterflyPair(); }, 1000); // Inicia logo com o par de borboletas
             setInterval(() => {
-                spawnButterfly();
-            }, 16000 + Math.random() * 8000); // Intervalo harmonioso (a cada 16 a 24s)
+                triggerButterflyPair();
+            }, 15000 + Math.random() * 7000); // A cada 15 a 22 segundos
         }
 
         // ==========================================
