@@ -11,9 +11,9 @@
   },
   {
     "id": "user-luana",
-    "name": "Luana",
+    "name": "Luana Menato",
     "username": "luana",
-    "password": "luana123",
+    "password": "luana456",
     "role": "seller",
     "avatar": "🍫",
     "biometricCredentials": [],

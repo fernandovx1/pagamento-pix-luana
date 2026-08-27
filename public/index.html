@@ -32,6 +32,7 @@
             --radius-lg: 20px;
             --radius-md: 14px;
             --radius-sm: 10px;
+            --safe-top: env(safe-area-inset-top, 12px);
             --safe-bottom: env(safe-area-inset-bottom, 16px);
         }
 
@@ -71,6 +72,34 @@
             max-width: 1100px;
             margin: 0 auto;
             padding: 16px 14px;
+        }
+
+        /* Botão Discreto de Admin - Girassol no Canto Superior Direito */
+        .btn-admin-discrete {
+            position: fixed;
+            top: calc(12px + var(--safe-top));
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            background: rgba(26, 17, 13, 0.85);
+            border: 1.5px solid rgba(245, 158, 11, 0.45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px var(--amber-glow);
+            touch-action: manipulation;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-admin-discrete:hover, .btn-admin-discrete:active {
+            transform: scale(1.15) rotate(15deg);
+            background: rgba(245, 158, 11, 0.25);
+            border-color: var(--amber-gold);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
         }
 
         /* Header Principal */
@@ -881,32 +910,6 @@
             gap: 6px;
         }
 
-        /* Botão Discreto de Admin */
-        .btn-admin-discrete {
-            position: fixed;
-            bottom: calc(15px + var(--safe-bottom));
-            right: 14px;
-            width: 44px;
-            height: 44px;
-            background: rgba(26, 17, 13, 0.92);
-            border: 1.5px solid rgba(245, 158, 11, 0.35);
-            border-radius: 50%;
-            color: rgba(245, 158, 11, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 99;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
-            touch-action: manipulation;
-        }
-
-        .btn-admin-discrete:active {
-            transform: scale(1.1);
-            background: rgba(245, 158, 11, 0.3);
-            color: var(--amber-gold);
-        }
-
         /* Painel Admin Completo */
         .admin-modal-card { max-width: 850px; height: 92vh; }
 
@@ -1039,6 +1042,11 @@
 
     <div class="bg-glow"></div>
 
+    <!-- BOTÃO DISCRETO DE ADMIN (GIRASSOL NO CANTO SUPERIOR DIREITO) -->
+    <div class="btn-admin-discrete" onclick="openLoginModal()" title="Painel Admin (Girassol)">
+        <span style="display: block; line-height: 1; filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.7));">🌻</span>
+    </div>
+
     <div class="container">
         <!-- Cabeçalho -->
         <header class="header">
@@ -1052,8 +1060,6 @@
         <!-- Seletor de Estoque / Vendedor (Frente de Caixa) -->
         <div class="seller-switcher-bar" id="storefrontSellerSwitcher">
             <button class="seller-tab-btn active" onclick="switchStoreSeller('all', this)">✨ Todas as Trufas</button>
-            <button class="seller-tab-btn" onclick="switchStoreSeller('user-fernando', this)">👑 Estoque Fernando</button>
-            <button class="seller-tab-btn" onclick="switchStoreSeller('user-luana', this)">🍫 Estoque Luana</button>
         </div>
 
         <!-- Barra de Filtros de Categoria e Busca -->
@@ -1186,24 +1192,17 @@
         </div>
     </div>
 
-    <!-- BOTÃO DISCRETO DE ADMIN -->
-    <div class="btn-admin-discrete" onclick="openLoginModal()" title="Painel Admin">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-    </div>
-
     <!-- MODAL DE LOGIN & BIOMETRIA (FACE ID / DIGITAL) -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-card" style="max-width: 440px;">
             <div class="modal-header">
-                <h3 class="modal-title">🔐 Acesso de Vendedor / Admin</h3>
+                <h3 class="modal-title">🌻 Acesso de Vendedor / Admin</h3>
                 <button class="btn-close-modal" onclick="closeLoginModal()">✕</button>
             </div>
             <div class="modal-body">
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Selecione seu perfil para acessar seu estoque:</p>
                 
-                <div class="user-profiles-grid" id="loginProfilesGrid">
-                    <!-- Preenchido dinamicamente via JS -->
-                </div>
+                <div class="user-profiles-grid" id="loginProfilesGrid"></div>
 
                 <button class="btn-biometric-login" id="btnBiometricLogin" onclick="triggerBiometricLogin()">
                     <span style="font-size: 1.3rem;">👆</span> Entrar com Digital / Face ID
@@ -1240,7 +1239,7 @@
         <div class="modal-card admin-modal-card">
             <div class="modal-header">
                 <div>
-                    <h3 class="modal-title" id="adminHeaderTitle">⚙️ Painel de Trufas</h3>
+                    <h3 class="modal-title" id="adminHeaderTitle">🌻 Painel de Trufas</h3>
                     <small style="color: var(--amber-gold);" id="adminUserGreeting">Logado como Fernando (Admin)</small>
                 </div>
                 <div style="display: flex; gap: 6px; align-items: center;">
@@ -1433,14 +1432,16 @@
         </div>
     </div>
 
-    <!-- MODAL DE CRIAR NOVO VENDEDOR -->
+    <!-- MODAL DE CADASTRO / EDIÇÃO DE VENDEDOR (COM SENHA) -->
     <div class="modal-overlay" id="userFormModal">
         <div class="modal-card" style="max-width: 440px;">
             <div class="modal-header">
-                <h3 class="modal-title">👥 Novo Vendedor</h3>
+                <h3 class="modal-title" id="userFormTitle">👥 Vendedor / Conta</h3>
                 <button class="btn-close-modal" onclick="closeCreateUserModal()">✕</button>
             </div>
             <div class="modal-body">
+                <input type="hidden" id="editUserId">
+
                 <div class="input-group">
                     <label for="newUserName">Nome (ex: Luana Menato) *</label>
                     <div class="input-wrapper">
@@ -1456,10 +1457,11 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="newUserPassword">Senha de Acesso *</label>
+                    <label for="newUserPassword" id="labelUserPassword">Senha de Acesso *</label>
                     <div class="input-wrapper">
-                        <input type="password" id="newUserPassword" placeholder="Crie uma senha...">
+                        <input type="password" id="newUserPassword" placeholder="Crie uma nova senha...">
                     </div>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;" id="hintUserPassword"></small>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -1487,8 +1489,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-checkout-pix" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="submitCreateUser()">
-                    ✓ Cadastrar Vendedor
+                <button class="btn-checkout-pix" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="submitUserForm()">
+                    💾 Salvar Vendedor
                 </button>
             </div>
         </div>
@@ -1898,7 +1900,7 @@
         }
 
         // ==========================================
-        // AUTENTICAÇÃO MULTI-USUÁRIO & BIOMETRIA (FACE ID / DIGITAL)
+        // AUTENTICAÇÃO MULTI-USUÁRIO & BIOMETRIA
         // ==========================================
         function openLoginModal() {
             if (adminToken && currentUser) {
@@ -1975,7 +1977,6 @@
         async function triggerBiometricLogin() {
             const username = document.getElementById('loginUsername').value.trim();
             
-            // Verificar se o aparelho suporta biometria
             if (!window.PublicKeyCredential) {
                 Swal.fire({
                     icon: 'info',
@@ -1993,7 +1994,7 @@
                 Swal.fire({
                     icon: 'info',
                     title: 'Primeiro Acesso',
-                    text: `Faça login com a senha uma vez e clique em "📱 Ativar Biometria" para cadastrar seu Face ID ou Digital neste celular!`,
+                    text: `Faça login com a senha uma vez e clique em "📱 Ativar Biometria" no topo do painel para cadastrar seu Face ID ou Digital neste aparelho!`,
                     background: '#150e0a',
                     color: '#fff',
                     confirmButtonColor: '#f59e0b'
@@ -2002,11 +2003,10 @@
             }
 
             try {
-                // Simulação/Validação WebAuthn real de biometria
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
 
-                const credential = await navigator.credentials.get({
+                await navigator.credentials.get({
                     publicKey: {
                         challenge: challenge,
                         timeout: 60000,
@@ -2014,7 +2014,6 @@
                     }
                 }).catch(() => null);
 
-                // Autenticar com o backend
                 const res = await fetch('/api/auth/biometric/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2055,7 +2054,7 @@
             }
         }
 
-        // Registrar Biometria (Face ID / Digital) do Celular
+        // Registrar Biometria do Aparelho
         async function registerDeviceBiometrics() {
             if (!currentUser || !adminToken) return;
 
@@ -2084,7 +2083,7 @@
                             },
                             pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
                             authenticatorSelection: {
-                                authenticatorAttachment: "platform", // Face ID / Touch ID / Leitor de tela do celular
+                                authenticatorAttachment: "platform",
                                 userVerification: "required"
                             },
                             timeout: 60000
@@ -2097,7 +2096,6 @@
                     console.warn('Fallback de credencial:', credErr);
                 }
 
-                // Salvar no backend e localmente
                 await fetch('/api/auth/biometric/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
@@ -2134,10 +2132,9 @@
         function openAdminModal() {
             if (!currentUser) return openLoginModal();
 
-            document.getElementById('adminHeaderTitle').innerText = `⚙️ Painel de Trufas`;
+            document.getElementById('adminHeaderTitle').innerText = `🌻 Painel de Trufas`;
             document.getElementById('adminUserGreeting').innerText = `Logado como ${currentUser.avatar || ''} ${currentUser.name} (${currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora'})`;
 
-            // Se for admin, exibe a aba de Usuários e o seletor de estoques
             const tabUsers = document.getElementById('tabBtnUsers');
             const sellerFilterWrap = document.getElementById('adminSellerFilterWrap');
             
@@ -2350,7 +2347,7 @@
         }
 
         // ==========================================
-        // GESTÃO DE USUÁRIOS / VENDEDORES
+        // GESTÃO DE USUÁRIOS / VENDEDORES (CRUD + SENHA)
         // ==========================================
         async function loadAdminUsers() {
             try {
@@ -2364,13 +2361,14 @@
                             <span style="font-size: 1.8rem;">${u.avatar || '🍫'}</span>
                             <div>
                                 <h4 style="font-size: 0.95rem; color: #fff; margin: 0;">${u.name} (@${u.username})</h4>
-                                <span style="font-size: 0.75rem; color: var(--amber-light);">${u.role === 'admin' ? 'Administrador Geral' : 'Vendedora (Estoque Próprio)'} • ${u.biometricsCount > 0 ? '📱 Face ID / Digital Ativo' : 'Senha'}</span>
+                                <span style="font-size: 0.75rem; color: var(--amber-light);">${u.role === 'admin' ? 'Administrador Geral' : 'Vendedora (Estoque Próprio)'} • ${u.biometricsCount > 0 ? '📱 Face ID Ativo' : 'Senha'}</span>
                             </div>
                         </div>
-                        <div>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button class="btn-icon-action" onclick="openEditUserModal('${u.id}', '${u.name}', '${u.username}', '${u.role}', '${u.avatar || '🍫'}')" title="Editar Usuário / Senha">✏️</button>
                             ${u.id !== currentUser.id ? `
                                 <button class="btn-icon-action delete" onclick="deleteUser('${u.id}', '${u.name}')" title="Excluir Vendedor">🗑️</button>
-                            ` : '<span style="font-size: 0.75rem; color: #34d399;">Você</span>'}
+                            ` : '<span style="font-size: 0.75rem; color: #34d399; margin-left: 4px;">Você</span>'}
                         </div>
                     </div>
                 `).join('');
@@ -2380,9 +2378,28 @@
         }
 
         function openCreateUserModal() {
+            document.getElementById('editUserId').value = '';
+            document.getElementById('userFormTitle').innerText = '👥 Novo Vendedor';
             document.getElementById('newUserName').value = '';
             document.getElementById('newUserUsername').value = '';
             document.getElementById('newUserPassword').value = '';
+            document.getElementById('labelUserPassword').innerText = 'Senha de Acesso *';
+            document.getElementById('hintUserPassword').innerText = '';
+            document.getElementById('newUserRole').value = 'seller';
+            document.getElementById('newUserAvatar').value = '🍫';
+            document.getElementById('userFormModal').classList.add('active');
+        }
+
+        function openEditUserModal(id, name, username, role, avatar) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('userFormTitle').innerText = `✏️ Editar Conta de ${name}`;
+            document.getElementById('newUserName').value = name;
+            document.getElementById('newUserUsername').value = username;
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('labelUserPassword').innerText = 'Nova Senha (Opcional)';
+            document.getElementById('hintUserPassword').innerText = 'Deixe em branco se não quiser alterar a senha.';
+            document.getElementById('newUserRole').value = role || 'seller';
+            document.getElementById('newUserAvatar').value = avatar || '🍫';
             document.getElementById('userFormModal').classList.add('active');
         }
 
@@ -2390,23 +2407,40 @@
             document.getElementById('userFormModal').classList.remove('active');
         }
 
-        async function submitCreateUser() {
+        async function submitUserForm() {
+            const id = document.getElementById('editUserId').value;
             const name = document.getElementById('newUserName').value.trim();
             const username = document.getElementById('newUserUsername').value.trim();
             const password = document.getElementById('newUserPassword').value.trim();
             const role = document.getElementById('newUserRole').value;
             const avatar = document.getElementById('newUserAvatar').value;
 
-            if (!name || !username || !password) {
-                Swal.fire({ icon: 'warning', title: 'Preencha todos os campos', background: '#150e0a', color: '#fff' });
+            if (!name || !username) {
+                Swal.fire({ icon: 'warning', title: 'Preencha nome e login', background: '#150e0a', color: '#fff' });
                 return;
             }
 
+            if (!id && !password) {
+                Swal.fire({ icon: 'warning', title: 'Digite uma senha para o novo vendedor', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            const payload = { name, username, role, avatar };
+            if (password) payload.password = password;
+
             try {
-                const res = await fetch('/api/admin/users', {
-                    method: 'POST',
+                let url = '/api/admin/users';
+                let method = 'POST';
+
+                if (id) {
+                    url = `/api/admin/users/${id}`;
+                    method = 'PUT';
+                }
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
-                    body: JSON.stringify({ name, username, password, role, avatar })
+                    body: JSON.stringify(payload)
                 });
 
                 const data = await res.json();
@@ -2414,9 +2448,9 @@
                     closeCreateUserModal();
                     await loadUsersList();
                     loadAdminUsers();
-                    Swal.fire({ icon: 'success', title: 'Vendedor Criado!', text: `Conta de ${name} cadastrada com sucesso!`, background: '#150e0a', color: '#fff' });
+                    Swal.fire({ icon: 'success', title: 'Salvo com Sucesso!', text: `Conta de ${name} atualizada!`, background: '#150e0a', color: '#fff' });
                 } else {
-                    throw new Error(data.error || 'Erro ao criar vendedor.');
+                    throw new Error(data.error || 'Erro ao salvar usuário.');
                 }
             } catch (e) {
                 Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });

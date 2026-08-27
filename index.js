@@ -349,6 +349,36 @@ app.post('/api/admin/users', requireAdmin, (req, res) => {
     res.status(201).json({ success: true, user: newUser });
 });
 
+// Editar vendedor / usuário (incluindo senha)
+app.put('/api/admin/users/:id', requireAdmin, (req, res) => {
+    const { id } = req.params;
+    const { name, username, password, role, avatar } = req.body;
+
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.id === id);
+
+    if (userIndex === -1) {
+        return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    if (username) {
+        const checkConflict = users.find(u => u.id !== id && u.username.toLowerCase() === username.trim().toLowerCase());
+        if (checkConflict) {
+            return res.status(400).json({ error: 'Este nome de usuário já está sendo usado por outra conta.' });
+        }
+        users[userIndex].username = username.trim().toLowerCase();
+    }
+
+    if (name) users[userIndex].name = name.trim();
+    if (password && password.trim()) users[userIndex].password = password.trim();
+    if (role) users[userIndex].role = role === 'admin' ? 'admin' : 'seller';
+    if (avatar) users[userIndex].avatar = avatar;
+
+    saveUsers(users);
+    console.log(`[USUÁRIOS] Usuário atualizado: ${users[userIndex].name} (@${users[userIndex].username})`);
+    res.json({ success: true, user: users[userIndex] });
+});
+
 // Excluir usuário
 app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
     const { id } = req.params;
