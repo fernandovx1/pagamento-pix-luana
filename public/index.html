@@ -69,43 +69,44 @@
         }
 
         /* ==========================================
-           BORBOLETAS SUAVES E ELEGANTES (DELICADAS)
+           BORBOLETAS SUAVES QUE PASSAM POR CIMA DE TODAS AS TELAS
            ========================================== */
         .butterfly-canvas-layer {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
-            z-index: 2;
+            z-index: 99999; /* Passa por cima de todas as telas, cards e modais */
             overflow: hidden;
         }
 
         .floating-butterfly {
             position: absolute;
             pointer-events: none;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
-            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+            filter: drop-shadow(0 0 10px rgba(0, 209, 255, 0.6)) drop-shadow(0 0 16px rgba(245, 158, 11, 0.4));
             will-change: transform, opacity;
-            transition: opacity 1.2s ease;
+            transition: opacity 1s ease;
         }
 
         .butterfly-wing-wrap {
             display: inline-block;
-            font-size: 1.5rem;
-            animation: butterflyFlap 0.32s ease-in-out infinite alternate;
+            font-size: 1.8rem;
+            animation: butterflyFlap 0.28s ease-in-out infinite alternate;
             transform-origin: center;
+            user-select: none;
         }
 
         @keyframes butterflyFlap {
             0% { transform: scaleX(1) scaleY(1) rotate(0deg); }
-            100% { transform: scaleX(0.35) scaleY(1.08) rotate(12deg); }
+            100% { transform: scaleX(0.3) scaleY(1.12) rotate(14deg); }
         }
 
         .container {
@@ -1556,30 +1557,27 @@
         let adminToken = localStorage.getItem('trufas_admin_token') || '';
 
         // ==========================================
-        // SISTEMA DE BORBOLETAS SUAVES (POUCO FREQUENTES)
+        // SISTEMA DE BORBOLETAS (PASSAM POR CIMA DE TODAS AS TELAS)
         // ==========================================
-        const butterflyEmojis = ['🦋', '✨', '🦋'];
-        
         function spawnButterfly() {
             const layer = document.getElementById('butterflyLayer');
             if (!layer) return;
 
-            // Criar elemento borboleta
             const b = document.createElement('div');
             b.className = 'floating-butterfly';
             
             const isLeftToRight = Math.random() > 0.5;
-            const startY = Math.random() * (window.innerHeight * 0.7) + 50;
-            const endY = startY + (Math.random() * 200 - 100);
-            const duration = 14 + Math.random() * 8; // 14 a 22 segundos de travessia lenta
+            const startY = Math.random() * (window.innerHeight * 0.85) + 30;
+            const endY = startY + (Math.random() * 220 - 110);
+            const duration = 12 + Math.random() * 8; // 12 a 20 segundos de voo gracioso
             
-            const startX = isLeftToRight ? -60 : (window.innerWidth + 60);
-            const endX = isLeftToRight ? (window.innerWidth + 60) : -60;
-            const rotation = isLeftToRight ? (Math.random() * 20 - 5) : (Math.random() * 20 + 175);
+            const startX = isLeftToRight ? -70 : (window.innerWidth + 70);
+            const endX = isLeftToRight ? (window.innerWidth + 70) : -70;
+            const baseRotation = isLeftToRight ? 12 : 192;
+            const scale = 0.85 + Math.random() * 0.45;
             
             b.style.top = `${startY}px`;
             b.style.left = `${startX}px`;
-            b.style.transform = `scale(${0.75 + Math.random() * 0.35})`;
             
             const wingWrap = document.createElement('span');
             wingWrap.className = 'butterfly-wing-wrap';
@@ -1587,9 +1585,8 @@
             b.appendChild(wingWrap);
             layer.appendChild(b);
 
-            // Animação suave com requestAnimationFrame
             const startTime = performance.now();
-            setTimeout(() => { b.style.opacity = '0.75'; }, 100);
+            setTimeout(() => { b.style.opacity = '0.92'; }, 80);
 
             function animate(now) {
                 const elapsed = (now - startTime) / 1000;
@@ -1601,16 +1598,17 @@
                 }
 
                 const curX = startX + (endX - startX) * progress;
-                // Movimento em onda senoidal suave (ondulação natural de voo)
-                const waveY = Math.sin(progress * Math.PI * 4) * 35;
+                // Ondulação senoidal natural do bater de asas
+                const waveY = Math.sin(progress * Math.PI * 5) * 45;
                 const curY = startY + (endY - startY) * progress + waveY;
+                const tilt = Math.cos(progress * Math.PI * 5) * 14;
 
                 b.style.left = `${curX}px`;
                 b.style.top = `${curY}px`;
-                b.style.transform = `rotate(${rotation}deg)`;
+                b.style.transform = `scale(${scale}) rotate(${baseRotation + tilt}deg)`;
 
-                if (progress > 0.85) {
-                    b.style.opacity = `${(1 - progress) * 5}`;
+                if (progress > 0.88) {
+                    b.style.opacity = `${(1 - progress) * 8}`;
                 }
 
                 requestAnimationFrame(animate);
@@ -1619,12 +1617,11 @@
             requestAnimationFrame(animate);
         }
 
-        // Intervalo suave: solta 1 borboleta a cada 18 a 28 segundos para não poluir
         function startButterflySystem() {
-            setTimeout(spawnButterfly, 3000); // Primeira após 3s
+            setTimeout(spawnButterfly, 1500); // Primeira borboleta logo após 1.5s
             setInterval(() => {
                 spawnButterfly();
-            }, 20000 + Math.random() * 8000);
+            }, 16000 + Math.random() * 8000); // Intervalo harmonioso (a cada 16 a 24s)
         }
 
         // ==========================================
