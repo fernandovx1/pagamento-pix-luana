@@ -887,7 +887,11 @@
         .user-card-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
         .user-card-role { font-size: 0.75rem; color: var(--text-muted); }
 
-        /* QR Code Modal */
+        /* QR Code Modal & Proteção de Leitura */
+        #pixPaymentModal {
+            z-index: 100000; /* Sobrepõe a camada de borboletas */
+        }
+
         .pix-modal-content { text-align: center; padding: 10px 0; }
         .pix-timer-badge {
             display: inline-flex;
@@ -910,6 +914,8 @@
             display: inline-block;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
             margin-bottom: 12px;
+            position: relative;
+            z-index: 100001; /* Fica acima de tudo para 100% de precisão ao ler com a câmera do banco */
         }
 
         .qr-img { width: 190px; height: 190px; display: block; max-width: 60vw; max-height: 60vw; }
