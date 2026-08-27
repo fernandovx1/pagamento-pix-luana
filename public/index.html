@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🍫 Trufas Artesanais Gourmet - Catálogo, Estoque & Checkout Pix</title>
+    <title>🍫 Trufas Artesanais Gourmet - Catálogo & Checkout Pix</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -53,7 +53,7 @@
             overflow-x: hidden;
         }
 
-        /* Fundo Animado & Iluminação */
+        /* Fundo Animado & Iluminação Suave */
         .bg-glow {
             position: fixed;
             top: 0;
@@ -68,10 +68,52 @@
                 radial-gradient(circle at 50% 50%, rgba(18, 11, 8, 0.98) 0%, #080504 100%);
         }
 
+        /* ==========================================
+           BORBOLETAS SUAVES E ELEGANTES (DELICADAS)
+           ========================================== */
+        .butterfly-canvas-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .floating-butterfly {
+            position: absolute;
+            pointer-events: none;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+            will-change: transform, opacity;
+            transition: opacity 1.2s ease;
+        }
+
+        .butterfly-wing-wrap {
+            display: inline-block;
+            font-size: 1.5rem;
+            animation: butterflyFlap 0.32s ease-in-out infinite alternate;
+            transform-origin: center;
+        }
+
+        @keyframes butterflyFlap {
+            0% { transform: scaleX(1) scaleY(1) rotate(0deg); }
+            100% { transform: scaleX(0.35) scaleY(1.08) rotate(12deg); }
+        }
+
         .container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 16px 14px;
+            position: relative;
+            z-index: 3;
         }
 
         /* Botão Discreto de Admin - Girassol no Canto Superior Direito */
@@ -149,7 +191,7 @@
             line-height: 1.4;
         }
 
-        /* Seletor de Estoque / Vendedor (Fernando vs Luana) */
+        /* Seletor de Estoque / Vendedor (Frente de Caixa) */
         .seller-switcher-bar {
             display: flex;
             align-items: center;
@@ -283,7 +325,7 @@
             .products-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
         }
 
-        /* Card de Trufa */
+        /* Card de Trufa - Layout Limpo e Sem Sobreposição */
         .truffle-card {
             background: var(--bg-card);
             backdrop-filter: blur(14px);
@@ -295,7 +337,6 @@
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            overflow: hidden;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
             transition: transform 0.2s ease, border-color 0.2s ease;
         }
@@ -303,48 +344,20 @@
         .truffle-card:active { transform: scale(0.99); }
 
         .truffle-card.out-of-stock {
-            opacity: 0.5;
-            filter: grayscale(0.9);
+            opacity: 0.55;
+            filter: grayscale(0.85);
             border-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .out-of-stock-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(239, 68, 68, 0.95);
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
-        }
-
-        .seller-owner-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(245, 158, 11, 0.15);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: var(--amber-light);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 700;
         }
 
         .card-top {
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .truffle-icon-box {
-            font-size: 2rem;
+            font-size: 2.1rem;
             width: 52px;
             height: 52px;
             background: rgba(245, 158, 11, 0.12);
@@ -356,38 +369,64 @@
             flex-shrink: 0;
         }
 
-        .card-details { flex: 1; }
+        .card-details {
+            flex: 1;
+            min-width: 0; /* Impede overflow de flex children */
+        }
 
         .truffle-flavor {
-            font-size: 1.12rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #fff;
-            line-height: 1.25;
-            margin-bottom: 4px;
+            line-height: 1.3;
+            margin-bottom: 6px;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .tags-row {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
-            margin-top: 3px;
+            align-items: center;
         }
 
         .spec-tag {
             background: rgba(255, 255, 255, 0.07);
             color: var(--amber-light);
-            font-size: 0.72rem;
+            font-size: 0.73rem;
             font-weight: 600;
-            padding: 2px 7px;
+            padding: 3px 8px;
             border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            white-space: nowrap;
+        }
+
+        .spec-tag.category-tag {
+            color: #6ee7b7;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .spec-tag.seller-tag {
+            color: var(--amber-gold);
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.35);
+            font-weight: 700;
+        }
+
+        .spec-tag.out-tag {
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            font-weight: 800;
         }
 
         .truffle-desc {
             font-size: 0.82rem;
             color: var(--text-muted);
             line-height: 1.35;
-            margin: 6px 0 12px;
+            margin: 8px 0 12px;
         }
 
         .card-pricing-row {
@@ -1042,6 +1081,9 @@
 
     <div class="bg-glow"></div>
 
+    <!-- CAMADA DE BORBOLETAS SUAVES -->
+    <div class="butterfly-canvas-layer" id="butterflyLayer"></div>
+
     <!-- BOTÃO DISCRETO DE ADMIN (GIRASSOL NO CANTO SUPERIOR DIREITO) -->
     <div class="btn-admin-discrete" onclick="openLoginModal()" title="Painel Admin (Girassol)">
         <span style="display: block; line-height: 1; filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.7));">🌻</span>
@@ -1514,9 +1556,82 @@
         let adminToken = localStorage.getItem('trufas_admin_token') || '';
 
         // ==========================================
+        // SISTEMA DE BORBOLETAS SUAVES (POUCO FREQUENTES)
+        // ==========================================
+        const butterflyEmojis = ['🦋', '✨', '🦋'];
+        
+        function spawnButterfly() {
+            const layer = document.getElementById('butterflyLayer');
+            if (!layer) return;
+
+            // Criar elemento borboleta
+            const b = document.createElement('div');
+            b.className = 'floating-butterfly';
+            
+            const isLeftToRight = Math.random() > 0.5;
+            const startY = Math.random() * (window.innerHeight * 0.7) + 50;
+            const endY = startY + (Math.random() * 200 - 100);
+            const duration = 14 + Math.random() * 8; // 14 a 22 segundos de travessia lenta
+            
+            const startX = isLeftToRight ? -60 : (window.innerWidth + 60);
+            const endX = isLeftToRight ? (window.innerWidth + 60) : -60;
+            const rotation = isLeftToRight ? (Math.random() * 20 - 5) : (Math.random() * 20 + 175);
+            
+            b.style.top = `${startY}px`;
+            b.style.left = `${startX}px`;
+            b.style.transform = `scale(${0.75 + Math.random() * 0.35})`;
+            
+            const wingWrap = document.createElement('span');
+            wingWrap.className = 'butterfly-wing-wrap';
+            wingWrap.innerText = '🦋';
+            b.appendChild(wingWrap);
+            layer.appendChild(b);
+
+            // Animação suave com requestAnimationFrame
+            const startTime = performance.now();
+            setTimeout(() => { b.style.opacity = '0.75'; }, 100);
+
+            function animate(now) {
+                const elapsed = (now - startTime) / 1000;
+                const progress = elapsed / duration;
+
+                if (progress >= 1) {
+                    b.remove();
+                    return;
+                }
+
+                const curX = startX + (endX - startX) * progress;
+                // Movimento em onda senoidal suave (ondulação natural de voo)
+                const waveY = Math.sin(progress * Math.PI * 4) * 35;
+                const curY = startY + (endY - startY) * progress + waveY;
+
+                b.style.left = `${curX}px`;
+                b.style.top = `${curY}px`;
+                b.style.transform = `rotate(${rotation}deg)`;
+
+                if (progress > 0.85) {
+                    b.style.opacity = `${(1 - progress) * 5}`;
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Intervalo suave: solta 1 borboleta a cada 18 a 28 segundos para não poluir
+        function startButterflySystem() {
+            setTimeout(spawnButterfly, 3000); // Primeira após 3s
+            setInterval(() => {
+                spawnButterfly();
+            }, 20000 + Math.random() * 8000);
+        }
+
+        // ==========================================
         // INICIALIZAÇÃO & CARREGAMENTO
         // ==========================================
         async function initApp() {
+            startButterflySystem();
             await loadUsersList();
             await loadProducts();
         }
@@ -1601,8 +1716,6 @@
 
                 return `
                     <div class="truffle-card ${isOutOfStock ? 'out-of-stock' : ''}" id="card-${p.id}">
-                        ${isOutOfStock ? '<div class="out-of-stock-badge">Sem Estoque</div>' : (p.sellerName ? `<div class="seller-owner-badge">Por ${p.sellerName}</div>` : '')}
-                        
                         <div>
                             <div class="card-top">
                                 <div class="truffle-icon-box">${p.icon || '🍫'}</div>
@@ -1611,12 +1724,14 @@
                                     <div class="tags-row">
                                         <span class="spec-tag">${p.weight || '45g'}</span>
                                         <span class="spec-tag">${p.size || 'Médio'}</span>
-                                        <span class="spec-tag" style="color: #6ee7b7;">${p.category || 'Gourmet'}</span>
+                                        <span class="spec-tag category-tag">${p.category || 'Gourmet'}</span>
+                                        ${p.sellerName ? `<span class="spec-tag seller-tag">Por ${p.sellerName}</span>` : ''}
+                                        ${isOutOfStock ? `<span class="spec-tag out-tag">Sem Estoque</span>` : ''}
                                     </div>
                                 </div>
                             </div>
 
-                            <p class="truffle-desc">${p.description || 'Deliciosa trufa artesanal recheada.'}</p>
+                            <p class="truffle-desc">${p.description || 'Deliciosa trufa artesanal recheada com ingredientes nobres.'}</p>
                         </div>
 
                         <div>
