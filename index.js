@@ -170,11 +170,12 @@ const transporter = nodemailer.createTransport({
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 
-// Middleware Anti-Cache Global (Força o navegador e celular a baixar a versão mais recente sempre)
+// Middleware Anti-Cache Global Rigoroso (Força o navegador e celular a baixar a versão mais recente sempre)
 app.use((req, res, next) => {
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
     next();
 });
 
@@ -183,11 +184,16 @@ app.use(express.static('public', {
     lastModified: false,
     maxAge: 0,
     setHeaders: (res) => {
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
     }
 }));
+
+// Rota de versão para garantir sincronização
+app.get('/api/version', (req, res) => {
+    res.json({ version: '2026.08.28-v3.3-balcao-fixed', time: Date.now() });
+});
 
 // Gerenciamento de Sessão / Tokens
 const activeSessions = new Map(); // token -> userObject

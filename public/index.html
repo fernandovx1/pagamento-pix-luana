@@ -1994,6 +1994,19 @@
 
     <script>
         // ==========================================
+        // AUTO-CACHE BUSTER & CONTROLE DE VERSÃO
+        // ==========================================
+        const CURRENT_APP_VERSION = '2026.08.28-v3.4-balcao-fixed';
+        if (localStorage.getItem('trufas_sys_ver') !== CURRENT_APP_VERSION) {
+            localStorage.setItem('trufas_sys_ver', CURRENT_APP_VERSION);
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    for (let name of names) caches.delete(name);
+                });
+            }
+        }
+
+        // ==========================================
         // ESTADO GLOBAL DA APLICAÇÃO
         // ==========================================
         let allProducts = [];
@@ -2276,13 +2289,23 @@
             renderCartModalItems();
         }
 
+        // ==========================================
+        // CÁLCULO E CONTROLE DO CARRINHO
+        // ==========================================
+        function calculateCartTotal() {
+            let total = 0;
+            Object.values(cart).forEach(item => {
+                total += (Number(item.product.price) * item.quantity);
+            });
+            return total;
+        }
+
         function updateCartDisplay() {
             let totalItems = 0;
-            let totalPrice = 0;
+            let totalPrice = calculateCartTotal();
 
             Object.values(cart).forEach(item => {
                 totalItems += item.quantity;
-                totalPrice += (Number(item.product.price) * item.quantity);
             });
 
             const bar = document.getElementById('floatingCart');
