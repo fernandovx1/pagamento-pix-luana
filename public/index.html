@@ -1626,6 +1626,9 @@
                     <small style="color: var(--amber-gold);" id="adminUserGreeting">Logado como Fernando (Admin)</small>
                 </div>
                 <div style="display: flex; gap: 6px; align-items: center;">
+                    <button class="pill-btn" style="background: rgba(239, 68, 68, 0.22); color: #fca5a5; border-color: rgba(239, 68, 68, 0.45); padding: 4px 9px; font-size: 0.75rem; font-weight: 700;" onclick="promptResetSystemData()" title="Zerar todos os dados do sistema">
+                        🗑️ Zerar Dados
+                    </button>
                     <button class="pill-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); padding: 4px 8px; font-size: 0.75rem;" onclick="registerDeviceBiometrics()" title="Ativar Face ID neste celular">
                         📱 Ativar Biometria
                     </button>
@@ -3609,8 +3612,82 @@
         }
 
         // ==========================================
-        // GESTÃO DE USUÁRIOS / VENDEDORES (CRUD + SENHA)
+        // ZERAR / LIMPAR DADOS DO SISTEMA (ADMIN)
         // ==========================================
+        async function promptResetSystemData() {
+            if (currentUser?.role !== 'admin') {
+                Swal.fire({ icon: 'error', title: 'Acesso Restrito', text: 'Apenas o administrador mestre pode zerar os dados.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            const { value: target } = await Swal.fire({
+                title: '🗑️ Zerar Dados do Sistema',
+                text: 'Escolha o que você deseja limpar e zerar completamente:',
+                icon: 'warning',
+                input: 'select',
+                inputOptions: {
+                    'all': '💥 Zerar TUDO (Produtos + Pedidos + Histórico)',
+                    'products': '🍫 Zerar apenas Catálogo de Produtos',
+                    'orders': '🧾 Zerar apenas Histórico de Pedidos / Vendas',
+                    'transfers': '🔄 Zerar apenas Histórico de Transferências'
+                },
+                inputPlaceholder: 'Selecione o que deseja zerar...',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Continuar ➔',
+                cancelButtonText: 'Cancelar',
+                background: '#150e0a',
+                color: '#fff',
+                inputValidator: (value) => {
+                    if (!value) return 'Por favor, selecione uma opção para continuar!';
+                }
+            });
+
+            if (!target) return;
+
+            const confirmFinal = await Swal.fire({
+                title: '⚠️ Tem Certeza Absoluta?',
+                html: `
+                    <p style="color: #fca5a5; font-size: 0.95rem;">Esta ação apagará os dados selecionados permanentemente e não pode ser revertida.</p>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sim, Apagar Agora!',
+                cancelButtonText: 'Voltar',
+                background: '#150e0a',
+                color: '#fff'
+            });
+
+            if (!confirmFinal.isConfirmed) return;
+
+            try {
+                const res = await fetch('/api/admin/reset-all-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify({ target })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    await loadProducts();
+                    await loadAdminData();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Limpeza Realizada!',
+                        text: data.message,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
+                } else {
+                    throw new Error(data.error || 'Falha ao zerar dados do sistema.');
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: err.message, background: '#150e0a', color: '#fff' });
+            }
+        }
         async function loadAdminUsers() {
             try {
                 const res = await fetch('/api/admin/users', { headers: { 'authorization': adminToken } });

@@ -1268,6 +1268,37 @@ app.get('/api/admin/orders', authenticateUser, (req, res) => {
     res.json(filteredOrders);
 });
 
+// Zerar / Limpar Dados do Sistema (Admin)
+app.post('/api/admin/reset-all-data', authenticateUser, (req, res) => {
+    const { target } = req.body; // 'all' | 'products' | 'orders' | 'transfers'
+
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Apenas o administrador pode zerar os dados do sistema.' });
+    }
+
+    if (target === 'products' || target === 'all') {
+        saveProducts([]);
+        console.log('[RESET] Catálogo de produtos zerado.');
+    }
+
+    if (target === 'orders' || target === 'all') {
+        saveOrders([]);
+        console.log('[RESET] Histórico de pedidos zerado.');
+    }
+
+    if (target === 'transfers' || target === 'all') {
+        saveTransfers([]);
+        console.log('[RESET] Histórico de transferências zerado.');
+    }
+
+    res.json({
+        success: true,
+        message: target === 'all' 
+            ? 'Todos os dados (produtos, pedidos e transferências) foram zerados com sucesso!' 
+            : `Dados de ${target} zerados com sucesso!`
+    });
+});
+
 // Fallback de rotas antigas
 app.post('/create-payment', async (req, res) => {
     return app._router.handle({ ...req, url: '/api/create-pix', method: 'POST' }, res);
