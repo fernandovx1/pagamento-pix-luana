@@ -940,6 +940,128 @@
         .user-card-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
         .user-card-role { font-size: 0.75rem; color: var(--text-muted); }
 
+        /* Modal de Venda Presencial / Balcão Profissional */
+        .direct-condition-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .direct-condition-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            position: relative;
+        }
+
+        .direct-condition-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(245, 158, 11, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .direct-condition-card.active {
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.28));
+            border-color: #10b981;
+            box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+        }
+
+        .direct-condition-card.active.pay-later {
+            background: linear-gradient(145deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3));
+            border-color: #f59e0b;
+            box-shadow: 0 4px 18px rgba(245, 158, 11, 0.35);
+        }
+
+        .condition-badge-icon {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .condition-title {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .condition-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.2;
+        }
+
+        .date-quick-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .date-chip-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border-subtle);
+            color: #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .date-chip-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber-gold);
+            color: #fff;
+        }
+
+        .date-chip-btn.active {
+            background: var(--amber-gold);
+            border-color: var(--amber-gold);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .order-summary-pill {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .whatsapp-btn-table {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: #fff !important;
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+            margin-top: 4px;
+        }
+
+        .whatsapp-btn-table:hover {
+            background: linear-gradient(135deg, #1eb956, #0e7266);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5);
+            transform: translateY(-1px);
+        }
+
         /* QR Code Modal & Proteção de Leitura */
         #pixPaymentModal {
             z-index: 100000; /* Sobrepõe a camada de borboletas */
@@ -1256,8 +1378,110 @@
                 <button class="btn-checkout-pix" id="btnCheckoutPix" onclick="submitPixOrder()">
                     ⚡ Gerar Pix Instantâneo
                 </button>
-                <button class="btn-checkout-direct" id="btnCheckoutDirect" onclick="submitDirectCashOrder()">
+                <button class="btn-checkout-direct" id="btnCheckoutDirect" onclick="openDirectOrderModal()">
                     💵 Pago no Balcão / Dinheiro (Baixar Estoque)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PROFISSIONAL DE VENDA PRESENCIAL / BALCÃO / A PRAZO -->
+    <div class="modal-overlay" id="directOrderModal" style="z-index: 100001;">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 class="modal-title">💵 Venda Presencial / Balcão</h3>
+                <button class="btn-close-modal" onclick="closeDirectOrderModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Resumo Rápido do Pedido -->
+                <div class="order-summary-pill">
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Total do Pedido</span>
+                        <strong style="font-size: 1.25rem; color: var(--amber-gold);" id="directModalTotal">R$ 0,00</strong>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="stock-badge high" id="directModalQtyBadge">0 trufas</span>
+                    </div>
+                </div>
+
+                <!-- Escolha Profissional: Já Pago vs Vai Pagar em Outro Dia -->
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--amber-light); margin-bottom: 8px; display: block;">
+                    Situação do Pagamento: *
+                </label>
+                <div class="direct-condition-grid">
+                    <div class="direct-condition-card active" id="cardConditionPaid" onclick="selectPaymentCondition('paid_now')">
+                        <span class="condition-badge-icon">🟢</span>
+                        <div class="condition-title">Já Foi Pago</div>
+                        <div class="condition-sub">Dinheiro, Débito, Crédito ou Pix</div>
+                    </div>
+                    <div class="direct-condition-card" id="cardConditionLater" onclick="selectPaymentCondition('pay_later')">
+                        <span class="condition-badge-icon">📅</span>
+                        <div class="condition-title">Vai Pagar Outro Dia</div>
+                        <div class="condition-sub">A Prazo / Fiado / Promessa</div>
+                    </div>
+                </div>
+
+                <!-- Dados do Cliente -->
+                <div class="input-group">
+                    <label for="directCustName">Nome da Pessoa / Cliente *</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="text" id="directCustName" placeholder="Ex: Maria Oliveira, Lucas...">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="directCustPhone">WhatsApp da Pessoa (Opcional, para comprovante/lembrete)</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <input type="tel" id="directCustPhone" placeholder="(11) 99999-9999" oninput="formatPhoneInput(this)">
+                    </div>
+                </div>
+
+                <!-- Seção: Forma de Pagamento (Quando Já Pago) -->
+                <div class="input-group" id="directMethodGroup">
+                    <label for="directPaymentMethod">Forma do Pagamento Recebido:</label>
+                    <div class="input-wrapper">
+                        <select id="directPaymentMethod">
+                            <option value="Dinheiro (Em espécie)">💵 Dinheiro (Em mãos)</option>
+                            <option value="Cartão de Débito">💳 Cartão de Débito</option>
+                            <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+                            <option value="Pix Balcão / Direto">⚡ Pix Transferência Balcão</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Seção: Dia que irá pagar -->
+                <div class="input-group" id="directDueDateGroup">
+                    <label for="directPaymentDueDate" id="directDueDateLabel">
+                        📅 Dia que irá pagar (Data Combinada / Vencimento) *
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="date" id="directPaymentDueDate" style="color: #fff; font-weight: 600;">
+                    </div>
+                    <!-- Botões Rápidos de Data -->
+                    <div class="date-quick-chips">
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueDate(0, 'Hoje')">Hoje</button>
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueDate(1, 'Amanhã')">Amanhã</button>
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueDateNextDay(5, 'Sexta')">Sexta-feira</button>
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueDate(7, '7 dias')">Em 7 dias</button>
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueDate(15, '15 dias')">Em 15 dias</button>
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueDayOfMonth(5)">Dia 05</button>
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueDayOfMonth(10)">Dia 10</button>
+                    </div>
+                </div>
+
+                <!-- Observação Opcional -->
+                <div class="input-group">
+                    <label for="directOrderNotes">Observação / Anotação (Opcional)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="directOrderNotes" placeholder="Ex: Deixar na recepção, pagar no almoço...">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-direct" id="btnSubmitDirectOrderModal" onclick="processDirectOrderSubmit()" style="height: 50px; font-size: 1.02rem;">
+                    ✅ Confirmar Venda e Baixar Estoque
                 </button>
             </div>
         </div>
@@ -1522,9 +1746,10 @@
                             <thead>
                                 <tr>
                                     <th>Data</th>
-                                    <th>Cliente</th>
+                                    <th>Cliente & WhatsApp</th>
                                     <th>Itens Comprados</th>
                                     <th>Total</th>
+                                    <th>Pagamento / Vencimento</th>
                                     <th>Status</th>
                                     <th>Ação</th>
                                 </tr>
@@ -2151,8 +2376,148 @@
             }
         }
 
-        // Venda Presencial / Dinheiro / Balcão com Baixa Imediata
-        async function submitDirectCashOrder() {
+        // ==========================================
+        // MODAL DE VENDA PRESENCIAL / BALCÃO / A PRAZO
+        // ==========================================
+        let currentDirectPaymentCondition = 'paid_now';
+
+        function openDirectOrderModal() {
+            const items = Object.values(cart);
+            if (items.length === 0) {
+                Swal.fire({ icon: 'warning', title: 'Carrinho Vazio', text: 'Adicione trufas ao carrinho primeiro.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            const totalQty = items.reduce((s, i) => s + i.quantity, 0);
+            const totalVal = calculateCartTotal();
+
+            document.getElementById('directModalTotal').innerText = `R$ ${totalVal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('directModalQtyBadge').innerText = `${totalQty} ${totalQty === 1 ? 'trufa' : 'trufas'}`;
+
+            // Puxa nome e telefone caso o usuário já tenha digitado no carrinho
+            const preName = document.getElementById('custName')?.value?.trim() || '';
+            const prePhone = document.getElementById('custPhone')?.value?.trim() || '';
+
+            if (preName && !document.getElementById('directCustName').value) {
+                document.getElementById('directCustName').value = preName;
+            }
+            if (prePhone && !document.getElementById('directCustPhone').value) {
+                document.getElementById('directCustPhone').value = prePhone;
+            }
+
+            // Data padrão = Hoje
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('directPaymentDueDate').value = todayStr;
+
+            // Reset condição para "Já Foi Pago" inicial
+            selectPaymentCondition('paid_now');
+
+            // Abre modal
+            document.getElementById('directOrderModal').classList.add('active');
+        }
+
+        function closeDirectOrderModal() {
+            document.getElementById('directOrderModal').classList.remove('active');
+        }
+
+        function selectPaymentCondition(cond) {
+            currentDirectPaymentCondition = cond;
+            const cardPaid = document.getElementById('cardConditionPaid');
+            const cardLater = document.getElementById('cardConditionLater');
+            const methodGroup = document.getElementById('directMethodGroup');
+            const dueDateLabel = document.getElementById('directDueDateLabel');
+
+            // Atualiza botões chips
+            document.querySelectorAll('.date-chip-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (cond === 'paid_now') {
+                cardPaid.classList.add('active');
+                cardLater.classList.remove('active', 'pay-later');
+                methodGroup.style.display = 'block';
+                dueDateLabel.innerHTML = `📅 Data do Pagamento (Realizado Hoje):`;
+                document.getElementById('directPaymentDueDate').value = new Date().toISOString().split('T')[0];
+            } else {
+                cardPaid.classList.remove('active');
+                cardLater.classList.add('active', 'pay-later');
+                methodGroup.style.display = 'none';
+                dueDateLabel.innerHTML = `📅 Dia que irá pagar (Data Combinada / Vencimento) *`;
+                
+                // Sugere 7 dias como padrão para prazo se a data atual for hoje
+                const todayStr = new Date().toISOString().split('T')[0];
+                if (document.getElementById('directPaymentDueDate').value === todayStr) {
+                    setQuickDueDate(7, '7 dias');
+                }
+            }
+        }
+
+        function setQuickDueDate(daysAhead, label) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysAhead);
+            const dateStr = d.toISOString().split('T')[0];
+            document.getElementById('directPaymentDueDate').value = dateStr;
+
+            // Feedback visual no botão
+            document.querySelectorAll('.date-chip-btn').forEach(btn => {
+                if (btn.innerText.includes(label)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function setQuickDueDateNextDay(targetDayOfWeek, label) {
+            const d = new Date();
+            const currentDay = d.getDay();
+            let daysUntil = (targetDayOfWeek - currentDay + 7) % 7;
+            if (daysUntil === 0) daysUntil = 7;
+            d.setDate(d.getDate() + daysUntil);
+            const dateStr = d.toISOString().split('T')[0];
+            document.getElementById('directPaymentDueDate').value = dateStr;
+
+            document.querySelectorAll('.date-chip-btn').forEach(btn => {
+                if (btn.innerText.includes(label)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function setQuickDueDayOfMonth(targetDay) {
+            const d = new Date();
+            if (d.getDate() >= targetDay) {
+                d.setMonth(d.getMonth() + 1);
+            }
+            d.setDate(targetDay);
+            const dateStr = d.toISOString().split('T')[0];
+            document.getElementById('directPaymentDueDate').value = dateStr;
+
+            document.querySelectorAll('.date-chip-btn').forEach(btn => {
+                if (btn.innerText.includes(`Dia ${targetDay < 10 ? '0' + targetDay : targetDay}`)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function formatPhoneInput(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+
+            if (v.length > 6) {
+                input.value = `(${v.substring(0, 2)}) ${v.substring(2, 7)}-${v.substring(7)}`;
+            } else if (v.length > 2) {
+                input.value = `(${v.substring(0, 2)}) ${v.substring(2)}`;
+            } else if (v.length > 0) {
+                input.value = `(${v}`;
+            } else {
+                input.value = '';
+            }
+        }
+
+        async function processDirectOrderSubmit() {
             const items = Object.values(cart).map(i => ({
                 id: i.product.id,
                 productId: i.product.id,
@@ -2165,48 +2530,46 @@
                 return;
             }
 
+            const customerName = document.getElementById('directCustName').value.trim();
+            const customerPhone = document.getElementById('directCustPhone').value.trim();
+            const paymentDueDate = document.getElementById('directPaymentDueDate').value;
+            const notes = document.getElementById('directOrderNotes').value.trim();
             const totalQty = items.reduce((s, i) => s + i.quantity, 0);
             const totalVal = calculateCartTotal();
-            const customerName = document.getElementById('custName').value.trim() || 'Cliente Balcão';
-            const customerPhone = document.getElementById('custPhone').value.trim();
-            const customerEmail = document.getElementById('custEmail').value.trim();
 
-            const confirm = await Swal.fire({
-                title: '💵 Confirmar Pagamento',
-                html: `
-                    <div style="text-align: left; font-size: 0.95rem; color: #ddd;">
-                        <p><strong>Total:</strong> <span style="color: #f59e0b; font-size: 1.1rem; font-weight: 700;">R$ ${totalVal.toFixed(2).replace('.', ',')}</span> (${totalQty} trufas)</p>
-                        <p style="margin-top: 8px;"><strong>Cliente:</strong> ${customerName}</p>
-                        <div style="margin-top: 12px;">
-                            <label style="font-size: 0.85rem; color: #94a3b8;">Forma de Pagamento:</label>
-                            <select id="directPaymentMethodSelect" style="width: 100%; margin-top: 4px; padding: 10px; background: #261b14; border: 1px solid #f59e0b; border-radius: 8px; color: #fff;">
-                                <option value="Dinheiro">💵 Dinheiro (À Vista)</option>
-                                <option value="Cartão de Débito">💳 Cartão de Débito</option>
-                                <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
-                                <option value="Pix Pago no Balcão">⚡ Pix Transferência Direta</option>
-                            </select>
-                        </div>
-                    </div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#10b981',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: '✅ Confirmar e Baixar Estoque',
-                cancelButtonText: 'Cancelar',
-                background: '#150e0a',
-                color: '#fff',
-                preConfirm: () => {
-                    return document.getElementById('directPaymentMethodSelect').value;
-                }
-            });
+            if (!customerName) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Nome Obrigatório',
+                    text: 'Por favor, digite o nome da pessoa / cliente para registrar a venda.',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+                document.getElementById('directCustName').focus();
+                return;
+            }
 
-            if (!confirm.isConfirmed) return;
-            const chosenMethod = confirm.value || 'Dinheiro / Balcão';
+            if (currentDirectPaymentCondition === 'pay_later' && !paymentDueDate) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Obrigatória',
+                    text: 'Por favor, informe o dia em que o cliente irá pagar.',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+                return;
+            }
 
-            const btn = document.getElementById('btnCheckoutDirect');
+            let paymentMethod = '';
+            if (currentDirectPaymentCondition === 'paid_now') {
+                paymentMethod = document.getElementById('directPaymentMethod').value || 'Dinheiro (Balcão)';
+            } else {
+                paymentMethod = 'A Prazo / Pagar Depois';
+            }
+
+            const btn = document.getElementById('btnSubmitDirectOrderModal');
             const originalHtml = btn.innerHTML;
-            btn.innerHTML = `<div class="spinner" style="width: 16px; height: 16px;"></div> Baixando estoque...`;
+            btn.innerHTML = `<div class="spinner" style="width: 18px; height: 18px;"></div> Registrando venda e baixando estoque...`;
             btn.disabled = true;
 
             try {
@@ -2217,32 +2580,73 @@
                         items,
                         customerName,
                         customerPhone,
-                        customerEmail,
-                        paymentMethod: chosenMethod
+                        paymentMethod,
+                        paymentCondition: currentDirectPaymentCondition,
+                        paymentDueDate,
+                        notes
                     })
                 });
 
                 const data = await res.json();
                 if (res.ok && data.success) {
+                    closeDirectOrderModal();
                     closeCartModal();
                     cart = {};
                     updateCartDisplay();
                     await loadProducts();
 
-                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                    // Limpa formulário
+                    document.getElementById('directCustName').value = '';
+                    document.getElementById('directCustPhone').value = '';
+                    document.getElementById('directOrderNotes').value = '';
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: '🎉 Venda Concluída!',
-                        html: `
-                            <p style="font-size: 1rem;">Estoque de <strong>${totalQty} trufas</strong> baixado com sucesso!</p>
-                            <p style="font-size: 0.85rem; color: #10b981; margin-top: 6px;">Forma: <strong>${chosenMethod}</strong> • Total: <strong>R$ ${totalVal.toFixed(2).replace('.', ',')}</strong></p>
-                        `,
-                        background: '#150e0a',
-                        color: '#fff'
-                    });
+                    confetti({ particleCount: 130, spread: 85, origin: { y: 0.6 } });
+
+                    let dueFormatted = '';
+                    if (paymentDueDate) {
+                        const parts = paymentDueDate.split('-');
+                        if (parts.length === 3) dueFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    }
+
+                    if (currentDirectPaymentCondition === 'pay_later') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: '📅 Venda A Prazo Registrada!',
+                            html: `
+                                <div style="text-align: left; font-size: 0.95rem; line-height: 1.5; color: #ddd;">
+                                    <p>Estoque de <strong>${totalQty} trufas</strong> baixado imediatamente!</p>
+                                    <p style="margin-top: 8px;">👤 <strong>Cliente:</strong> ${customerName}</p>
+                                    ${customerPhone ? `<p>📱 <strong>WhatsApp:</strong> ${customerPhone}</p>` : ''}
+                                    <p>💰 <strong>Total:</strong> <span style="color: #f59e0b; font-weight: 700;">R$ ${totalVal.toFixed(2).replace('.', ',')}</span></p>
+                                    <p style="color: #f59e0b; font-weight: 700; margin-top: 6px;">📅 <strong>Dia do Pagamento:</strong> ${dueFormatted || 'A Combinar'}</p>
+                                    <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 8px;">Você pode acompanhar e dar baixa no Painel de Pedidos quando receber.</p>
+                                </div>
+                            `,
+                            background: '#150e0a',
+                            color: '#fff',
+                            confirmButtonColor: '#f59e0b',
+                            confirmButtonText: 'Entendido'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '🎉 Venda Concluída!',
+                            html: `
+                                <div style="text-align: left; font-size: 0.95rem; line-height: 1.5; color: #ddd;">
+                                    <p>Estoque de <strong>${totalQty} trufas</strong> baixado com sucesso!</p>
+                                    <p style="margin-top: 8px;">👤 <strong>Cliente:</strong> ${customerName}</p>
+                                    <p style="color: #10b981; font-weight: 700;">💵 <strong>Forma:</strong> ${paymentMethod}</p>
+                                    <p>💰 <strong>Total Recebido:</strong> <span style="color: #34d399; font-weight: 700;">R$ ${totalVal.toFixed(2).replace('.', ',')}</span></p>
+                                </div>
+                            `,
+                            background: '#150e0a',
+                            color: '#fff',
+                            confirmButtonColor: '#10b981',
+                            confirmButtonText: 'Excelente!'
+                        });
+                    }
                 } else {
-                    throw new Error(data.error || 'Erro ao registrar venda no balcão.');
+                    throw new Error(data.error || 'Erro ao registrar venda presencial.');
                 }
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'Erro', text: err.message, background: '#150e0a', color: '#fff' });
@@ -2250,6 +2654,10 @@
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
             }
+        }
+
+        function submitDirectCashOrder() {
+            openDirectOrderModal();
         }
 
         // Modal de Cobrança Pix Avulsa / Rápida
@@ -3085,28 +3493,75 @@
                 const orders = await res.json();
                 const tbody = document.getElementById('adminOrdersTable');
 
+                if (!orders || orders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">Nenhum pedido registrado ainda.</td></tr>`;
+                    return;
+                }
+
                 tbody.innerHTML = orders.map(o => {
-                    const itemsDesc = o.items.map(i => `${i.quantity}x ${i.flavor}`).join(', ');
+                    const itemsDesc = (o.items || []).map(i => `${i.quantity}x ${i.flavor}`).join(', ');
                     const dateStr = new Date(o.createdAt).toLocaleString('pt-BR');
                     const isApproved = o.status === 'approved';
+                    const isPayLater = o.paymentCondition === 'pay_later' || o.paymentMethod?.includes('Prazo') || o.paymentMethod?.includes('Depois');
+                    
+                    let formattedDueDate = '';
+                    if (o.paymentDueDate) {
+                        const parts = o.paymentDueDate.split('-');
+                        if (parts.length === 3) formattedDueDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                        else formattedDueDate = o.paymentDueDate;
+                    }
+
+                    // Limpa telefone para link do WhatsApp
+                    const cleanPhone = (o.customerPhone || '').replace(/\D/g, '');
+                    const hasPhone = cleanPhone.length >= 10;
+                    const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+
+                    // Mensagem amigável para WhatsApp
+                    let waMessage = '';
+                    if (!isApproved && isPayLater) {
+                        waMessage = encodeURIComponent(`Olá ${o.customerName}! Tudo bem? Passando para confirmar suas trufas gourmet (${itemsDesc}), valor total de R$ ${Number(o.totalAmount).toFixed(2).replace('.', ',')}, com pagamento combinado para ${formattedDueDate || 'os próximos dias'}. Qualquer dúvida estou à disposição! 🍫✨`);
+                    } else {
+                        waMessage = encodeURIComponent(`Olá ${o.customerName}! Segue o comprovante da sua compra de trufas gourmet (${itemsDesc}) no valor de R$ ${Number(o.totalAmount).toFixed(2).replace('.', ',')}. Muito obrigado pela preferência e bom proveito! 🍫🎉`);
+                    }
 
                     return `
                         <tr>
                             <td><span style="font-size: 0.75rem; color: var(--text-muted);">${dateStr}</span></td>
-                            <td><strong>${o.customerName}</strong><br><small style="color: var(--text-muted);">${o.customerPhone || ''}</small></td>
-                            <td><span style="font-size: 0.82rem;">${itemsDesc}</span></td>
-                            <td><strong style="color: #34d399;">R$ ${Number(o.totalAmount).toFixed(2)}</strong></td>
+                            <td>
+                                <strong>${o.customerName}</strong>
+                                ${hasPhone ? `
+                                    <br>
+                                    <a href="https://wa.me/${waNumber}?text=${waMessage}" target="_blank" class="whatsapp-btn-table" title="Conversar no WhatsApp">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                        ${o.customerPhone}
+                                    </a>
+                                ` : (o.customerPhone ? `<br><small style="color: var(--text-muted);">${o.customerPhone}</small>` : '')}
+                            </td>
+                            <td>
+                                <span style="font-size: 0.82rem;">${itemsDesc}</span>
+                                ${o.notes ? `<br><small style="color: var(--amber-light); font-style: italic;">Obs: ${o.notes}</small>` : ''}
+                            </td>
+                            <td><strong style="color: #34d399;">R$ ${Number(o.totalAmount).toFixed(2).replace('.', ',')}</strong></td>
+                            <td>
+                                ${isPayLater ? `
+                                    <span class="stock-badge ${isApproved ? 'high' : 'low'}" style="${!isApproved ? 'background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #f59e0b;' : ''}">
+                                        📅 ${isApproved ? 'Pago em ' + formattedDueDate : 'Paga em: ' + (formattedDueDate || 'A Prazo')}
+                                    </span>
+                                ` : `
+                                    <span style="font-size: 0.8rem; color: #cbd5e1;">${o.paymentMethod || 'Dinheiro (Balcão)'}</span>
+                                `}
+                            </td>
                             <td>
                                 <span class="stock-badge ${isApproved ? 'high' : 'low'}">
-                                    ${isApproved ? 'Aprovado' : 'Pendente'}
+                                    ${isApproved ? '✓ Pago' : '⏳ Pendente'}
                                 </span>
                             </td>
                             <td>
                                 ${!isApproved ? `
-                                    <button class="pill-btn" style="padding: 3px 8px; font-size: 0.75rem;" onclick="manualApproveOrder('${o.id}')">
-                                        ✓ Aprovar
+                                    <button class="pill-btn" style="padding: 4px 9px; font-size: 0.75rem; background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; white-space: nowrap;" onclick="manualApproveOrder('${o.id}')" title="Marcar como Pago e Baixar">
+                                        ✓ Baixar Pagamento
                                     </button>
-                                ` : '<span style="color: #34d399; font-size: 0.8rem;">✓ OK</span>'}
+                                ` : '<span style="color: #34d399; font-size: 0.8rem; font-weight: 700;">✓ Liquidado</span>'}
                             </td>
                         </tr>
                     `;

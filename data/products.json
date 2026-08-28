@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "id": "trufa-1",
+    "sellerId": "user-luana",
+    "sellerName": "Luana Menato",
+    "flavor": "Ninho com Nutella",
+    "price": 6,
+    "weight": "45g",
+    "size": "Médio",
+    "stock": 20,
+    "category": "Gourmet",
+    "description": "Recheio cremoso de Leite Ninho com cobertura de chocolate nobre e recheio de pura Nutella.",
+    "icon": "🍫",
+    "active": true
+  },
+  {
+    "id": "trufa-2",
+    "sellerId": "user-fernando",
+    "sellerName": "Fernando",
+    "flavor": "Maracujá Cremoso",
+    "price": 5.5,
+    "weight": "45g",
+    "size": "Médio",
+    "stock": 15,
+    "category": "Frutadas",
+    "description": "Equilíbrio perfeito do azedinho do maracujá fresco com chocolate blend meio amargo.",
+    "icon": "🍋",
+    "active": true
+  },
+  {
+    "id": "trufa-3",
+    "sellerId": "user-luana",
+    "sellerName": "Luana Menato",
+    "flavor": "Brigadeiro Belga",
+    "price": 6,
+    "weight": "45g",
+    "size": "Médio",
+    "stock": 25,
+    "category": "Tradicionais",
+    "description": "Autêntico brigadeiro artesanal com raspas de chocolate belga Callebaut.",
+    "icon": "✨",
+    "active": true
+  }
+]

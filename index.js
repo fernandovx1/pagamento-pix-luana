@@ -912,9 +912,9 @@ app.post('/api/create-pix', async (req, res) => {
     }
 });
 
-// Venda Presencial / Dinheiro / Balcão (Baixa Imediata no Estoque e Histórico)
+// Venda Presencial / Dinheiro / Balcão / A Prazo (Baixa Imediata no Estoque e Histórico)
 app.post('/api/create-direct-order', (req, res) => {
-    const { items, customerName, customerEmail, customerPhone, paymentMethod } = req.body;
+    const { items, customerName, customerEmail, customerPhone, paymentMethod, paymentCondition, paymentDueDate, notes } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'O carrinho está vazio.' });
@@ -962,34 +962,44 @@ app.post('/api/create-direct-order', (req, res) => {
         return res.status(400).json({ error: 'Nenhum item válido no carrinho.' });
     }
 
+    const isPayLater = paymentCondition === 'pay_later' || paymentMethod === 'A Prazo / Fiado' || paymentMethod === 'Pagar em Outro Dia';
+    const isPaidNow = !isPayLater;
+    const finalStatus = isPaidNow ? 'approved' : 'pending';
+    const paidAt = isPaidNow ? new Date().toISOString() : null;
+
     const orderId = `BALCAO-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const newOrder = {
         id: orderId,
         paymentId: `DIR-${Date.now()}`,
-        paymentMethod: paymentMethod || 'Dinheiro / Balcão',
-        customerName: customerName || 'Cliente Balcão',
-        customerEmail: customerEmail || '',
-        customerPhone: customerPhone || '',
+        paymentMethod: paymentMethod || (isPayLater ? 'A Prazo / Pagar Depois' : 'Dinheiro (Balcão)'),
+        paymentCondition: isPayLater ? 'pay_later' : 'paid_now',
+        paymentDueDate: paymentDueDate || (isPayLater ? '' : new Date().toISOString().split('T')[0]),
+        customerName: customerName ? customerName.trim() : 'Cliente Balcão',
+        customerEmail: customerEmail ? customerEmail.trim() : '',
+        customerPhone: customerPhone ? customerPhone.trim() : '',
+        notes: notes ? notes.trim() : '',
         items: orderItems,
         totalAmount: Number(calculatedTotal.toFixed(2)),
         totalQuantity: totalQty,
-        status: 'approved',
+        status: finalStatus,
         stockDeducted: false,
         createdAt: new Date().toISOString(),
-        paidAt: new Date().toISOString()
+        paidAt: paidAt
     };
 
-    // Baixa imediata de estoque
+    // Baixa imediata de estoque (como solicitado: "Baixar Estoque")
     deductStockForOrder(newOrder);
 
     const orders = getOrders();
     orders.unshift(newOrder);
     saveOrders(orders);
 
-    console.log(`[VENDA PRESENCIAL] Pedido ${orderId} concluído com sucesso. Total: R$ ${newOrder.totalAmount.toFixed(2)} - Método: ${newOrder.paymentMethod}`);
+    console.log(`[VENDA PRESENCIAL] Pedido ${orderId} concluído com sucesso. Total: R$ ${newOrder.totalAmount.toFixed(2)} - Método: ${newOrder.paymentMethod} - Condição: ${newOrder.paymentCondition} - Vencimento: ${newOrder.paymentDueDate || 'Hoje'}`);
     res.json({
         success: true,
-        message: 'Venda presencial registrada com sucesso! Estoque baixado.',
+        message: isPayLater 
+            ? 'Venda a prazo registrada com sucesso! Estoque baixado e agendado.'
+            : 'Venda presencial registrada e paga com sucesso! Estoque baixado.',
         order: newOrder
     });
 });
@@ -1167,7 +1177,7 @@ app.post('/webhook', async (req, res) => {
     res.status(200).send('OK');
 });
 
-// Aprovação Manual (Admin / Vendedor)
+// Aprovação Manual / Baixa de Pagamento (Admin / Vendedor)
 app.post('/api/admin/orders/:id/approve-manual', authenticateUser, (req, res) => {
     const { id } = req.params;
     const orders = getOrders();
@@ -1179,10 +1189,11 @@ app.post('/api/admin/orders/:id/approve-manual', authenticateUser, (req, res) =>
 
     order.status = 'approved';
     order.paidAt = new Date().toISOString();
+    order.paymentCondition = 'paid_now';
     deductStockForOrder(order);
     saveOrders(orders);
 
-    res.json({ success: true, message: 'Pedido aprovado manualmente e estoque baixado!', order });
+    res.json({ success: true, message: 'Pagamento confirmado e registrado com sucesso!', order });
 });
 
 // Estatísticas e Relatórios (Separados por Vendedor ou Geral)
