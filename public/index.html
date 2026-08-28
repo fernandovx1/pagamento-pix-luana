@@ -1900,11 +1900,21 @@
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">
-                        🍫 Nenhuma trufa encontrada com esses filtros.
-                    </div>
-                `;
+                if (allProducts.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--text-muted); background: rgba(26, 17, 13, 0.6); border: 1px dashed var(--glass-border); border-radius: var(--radius-lg);">
+                            <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🍫</span>
+                            <h3 style="color: var(--amber-gold); margin-bottom: 6px; font-family: 'Playfair Display', serif;">Nenhuma trufa no estoque no momento</h3>
+                            <p style="font-size: 0.9rem;">Cadastre seus sabores no painel para que apareçam aqui na vitrine.</p>
+                        </div>
+                    `;
+                } else {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">
+                            🍫 Nenhuma trufa encontrada com esses filtros.
+                        </div>
+                    `;
+                }
                 return;
             }
 
