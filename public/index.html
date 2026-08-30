@@ -1545,8 +1545,31 @@
 
     <div class="bg-glow"></div>
 
-    <!-- CAMADA DE BORBOLETAS SUAVES -->
-    <div class="butterfly-canvas-layer" id="butterflyLayer"></div>
+    <!-- BARRA SUPERIOR DO USUÁRIO LOGADO -->
+    <div id="loggedInUserBar" style="display: none; background: rgba(26, 17, 13, 0.95); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 10px 16px; position: sticky; top: 0; z-index: 10000; backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="userBarAvatar" style="font-size: 1.3rem;">👑</span>
+                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;" id="userBarName">Fernando</span>
+                <span id="userBarRole" class="spec-tag" style="background: rgba(245, 158, 11, 0.2); color: var(--amber-gold); border-color: rgba(245, 158, 11, 0.4); font-size: 0.72rem; padding: 2px 7px;">Admin</span>
+            </div>
+
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button class="pill-btn active" onclick="openAdminModal()" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 700;">
+                    🌻 Painel & Estoque
+                </button>
+                <button class="pill-btn" onclick="openNotesQuickView()" style="background: rgba(245, 158, 11, 0.15); border-color: var(--amber-gold); color: #fbbf24; font-weight: 700; font-size: 0.8rem; padding: 6px 12px;">
+                    📝 Anotações & Fiados <span id="badgeTopNotesCount" class="tab-counter-badge" style="display: none; padding: 1px 6px; font-size: 0.68rem;">0</span>
+                </button>
+                <button class="pill-btn" onclick="openCustomPixModal()" style="background: rgba(0, 209, 255, 0.15); border-color: rgba(0, 209, 255, 0.4); color: #00D1FF; font-weight: 700; font-size: 0.8rem; padding: 6px 12px;">
+                    ⚡ Pix
+                </button>
+                <button class="pill-btn" onclick="adminLogout()" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.35); color: #f87171; font-size: 0.8rem; padding: 6px 10px;">
+                    🚪 Sair
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <!-- Cabeçalho -->
@@ -2567,14 +2590,15 @@
             await loadUsersList();
             await loadProducts();
 
-            // Abre o painel automaticamente se o usuário acessou por /admin, /login ou #admin
-            const path = window.location.pathname.toLowerCase();
-            const hash = window.location.hash.toLowerCase();
-            if (path.includes('/admin') || path.includes('/login') || path.includes('/painel') || hash === '#admin' || hash === '#login') {
-                if (currentUser && adminToken) {
+            // EXIGIR LOGIN AO ENTRAR NO SITE (SEMPRE PEDE LOGIN PRIMEIRO)
+            if (!currentUser || !adminToken) {
+                openLoginModal(true);
+            } else {
+                updateLoggedInUserBar();
+                const path = window.location.pathname.toLowerCase();
+                const hash = window.location.hash.toLowerCase();
+                if (path.includes('/admin') || path.includes('/login') || path.includes('/painel') || hash === '#admin' || hash === '#login') {
                     openAdminModal();
-                } else {
-                    openLoginModal();
                 }
             }
         }
@@ -3385,10 +3409,19 @@
         // ==========================================
         // AUTENTICAÇÃO MULTI-USUÁRIO & BIOMETRIA
         // ==========================================
-        function openLoginModal() {
-            // Sempre solicita usuário e senha ao clicar no Girassol
+        function openLoginModal(isMandatory = false) {
             renderLoginProfiles();
             document.getElementById('loginPassword').value = '';
+
+            const closeBtn = document.querySelector('#loginModal .btn-close-modal');
+            if (closeBtn) {
+                if (isMandatory || (!currentUser && !adminToken)) {
+                    closeBtn.style.display = 'none';
+                } else {
+                    closeBtn.style.display = 'block';
+                }
+            }
+
             document.getElementById('loginModal').classList.add('active');
             setTimeout(() => {
                 const passInput = document.getElementById('loginPassword');
@@ -3397,7 +3430,33 @@
         }
 
         function closeLoginModal() {
+            if (!currentUser || !adminToken) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Acesso Obrigatório',
+                    text: 'Selecione seu perfil e digite a senha para entrar.',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+                return;
+            }
             document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function updateLoggedInUserBar() {
+            const bar = document.getElementById('loggedInUserBar');
+            if (!bar) return;
+            if (currentUser && adminToken) {
+                bar.style.display = 'block';
+                const avatarEl = document.getElementById('userBarAvatar');
+                const nameEl = document.getElementById('userBarName');
+                const roleEl = document.getElementById('userBarRole');
+                if (avatarEl) avatarEl.innerText = currentUser.avatar || '🍫';
+                if (nameEl) nameEl.innerText = currentUser.name || 'Vendedor';
+                if (roleEl) roleEl.innerText = currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora';
+            } else {
+                bar.style.display = 'none';
+            }
         }
 
         function renderLoginProfiles() {
@@ -3448,13 +3507,25 @@
                     localStorage.setItem('trufas_admin_token', adminToken);
                     localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
                     
-                    closeLoginModal();
+                    updateLoggedInUserBar();
+                    document.getElementById('loginModal').classList.remove('active');
                     openAdminModal();
+
                     if (window._openTabAfterLogin === 'notes') {
                         const tabBtn = document.getElementById('tabBtnNotes');
                         if (tabBtn) switchAdminTab('notes', tabBtn);
                         window._openTabAfterLogin = null;
                     }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: `Olá, ${currentUser.name}! 🌻`,
+                        text: 'Acesso liberado com sucesso!',
+                        timer: 1400,
+                        showConfirmButton: false,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
                 } else {
                     Swal.fire({ icon: 'error', title: 'Senha Incorreta', text: data.error || 'Tente novamente.', background: '#150e0a', color: '#fff' });
                 }
@@ -3517,8 +3588,10 @@
                     localStorage.setItem('trufas_admin_token', adminToken);
                     localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
                     
-                    closeLoginModal();
+                    updateLoggedInUserBar();
+                    document.getElementById('loginModal').classList.remove('active');
                     openAdminModal();
+
                     if (window._openTabAfterLogin === 'notes') {
                         const tabBtn = document.getElementById('tabBtnNotes');
                         if (tabBtn) switchAdminTab('notes', tabBtn);
@@ -3528,8 +3601,8 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Biometria Reconhecida!',
-                        text: `Bem-vindo(a), ${currentUser.name}!`,
-                        timer: 1500,
+                        text: `Bem-vindo(a), ${currentUser.name}! 🌻`,
+                        timer: 1400,
                         showConfirmButton: false,
                         background: '#150e0a',
                         color: '#fff'
@@ -3618,7 +3691,9 @@
             currentUser = null;
             localStorage.removeItem('trufas_admin_token');
             localStorage.removeItem('trufas_current_user');
+            updateLoggedInUserBar();
             closeAdminModal();
+            openLoginModal(true);
         }
 
         // ==========================================
