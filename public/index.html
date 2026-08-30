@@ -1548,26 +1548,6 @@
     <!-- CAMADA DE BORBOLETAS SUAVES -->
     <div class="butterfly-canvas-layer" id="butterflyLayer"></div>
 
-    <!-- BOTÃO DISCRETO DE ANOTAÇÕES & FIADOS (CADERNO DISCRETO) -->
-    <div class="btn-notes-discrete" onclick="openNotesQuickView()" title="Caderno de Anotações & Quem Pagou">
-        <span style="font-weight: 700; font-size: 0.88rem; color: #fbbf24; display: flex; align-items: center; gap: 5px;">
-            📝 Anotações <span id="badgeTopNotesCount" class="tab-counter-badge" style="display: none; padding: 1px 6px; font-size: 0.68rem;">0</span>
-        </span>
-    </div>
-
-    <!-- BOTÃO DISCRETO DE COBRANÇA PIX AVULSA (DESENHO DO PIX) -->
-    <div class="btn-pix-discrete" onclick="openCustomPixModal()" title="Gerar Cobrança Pix Avulsa">
-        <span style="font-weight: 800; font-size: 0.92rem; color: #00D1FF; display: flex; align-items: center; gap: 4px;">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#00D1FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            Pix
-        </span>
-    </div>
-
-    <!-- BOTÃO DISCRETO DE ADMIN (GIRASSOL NO CANTO SUPERIOR DIREITO) -->
-    <div class="btn-admin-discrete" onclick="openLoginModal()" title="Painel Admin (Girassol)">
-        <span style="display: block; line-height: 1; filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.7));">🌻</span>
-    </div>
-
     <div class="container">
         <!-- Cabeçalho -->
         <header class="header">
@@ -1601,6 +1581,19 @@
                 <p style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">Carregando trufas deliciosas...</p>
             </div>
         </div>
+
+        <!-- Rodapé Profissional & Acesso ao Painel do Vendedor -->
+        <footer style="margin-top: 60px; margin-bottom: 70px; padding: 25px 15px; text-align: center; border-top: 1px solid rgba(245, 158, 11, 0.15); color: var(--text-muted); font-size: 0.85rem;">
+            <p style="margin-bottom: 12px; color: var(--amber-light); font-weight: 600;">🍫 Trufas Artesanais Gourmet • Luana Menato & Fernando</p>
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <button onclick="openLoginModal()" style="display: inline-flex; align-items: center; gap: 6px; color: var(--amber-gold); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; background: rgba(26, 17, 13, 0.75); padding: 8px 18px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                    🌻 Acesso do Vendedor / Painel Administrativo
+                </button>
+                <button onclick="openCustomPixModal()" style="display: inline-flex; align-items: center; gap: 6px; color: #00D1FF; border: 1px solid rgba(0, 209, 255, 0.35); border-radius: 20px; background: rgba(0, 209, 255, 0.08); padding: 8px 16px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                    ⚡ Cobrança Pix Avulsa
+                </button>
+            </div>
+        </footer>
     </div>
 
     <!-- Barra Flutuante de Carrinho -->
@@ -1864,43 +1857,46 @@
         </div>
     </div>
 
-    <!-- MODAL DE LOGIN & BIOMETRIA (FACE ID / DIGITAL) -->
+    <!-- PAINEL DE LOGIN & BIOMETRIA (ACESSO RESTRITO DE VENDEDOR / ADMIN) -->
     <div class="modal-overlay" id="loginModal">
-        <div class="modal-card" style="max-width: 440px;">
-            <div class="modal-header">
-                <h3 class="modal-title">🌻 Acesso de Vendedor / Admin</h3>
-                <button class="btn-close-modal" onclick="closeLoginModal()">✕</button>
+        <div class="modal-card" style="max-width: 440px; border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 35px rgba(245, 158, 11, 0.2);">
+            <div class="modal-header" style="text-align: center; display: block; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 16px;">
+                <div style="font-size: 2.4rem; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6));">🌻</div>
+                <h3 class="modal-title" style="font-size: 1.25rem; font-weight: 800; color: #fff;">Painel do Vendedor & Admin</h3>
+                <small style="color: var(--amber-gold); font-size: 0.82rem; display: block; margin-top: 2px;">Trufas Gourmet • Luana Menato & Fernando</small>
+                <button class="btn-close-modal" onclick="closeLoginModal()" style="position: absolute; right: 16px; top: 16px;">✕</button>
             </div>
-            <div class="modal-body">
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Selecione seu perfil para acessar seu estoque:</p>
+            <div class="modal-body" style="padding-top: 18px;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--amber-light); margin-bottom: 10px; display: block; text-align: center;">
+                    👤 Selecione quem está acessando:
+                </label>
                 
-                <div class="user-profiles-grid" id="loginProfilesGrid"></div>
+                <div class="user-profiles-grid" id="loginProfilesGrid" style="margin-bottom: 16px;"></div>
 
-                <button class="btn-biometric-login" id="btnBiometricLogin" onclick="triggerBiometricLogin()">
+                <button class="btn-biometric-login" id="btnBiometricLogin" onclick="triggerBiometricLogin()" style="margin-bottom: 14px;">
                     <span style="font-size: 1.3rem;">👆</span> Entrar com Digital / Face ID
                 </button>
 
-                <div style="text-align: center; margin: 12px 0; color: var(--text-muted); font-size: 0.8rem;">— OU COM SENHA —</div>
+                <div style="text-align: center; margin: 10px 0 14px; color: var(--text-muted); font-size: 0.78rem; letter-spacing: 1px;">— OU COM SENHA —</div>
 
-                <div class="input-group">
+                <div class="input-group" style="display: none;">
                     <label for="loginUsername">Usuário</label>
                     <div class="input-wrapper">
-                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         <input type="text" id="loginUsername" placeholder="fernando ou luana">
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label for="loginPassword">Senha</label>
+                    <label for="loginPassword">Senha de Acesso</label>
                     <div class="input-wrapper">
                         <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" id="loginPassword" placeholder="Sua senha..." onkeydown="if(event.key==='Enter') submitPasswordLogin()">
+                        <input type="password" id="loginPassword" placeholder="Digite sua senha..." onkeydown="if(event.key==='Enter') submitPasswordLogin()">
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-checkout-pix" onclick="submitPasswordLogin()">
-                    Entrar no Painel ➔
+            <div class="modal-footer" style="padding-top: 10px;">
+                <button class="btn-checkout-pix" onclick="submitPasswordLogin()" style="height: 48px; font-size: 1rem; font-weight: 800;">
+                    🚀 Entrar no Painel ➔
                 </button>
             </div>
         </div>
@@ -2570,6 +2566,17 @@
             currentStoreSeller = 'all';
             await loadUsersList();
             await loadProducts();
+
+            // Abre o painel automaticamente se o usuário acessou por /admin, /login ou #admin
+            const path = window.location.pathname.toLowerCase();
+            const hash = window.location.hash.toLowerCase();
+            if (path.includes('/admin') || path.includes('/login') || path.includes('/painel') || hash === '#admin' || hash === '#login') {
+                if (currentUser && adminToken) {
+                    openAdminModal();
+                } else {
+                    openLoginModal();
+                }
+            }
         }
 
         async function loadUsersList() {
@@ -2583,9 +2590,24 @@
         }
 
         async function loadProducts() {
+            // 1. Carrega do cache local instantaneamente
+            try {
+                const cached = localStorage.getItem('trufas_products_cache');
+                if (cached && (!allProducts || allProducts.length === 0)) {
+                    allProducts = JSON.parse(cached);
+                    renderProductsGrid();
+                }
+            } catch (e) {}
+
             try {
                 const response = await fetch(`/api/products?_t=${Date.now()}`);
-                allProducts = await response.json();
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    allProducts = data;
+                    localStorage.setItem('trufas_products_cache', JSON.stringify(allProducts));
+                } else if (!allProducts || allProducts.length === 0) {
+                    allProducts = data || [];
+                }
                 renderProductsGrid();
                 updateCartDisplay();
             } catch (err) {

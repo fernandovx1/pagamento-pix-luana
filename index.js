@@ -66,20 +66,142 @@ function saveUsers(users) {
     }
 }
 
+const PRODUCTS_BACKUP_FILE = path.join(DATA_DIR, 'products_backup.json');
+
+function getDefaultProductsList() {
+    return [
+        {
+            id: "trufa-nutella",
+            sellerId: "user-fernando",
+            sellerName: "Fernando",
+            flavor: "Nutella",
+            price: 4.00,
+            weight: "45g",
+            size: "Médio",
+            stock: 20,
+            category: "Gourmet",
+            description: "Deliciosa trufa artesanal recheada com Nutella cremosa e nobre.",
+            icon: "🍫",
+            active: true
+        },
+        {
+            id: "trufa-ninho",
+            sellerId: "user-fernando",
+            sellerName: "Fernando",
+            flavor: "Ninho",
+            price: 4.00,
+            weight: "45g",
+            size: "Médio",
+            stock: 20,
+            category: "Gourmet",
+            description: "Trufa artesanal com recheio cremoso e aveludado de Leite Ninho.",
+            icon: "🍫",
+            active: true
+        },
+        {
+            id: "trufa-doce-leite",
+            sellerId: "user-fernando",
+            sellerName: "Fernando",
+            flavor: "Doce de leite",
+            price: 4.00,
+            weight: "45g",
+            size: "Médio",
+            stock: 20,
+            category: "Gourmet",
+            description: "Deliciosa trufa artesanal recheada com doce de leite artesanal nobre.",
+            icon: "🍯",
+            active: true
+        },
+        {
+            id: "trufa-kit-kat",
+            sellerId: "user-fernando",
+            sellerName: "Fernando",
+            flavor: "Kit Kat",
+            price: 4.00,
+            weight: "45g",
+            size: "Médio",
+            stock: 20,
+            category: "Gourmet",
+            description: "Deliciosa trufa artesanal recheada com pedaços crocantes de Kit Kat.",
+            icon: "🍫",
+            active: true
+        },
+        {
+            id: "trufa-morango",
+            sellerId: "user-fernando",
+            sellerName: "Fernando",
+            flavor: "Morango",
+            price: 4.00,
+            weight: "45g",
+            size: "Médio",
+            stock: 20,
+            category: "Frutas",
+            description: "Deliciosa trufa artesanal recheada com morango e chocolate nobre.",
+            icon: "🍓",
+            active: true
+        },
+        {
+            id: "trufa-ovomaltine",
+            sellerId: "user-fernando",
+            sellerName: "Fernando",
+            flavor: "OvoMaltine",
+            price: 4.00,
+            weight: "45g",
+            size: "Médio",
+            stock: 20,
+            category: "Gourmet",
+            description: "Deliciosa trufa artesanal recheada com Ovomaltine crocante.",
+            icon: "🍫",
+            active: true
+        }
+    ];
+}
+
 function getProducts() {
     try {
-        if (!fs.existsSync(PRODUCTS_FILE)) return [];
+        if (!fs.existsSync(PRODUCTS_FILE)) {
+            if (fs.existsSync(PRODUCTS_BACKUP_FILE)) {
+                const backup = fs.readFileSync(PRODUCTS_BACKUP_FILE, 'utf-8');
+                const parsed = JSON.parse(backup || '[]');
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    fs.writeFileSync(PRODUCTS_FILE, backup, 'utf-8');
+                    return parsed;
+                }
+            }
+            const defaults = getDefaultProductsList();
+            saveProducts(defaults);
+            return defaults;
+        }
         const raw = fs.readFileSync(PRODUCTS_FILE, 'utf-8');
-        return JSON.parse(raw || '[]');
+        const parsed = JSON.parse(raw || '[]');
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+        }
+        // Se estiver vazio, restaura do backup ou dados padrão
+        if (fs.existsSync(PRODUCTS_BACKUP_FILE)) {
+            const backup = fs.readFileSync(PRODUCTS_BACKUP_FILE, 'utf-8');
+            const parsedBackup = JSON.parse(backup || '[]');
+            if (Array.isArray(parsedBackup) && parsedBackup.length > 0) {
+                fs.writeFileSync(PRODUCTS_FILE, backup, 'utf-8');
+                return parsedBackup;
+            }
+        }
+        const defaults = getDefaultProductsList();
+        saveProducts(defaults);
+        return defaults;
     } catch (e) {
         console.error('Erro ao ler products.json:', e);
-        return [];
+        return getDefaultProductsList();
     }
 }
 
 function saveProducts(products) {
     try {
-        fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(products, null, 2), 'utf-8');
+        const jsonStr = JSON.stringify(products, null, 2);
+        fs.writeFileSync(PRODUCTS_FILE, jsonStr, 'utf-8');
+        if (Array.isArray(products) && products.length > 0) {
+            fs.writeFileSync(PRODUCTS_BACKUP_FILE, jsonStr, 'utf-8');
+        }
         return true;
     } catch (e) {
         console.error('Erro ao salvar products.json:', e);
@@ -160,10 +282,12 @@ function initDefaultData() {
         console.log('[INIT] Usuários padrão (Fernando e Luana) criados automaticamente.');
     }
 
-    // 2. Garantir que o arquivo de produtos exista sem forçar trufas padrão fictícias
-    if (!fs.existsSync(PRODUCTS_FILE)) {
-        saveProducts([]);
-        console.log('[INIT] Arquivo products.json inicializado vazio.');
+    // 2. Garantir catálogo permanente de trufas (nunca perde produtos ao atualizar ou reiniciar)
+    const prods = getProducts();
+    if (!prods || prods.length === 0) {
+        const defaults = getDefaultProductsList();
+        saveProducts(defaults);
+        console.log('[INIT] Catálogo permanente de trufas inicializado com sucesso.');
     }
 }
 initDefaultData();
@@ -198,6 +322,11 @@ app.use((req, res, next) => {
     res.setHeader('Expires', '0');
     res.setHeader('Surrogate-Control', 'no-store');
     next();
+});
+
+// Rotas diretas para Painel de Login e Administração
+app.get(['/admin', '/login', '/painel'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.use(express.static('public', {
