@@ -1062,6 +1062,288 @@
             transform: translateY(-1px);
         }
 
+        /* ==========================================
+           ESTILOS DO CADERNO DE ANOTAÇÕES & QUEM PAGOU
+           ========================================== */
+        .btn-notes-discrete {
+            position: fixed;
+            top: calc(12px + var(--safe-top));
+            left: 12px;
+            height: 44px;
+            padding: 0 14px;
+            background: rgba(20, 13, 9, 0.92);
+            border: 1.5px solid rgba(245, 158, 11, 0.5);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px var(--amber-glow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            touch-action: manipulation;
+        }
+
+        .btn-notes-discrete:hover, .btn-notes-discrete:active {
+            transform: scale(1.06);
+            border-color: var(--amber-gold);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
+        }
+
+        .tab-counter-badge {
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 1px 7px;
+            border-radius: 10px;
+            margin-left: 4px;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+
+        .notes-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .notes-summary-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notes-summary-card.pending {
+            border-color: rgba(239, 68, 68, 0.45);
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.12), rgba(185, 28, 28, 0.22));
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+        }
+
+        .notes-summary-card.paid {
+            border-color: rgba(16, 185, 129, 0.45);
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.12), rgba(5, 150, 105, 0.22));
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
+        }
+
+        .notes-summary-card.total {
+            border-color: rgba(245, 158, 11, 0.45);
+            background: linear-gradient(145deg, rgba(245, 158, 11, 0.12), rgba(180, 83, 9, 0.22));
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+        }
+
+        .notes-summary-title {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .notes-summary-val {
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 2px;
+        }
+
+        .notes-summary-sub {
+            font-size: 0.73rem;
+            color: var(--text-muted);
+        }
+
+        .notes-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 600px) {
+            .notes-toolbar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .notes-grid-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .note-card-item {
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .note-card-item.is-pending {
+            border-left: 4.5px solid #ef4444;
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        .note-card-item.is-paid {
+            border-left: 4.5px solid #10b981;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        .note-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .note-card-customer {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .note-card-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+        }
+
+        .note-card-badge.pending {
+            background: rgba(239, 68, 68, 0.22);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.45);
+        }
+
+        .note-card-badge.paid {
+            background: rgba(16, 185, 129, 0.22);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+        }
+
+        .note-card-desc {
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .note-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .note-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding-top: 10px;
+        }
+
+        .note-card-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .note-card-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-note-toggle {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-note-toggle.to-pay {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-note-toggle.to-pending {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-note-wa {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: #fff !important;
+            padding: 6px 11px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-note-wa:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5);
+        }
+
+        .btn-note-pix-charge {
+            background: rgba(0, 209, 255, 0.15);
+            border: 1px solid rgba(0, 209, 255, 0.4);
+            color: #00D1FF;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-note-pix-charge:hover {
+            background: rgba(0, 209, 255, 0.25);
+            border-color: #00D1FF;
+            box-shadow: 0 0 10px rgba(0, 209, 255, 0.4);
+        }
+
         /* QR Code Modal & Proteção de Leitura */
         #pixPaymentModal {
             z-index: 100000; /* Sobrepõe a camada de borboletas */
@@ -1265,6 +1547,13 @@
 
     <!-- CAMADA DE BORBOLETAS SUAVES -->
     <div class="butterfly-canvas-layer" id="butterflyLayer"></div>
+
+    <!-- BOTÃO DISCRETO DE ANOTAÇÕES & FIADOS (CADERNO DISCRETO) -->
+    <div class="btn-notes-discrete" onclick="openNotesQuickView()" title="Caderno de Anotações & Quem Pagou">
+        <span style="font-weight: 700; font-size: 0.88rem; color: #fbbf24; display: flex; align-items: center; gap: 5px;">
+            📝 Anotações <span id="badgeTopNotesCount" class="tab-counter-badge" style="display: none; padding: 1px 6px; font-size: 0.68rem;">0</span>
+        </span>
+    </div>
 
     <!-- BOTÃO DISCRETO DE COBRANÇA PIX AVULSA (DESENHO DO PIX) -->
     <div class="btn-pix-discrete" onclick="openCustomPixModal()" title="Gerar Cobrança Pix Avulsa">
@@ -1640,6 +1929,9 @@
                 <!-- Abas do Admin -->
                 <div class="admin-tabs">
                     <button class="tab-btn active" onclick="switchAdminTab('truffles', this)">📦 Estoque & Sabores</button>
+                    <button class="tab-btn" id="tabBtnNotes" onclick="switchAdminTab('notes', this)" style="background: rgba(245, 158, 11, 0.15); border-color: var(--amber-gold); color: #fbbf24; font-weight: 700;">
+                        📝 Anotações & Fiados <span id="badgePendingNotesCount" class="tab-counter-badge" style="display:none;">0</span>
+                    </button>
                     <button class="tab-btn" onclick="switchAdminTab('transfers', this)">🔄 Repassar / Pedir Estoque</button>
                     <button class="tab-btn" onclick="switchAdminTab('stats', this)">📊 Vendas & Faturamento</button>
                     <button class="tab-btn" onclick="switchAdminTab('orders', this)">🧾 Histórico Pedidos</button>
@@ -1676,6 +1968,55 @@
                             </thead>
                             <tbody id="adminProductsTable"></tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- ABA: CADERNO DE ANOTAÇÕES & QUEM PAGOU (FIADOS & ACERTOS) -->
+                <div class="admin-tab-content" id="tab-notes">
+                    <!-- Resumo Financeiro no Topo -->
+                    <div class="notes-summary-grid">
+                        <div class="notes-summary-card pending">
+                            <div class="notes-summary-title">🔴 A Receber (Não Pagou)</div>
+                            <div class="notes-summary-val" style="color: #f87171;" id="notesSummaryPendingVal">R$ 0,00</div>
+                            <div class="notes-summary-sub" id="notesSummaryPendingCount">0 pendentes / fiado</div>
+                        </div>
+                        <div class="notes-summary-card paid">
+                            <div class="notes-summary-title">🟢 Já Recebido (Pago)</div>
+                            <div class="notes-summary-val" style="color: #34d399;" id="notesSummaryPaidVal">R$ 0,00</div>
+                            <div class="notes-summary-sub" id="notesSummaryPaidCount">0 recebidos</div>
+                        </div>
+                        <div class="notes-summary-card total">
+                            <div class="notes-summary-title">📋 Total Anotado</div>
+                            <div class="notes-summary-val" style="color: var(--amber-gold);" id="notesSummaryTotalVal">R$ 0,00</div>
+                            <div class="notes-summary-sub" id="notesSummaryTotalCount">0 registros</div>
+                        </div>
+                    </div>
+
+                    <!-- Barra de Controle & Filtros -->
+                    <div class="notes-toolbar">
+                        <div class="category-pills" style="margin-bottom: 0;">
+                            <button class="pill-btn active" id="noteFilterAll" onclick="filterNotesStatus('all', this)">✨ Todas (<span id="countPillAll">0</span>)</button>
+                            <button class="pill-btn" id="noteFilterPending" onclick="filterNotesStatus('pending', this)" style="border-color: rgba(239,68,68,0.4); color: #fca5a5;">🔴 Não Pagou (<span id="countPillPending">0</span>)</button>
+                            <button class="pill-btn" id="noteFilterPaid" onclick="filterNotesStatus('paid', this)" style="border-color: rgba(16,185,129,0.4); color: #6ee7b7;">🟢 Já Pagou (<span id="countPillPaid">0</span>)</button>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="pill-btn active" onclick="openNoteForm()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); padding: 8px 16px;">
+                                ✍️ + Nova Anotação / Fiado
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-box" style="margin-bottom: 14px;">
+                        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="noteSearchInput" placeholder="Buscar por nome da pessoa, telefone ou sabor de trufa..." oninput="handleNotesSearch()">
+                    </div>
+
+                    <!-- Lista de Anotações -->
+                    <div class="notes-grid-list" id="notesListContainer">
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                            <div class="spinner"></div>
+                            <p style="margin-top: 8px;">Carregando caderno de anotações...</p>
+                        </div>
                     </div>
                 </div>
 
@@ -1771,6 +2112,121 @@
 
                     <div id="usersListContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CADASTRO / EDIÇÃO DE ANOTAÇÃO (QUEM PAGOU / FIADO) -->
+    <div class="modal-overlay" id="noteFormModal" style="z-index: 100002;">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="noteFormTitle">📝 Nova Anotação / Fiado</h3>
+                <button class="btn-close-modal" onclick="closeNoteForm()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editNoteId">
+
+                <!-- Situação de Pagamento: Pendente (Fiado) ou Já Pago -->
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--amber-light); margin-bottom: 8px; display: block;">
+                    Situação do Pagamento: *
+                </label>
+                <div class="direct-condition-grid" style="margin-bottom: 14px;">
+                    <div class="direct-condition-card active pay-later" id="cardNoteConditionPending" onclick="selectNotePaymentStatus('pending')">
+                        <span class="condition-badge-icon">🔴</span>
+                        <div class="condition-title" style="color: #f87171;">Não Pagou (Fiado)</div>
+                        <div class="condition-sub">A Receber / Pagar Depois</div>
+                    </div>
+                    <div class="direct-condition-card" id="cardNoteConditionPaid" onclick="selectNotePaymentStatus('paid')">
+                        <span class="condition-badge-icon">🟢</span>
+                        <div class="condition-title" style="color: #34d399;">Já Foi Pago</div>
+                        <div class="condition-sub">Recebido no Ato</div>
+                    </div>
+                </div>
+
+                <!-- Dados da Pessoa / Cliente -->
+                <div class="input-group">
+                    <label for="noteCustomerName">Nome da Pessoa / Cliente *</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="text" id="noteCustomerName" placeholder="Ex: Maria (Recepção), João, Lucas...">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="noteCustomerPhone">WhatsApp / Celular (Opcional - para cobrar com 1 clique)</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <input type="tel" id="noteCustomerPhone" placeholder="(11) 99999-9999" oninput="formatPhoneInput(this)">
+                    </div>
+                </div>
+
+                <!-- O que pegou / Descrição & Valor -->
+                <div class="input-group">
+                    <label for="noteDescription">O que Pegou / Sabores / Quantidade *</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <input type="text" id="noteDescription" placeholder="Ex: 3 Trufas Nutella, 2 Ninho">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="noteTotalAmount">Valor Total (R$) *</label>
+                    <div class="input-wrapper">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--amber-gold); font-weight: 800; font-size: 1.1rem;">R$</span>
+                        <input type="number" id="noteTotalAmount" step="0.50" min="0" placeholder="Ex: 24.00" style="padding-left: 44px; font-size: 1.2rem; font-weight: 700; color: var(--amber-gold);">
+                    </div>
+                </div>
+
+                <!-- Data Combinada para Pagamento (quando pendente) -->
+                <div class="input-group" id="noteDueDateGroup">
+                    <label for="noteDueDate">📅 Dia que combinou de pagar (Data de Vencimento):</label>
+                    <div class="input-wrapper">
+                        <input type="date" id="noteDueDate" style="color: #fff; font-weight: 600;">
+                    </div>
+                    <div class="date-quick-chips">
+                        <button type="button" class="date-chip-btn" onclick="setNoteQuickDueDate(0, 'Hoje')">Hoje</button>
+                        <button type="button" class="date-chip-btn" onclick="setNoteQuickDueDate(1, 'Amanhã')">Amanhã</button>
+                        <button type="button" class="date-chip-btn" onclick="setNoteQuickDueDateNextDay(5, 'Sexta')">Sexta</button>
+                        <button type="button" class="date-chip-btn" onclick="setNoteQuickDueDate(7, '7 dias')">Em 7 dias</button>
+                        <button type="button" class="date-chip-btn" onclick="setNoteQuickDueDayOfMonth(5)">Dia 05</button>
+                        <button type="button" class="date-chip-btn" onclick="setNoteQuickDueDayOfMonth(10)">Dia 10</button>
+                        <button type="button" class="date-chip-btn" onclick="setNoteQuickDueDayOfMonth(20)">Dia 20</button>
+                    </div>
+                </div>
+
+                <!-- Forma de Pagamento (quando já pago) -->
+                <div class="input-group" id="notePaymentMethodGroup" style="display: none;">
+                    <label for="notePaymentMethod">Forma do Pagamento Recebido:</label>
+                    <div class="input-wrapper">
+                        <select id="notePaymentMethod">
+                            <option value="Dinheiro (Em mãos)">💵 Dinheiro (Em mãos)</option>
+                            <option value="Pix">⚡ Pix Instantâneo</option>
+                            <option value="Cartão de Débito">💳 Cartão de Débito</option>
+                            <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Observações Extras -->
+                <div class="input-group">
+                    <label for="noteExtraNotes">Observação / Anotação Extra (Opcional)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="noteExtraNotes" placeholder="Ex: Deixar troco, pagar no almoço...">
+                    </div>
+                </div>
+
+                <!-- Vendedor Responsável (quando admin) -->
+                <div class="input-group" id="noteSellerSelectGroup" style="display: none;">
+                    <label for="noteSellerId">Vendedor(a) Responsável:</label>
+                    <div class="input-wrapper">
+                        <select id="noteSellerId"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-checkout-direct" id="btnSaveNote" onclick="submitNoteForm()" style="height: 48px; font-size: 1rem;">
+                    💾 Salvar no Caderno
+                </button>
             </div>
         </div>
     </div>
@@ -2024,6 +2480,12 @@
         
         let currentUser = JSON.parse(localStorage.getItem('trufas_current_user') || 'null');
         let adminToken = localStorage.getItem('trufas_admin_token') || '';
+
+        // Estado do Caderno de Anotações & Fiados
+        let allNotes = [];
+        let currentNotesFilter = 'all';
+        let notesSearchQuery = '';
+        let currentNotePaymentStatus = 'pending';
 
         // ==========================================
         // SISTEMA DE BORBOLETAS EM DUPLA (PASSAM POR CIMA DE TODAS AS TELAS)
@@ -2966,6 +3428,11 @@
                     
                     closeLoginModal();
                     openAdminModal();
+                    if (window._openTabAfterLogin === 'notes') {
+                        const tabBtn = document.getElementById('tabBtnNotes');
+                        if (tabBtn) switchAdminTab('notes', tabBtn);
+                        window._openTabAfterLogin = null;
+                    }
                 } else {
                     Swal.fire({ icon: 'error', title: 'Senha Incorreta', text: data.error || 'Tente novamente.', background: '#150e0a', color: '#fff' });
                 }
@@ -3030,6 +3497,11 @@
                     
                     closeLoginModal();
                     openAdminModal();
+                    if (window._openTabAfterLogin === 'notes') {
+                        const tabBtn = document.getElementById('tabBtnNotes');
+                        if (tabBtn) switchAdminTab('notes', tabBtn);
+                        window._openTabAfterLogin = null;
+                    }
                     
                     Swal.fire({
                         icon: 'success',
@@ -3178,6 +3650,7 @@
             const target = document.getElementById(`tab-${tabId}`);
             if (target) target.classList.add('active');
 
+            if (tabId === 'notes') loadAdminNotes();
             if (tabId === 'users') loadAdminUsers();
             if (tabId === 'stats') loadAdminStats();
             if (tabId === 'orders') loadAdminOrders();
@@ -3189,6 +3662,7 @@
 
         async function loadAdminData() {
             loadAdminProducts();
+            loadAdminNotes();
             loadAdminStats();
             loadAdminOrders();
             loadAdminTransfers();
@@ -3967,8 +4441,498 @@
             }
         }
 
-        // Sincronização periódica do estoque
-        setInterval(() => { loadProducts(); }, 8000);
+        // ==========================================
+        // GESTÃO DO CADERNO DE ANOTAÇÕES & QUEM PAGOU
+        // ==========================================
+        function openNotesQuickView() {
+            if (!currentUser || !adminToken) {
+                window._openTabAfterLogin = 'notes';
+                return openLoginModal();
+            }
+            openAdminModal();
+            const tabBtn = document.getElementById('tabBtnNotes');
+            if (tabBtn) switchAdminTab('notes', tabBtn);
+        }
+
+        async function loadAdminNotes() {
+            try {
+                const sellerSelect = document.getElementById('adminSellerSelect');
+                const sellerId = (currentUser?.role === 'admin' && sellerSelect) ? sellerSelect.value : (currentUser?.id || 'all');
+
+                const res = await fetch(`/api/admin/notes?sellerId=${sellerId}&_t=${Date.now()}`, {
+                    headers: { 'authorization': adminToken }
+                });
+                const data = await res.json();
+                allNotes = data.notes || [];
+                const stats = data.stats || { totalPendingAmount: 0, totalPaidAmount: 0, countPending: 0, countPaid: 0, totalNotes: 0 };
+
+                // Atualizar Resumos no Topo
+                const pendingValEl = document.getElementById('notesSummaryPendingVal');
+                const pendingCountEl = document.getElementById('notesSummaryPendingCount');
+                const paidValEl = document.getElementById('notesSummaryPaidVal');
+                const paidCountEl = document.getElementById('notesSummaryPaidCount');
+                const totalValEl = document.getElementById('notesSummaryTotalVal');
+                const totalCountEl = document.getElementById('notesSummaryTotalCount');
+
+                if (pendingValEl) pendingValEl.innerText = `R$ ${stats.totalPendingAmount.toFixed(2).replace('.', ',')}`;
+                if (pendingCountEl) pendingCountEl.innerText = `${stats.countPending} pendente${stats.countPending === 1 ? '' : 's'} / fiado`;
+                if (paidValEl) paidValEl.innerText = `R$ ${stats.totalPaidAmount.toFixed(2).replace('.', ',')}`;
+                if (paidCountEl) paidCountEl.innerText = `${stats.countPaid} recebido${stats.countPaid === 1 ? '' : 's'}`;
+                if (totalValEl) totalValEl.innerText = `R$ ${(stats.totalPendingAmount + stats.totalPaidAmount).toFixed(2).replace('.', ',')}`;
+                if (totalCountEl) totalCountEl.innerText = `${stats.totalNotes} anotaç${stats.totalNotes === 1 ? 'ão' : 'ões'}`;
+
+                // Contadores das pílulas
+                const pillAll = document.getElementById('countPillAll');
+                const pillPending = document.getElementById('countPillPending');
+                const pillPaid = document.getElementById('countPillPaid');
+                if (pillAll) pillAll.innerText = stats.totalNotes;
+                if (pillPending) pillPending.innerText = stats.countPending;
+                if (pillPaid) pillPaid.innerText = stats.countPaid;
+
+                // Badges no botão superior e na aba
+                const badgeTab = document.getElementById('badgePendingNotesCount');
+                const badgeTop = document.getElementById('badgeTopNotesCount');
+                if (badgeTab) {
+                    badgeTab.innerText = stats.countPending;
+                    badgeTab.style.display = stats.countPending > 0 ? 'inline-block' : 'none';
+                }
+                if (badgeTop) {
+                    badgeTop.innerText = stats.countPending;
+                    badgeTop.style.display = stats.countPending > 0 ? 'inline-block' : 'none';
+                }
+
+                renderNotesList();
+            } catch (e) {
+                console.error('Erro ao carregar anotações:', e);
+            }
+        }
+
+        function renderNotesList() {
+            const container = document.getElementById('notesListContainer');
+            if (!container) return;
+
+            let filtered = allNotes.filter(n => {
+                const matchStatus = currentNotesFilter === 'all' || n.status === currentNotesFilter;
+                const search = (notesSearchQuery || '').toLowerCase();
+                const matchSearch = !search || 
+                    (n.customerName && n.customerName.toLowerCase().includes(search)) || 
+                    (n.customerPhone && n.customerPhone.includes(search)) || 
+                    (n.description && n.description.toLowerCase().includes(search)) ||
+                    (n.notes && n.notes.toLowerCase().includes(search));
+                return matchStatus && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                if (allNotes.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px; background: rgba(255, 255, 255, 0.02); border: 1px dashed var(--glass-border); border-radius: var(--radius-md); color: var(--text-muted);">
+                            <span style="font-size: 2.8rem; display: block; margin-bottom: 8px;">📝</span>
+                            <h3 style="color: var(--amber-gold); margin-bottom: 6px; font-size: 1.15rem;">Caderno de Anotações Vazio</h3>
+                            <p style="font-size: 0.88rem; max-width: 380px; margin: 0 auto 16px;">Anote aqui quem comprou fiado, quem já pagou ou promessas de pagamento de forma simples e rápida.</p>
+                            <button class="pill-btn active" onclick="openNoteForm()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 700; border: none; padding: 10px 20px;">
+                                ✍️ + Criar Primeira Anotação
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                            🔍 Nenhuma anotação encontrada com os filtros selecionados.
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            container.innerHTML = filtered.map(n => {
+                const isPaid = n.status === 'paid';
+                const valFormatted = `R$ ${Number(n.totalAmount).toFixed(2).replace('.', ',')}`;
+                const cleanPhone = (n.customerPhone || '').replace(/\D/g, '');
+                const hasPhone = cleanPhone.length >= 10;
+                const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+
+                // Data de Vencimento / Combinada
+                let formattedDue = '';
+                if (n.dueDate) {
+                    const parts = n.dueDate.split('-');
+                    if (parts.length === 3) formattedDue = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    else formattedDue = n.dueDate;
+                }
+
+                // Data de Criação
+                const createdDate = new Date(n.createdAt || Date.now()).toLocaleDateString('pt-BR');
+
+                // Mensagem amigável para WhatsApp
+                let waMessage = '';
+                if (!isPaid) {
+                    waMessage = encodeURIComponent(`Olá ${n.customerName}! Tudo bem? Passando com carinho para lembrar sobre as trufas deliciosas (${n.description || 'Trufas Gourmet'}), no valor de ${valFormatted}${formattedDue ? ', combinadas para ' + formattedDue : ''}. Se preferir fazer Pix, estou à disposição! Muito obrigado(a)! 🍫✨`);
+                } else {
+                    waMessage = encodeURIComponent(`Olá ${n.customerName}! Passando para agradecer pelo pagamento das trufas (${n.description || 'Trufas Gourmet'}) no valor de ${valFormatted}! Muito obrigado pela preferência e bom proveito! 🍫🎉`);
+                }
+
+                return `
+                    <div class="note-card-item ${isPaid ? 'is-paid' : 'is-pending'}" id="note-card-${n.id}">
+                        <div class="note-card-header">
+                            <div class="note-card-customer">
+                                <span style="font-size: 1.2rem;">${isPaid ? '🟢' : '🔴'}</span>
+                                <span>${n.customerName}</span>
+                                ${hasPhone ? `<small style="color: var(--text-muted); font-size: 0.8rem; font-weight: 400;">(${n.customerPhone})</small>` : ''}
+                            </div>
+                            <span class="note-card-badge ${isPaid ? 'paid' : 'pending'}">
+                                ${isPaid ? '✓ Já Pagou' : '⏳ Não Pagou (Fiado)'}
+                            </span>
+                        </div>
+
+                        <div class="note-card-body">
+                            <div class="note-card-desc">
+                                🍫 <strong>${n.description || 'Trufas Artesanais'}</strong>
+                            </div>
+
+                            <div class="note-card-meta">
+                                <span>📅 Anotado em: <strong>${createdDate}</strong></span>
+                                ${!isPaid && formattedDue ? `
+                                    <span style="color: #fbbf24; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                        ⏰ Pagar em: <strong>${formattedDue}</strong>
+                                    </span>
+                                ` : ''}
+                                ${isPaid ? `
+                                    <span style="color: #34d399;">
+                                        💵 Forma: <strong>${n.paymentMethod || 'Dinheiro (Em mãos)'}</strong>
+                                    </span>
+                                ` : ''}
+                                ${n.sellerName ? `<span style="color: var(--text-muted);">👤 Vendedor: ${n.sellerName}</span>` : ''}
+                            </div>
+
+                            ${n.notes ? `
+                                <div style="font-size: 0.82rem; color: #fde68a; font-style: italic; background: rgba(245, 158, 11, 0.08); border-left: 3px solid var(--amber-gold); padding: 5px 10px; border-radius: 4px; margin-bottom: 8px;">
+                                    📌 Obs: ${n.notes}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="note-card-footer">
+                            <div class="note-card-price" style="color: ${isPaid ? '#34d399' : '#f87171'};">
+                                ${valFormatted}
+                            </div>
+
+                            <div class="note-card-actions">
+                                <!-- Botão de Alternar Status (1 Toque) -->
+                                <button class="btn-note-toggle ${isPaid ? 'to-pending' : 'to-pay'}" onclick="toggleNoteStatus('${n.id}')">
+                                    ${isPaid ? '↩️ Marcar Não Pago' : '✓ Marcar como Pago'}
+                                </button>
+
+                                <!-- Botão WhatsApp -->
+                                ${hasPhone ? `
+                                    <a href="https://wa.me/${waNumber}?text=${waMessage}" target="_blank" class="btn-note-wa" title="Enviar Mensagem / Cobrança no WhatsApp">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                                        Cobrar
+                                    </a>
+                                ` : ''}
+
+                                <!-- Botão Gerar Pix Desta Conta -->
+                                <button class="btn-note-pix-charge" onclick="chargeNoteViaPix('${(n.customerName || '').replace(/'/g, "\\'")}', ${n.totalAmount}, '${(n.description || '').replace(/'/g, "\\'")}')" title="Gerar QR Code Pix deste valor para receber agora">
+                                    ⚡ Pix
+                                </button>
+
+                                <!-- Editar -->
+                                <button class="btn-icon-action" onclick="openNoteForm('${n.id}')" title="Editar Anotação">✏️</button>
+
+                                <!-- Excluir -->
+                                <button class="btn-icon-action delete" onclick="deleteNote('${n.id}', '${(n.customerName || '').replace(/'/g, "\\'")}')" title="Excluir Anotação">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterNotesStatus(status, el) {
+            currentNotesFilter = status;
+            document.querySelectorAll('.notes-toolbar .pill-btn').forEach(b => b.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderNotesList();
+        }
+
+        function handleNotesSearch() {
+            notesSearchQuery = document.getElementById('noteSearchInput')?.value.trim() || '';
+            renderNotesList();
+        }
+
+        function selectNotePaymentStatus(status) {
+            currentNotePaymentStatus = status;
+            const cardPending = document.getElementById('cardNoteConditionPending');
+            const cardPaid = document.getElementById('cardNoteConditionPaid');
+            const dueDateGroup = document.getElementById('noteDueDateGroup');
+            const methodGroup = document.getElementById('notePaymentMethodGroup');
+
+            if (status === 'pending') {
+                if (cardPending) { cardPending.classList.add('active'); cardPending.classList.add('pay-later'); }
+                if (cardPaid) cardPaid.classList.remove('active');
+                if (dueDateGroup) dueDateGroup.style.display = 'block';
+                if (methodGroup) methodGroup.style.display = 'none';
+            } else {
+                if (cardPaid) { cardPaid.classList.add('active'); }
+                if (cardPending) { cardPending.classList.remove('active'); cardPending.classList.remove('pay-later'); }
+                if (dueDateGroup) dueDateGroup.style.display = 'none';
+                if (methodGroup) methodGroup.style.display = 'block';
+            }
+        }
+
+        function setNoteQuickDueDate(days, label) {
+            const d = new Date();
+            d.setDate(d.getDate() + days);
+            const dateStr = d.toISOString().split('T')[0];
+            const input = document.getElementById('noteDueDate');
+            if (input) input.value = dateStr;
+        }
+
+        function setNoteQuickDueDateNextDay(targetDayOfWeek, label) {
+            const d = new Date();
+            const currentDay = d.getDay();
+            let daysUntil = (targetDayOfWeek - currentDay + 7) % 7;
+            if (daysUntil === 0) daysUntil = 7;
+            d.setDate(d.getDate() + daysUntil);
+            const dateStr = d.toISOString().split('T')[0];
+            const input = document.getElementById('noteDueDate');
+            if (input) input.value = dateStr;
+        }
+
+        function setNoteQuickDueDayOfMonth(targetDay) {
+            const d = new Date();
+            if (d.getDate() >= targetDay) {
+                d.setMonth(d.getMonth() + 1);
+            }
+            d.setDate(targetDay);
+            const dateStr = d.toISOString().split('T')[0];
+            const input = document.getElementById('noteDueDate');
+            if (input) input.value = dateStr;
+        }
+
+        function openNoteForm(noteId = null) {
+            document.getElementById('editNoteId').value = noteId || '';
+            const sellerGroup = document.getElementById('noteSellerSelectGroup');
+            const sellerSelect = document.getElementById('noteSellerId');
+
+            if (currentUser?.role === 'admin' && allUsers.length > 0) {
+                if (sellerGroup) sellerGroup.style.display = 'block';
+                if (sellerSelect) {
+                    sellerSelect.innerHTML = allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} Vendedor(a) ${u.name}</option>`).join('');
+                }
+            } else {
+                if (sellerGroup) sellerGroup.style.display = 'none';
+            }
+
+            if (noteId) {
+                const note = allNotes.find(n => n.id === noteId);
+                if (note) {
+                    document.getElementById('noteFormTitle').innerText = '✏️ Editar Anotação';
+                    document.getElementById('noteCustomerName').value = note.customerName || '';
+                    document.getElementById('noteCustomerPhone').value = note.customerPhone || '';
+                    document.getElementById('noteDescription').value = note.description || '';
+                    document.getElementById('noteTotalAmount').value = note.totalAmount || '';
+                    document.getElementById('noteDueDate').value = note.dueDate || '';
+                    document.getElementById('notePaymentMethod').value = note.paymentMethod || 'Dinheiro (Em mãos)';
+                    document.getElementById('noteExtraNotes').value = note.notes || '';
+                    if (sellerSelect && note.sellerId) sellerSelect.value = note.sellerId;
+                    selectNotePaymentStatus(note.status || 'pending');
+                }
+            } else {
+                document.getElementById('noteFormTitle').innerText = '📝 Nova Anotação / Fiado';
+                document.getElementById('noteCustomerName').value = '';
+                document.getElementById('noteCustomerPhone').value = '';
+                document.getElementById('noteDescription').value = 'Trufas Artesanais';
+                document.getElementById('noteTotalAmount').value = '';
+                document.getElementById('noteDueDate').value = '';
+                document.getElementById('notePaymentMethod').value = 'Dinheiro (Em mãos)';
+                document.getElementById('noteExtraNotes').value = '';
+                if (sellerSelect && currentUser) sellerSelect.value = currentUser.id;
+                selectNotePaymentStatus('pending');
+            }
+
+            document.getElementById('noteFormModal').classList.add('active');
+            setTimeout(() => {
+                const nameInput = document.getElementById('noteCustomerName');
+                if (nameInput && !noteId) nameInput.focus();
+            }, 300);
+        }
+
+        function closeNoteForm() {
+            document.getElementById('noteFormModal').classList.remove('active');
+        }
+
+        async function submitNoteForm() {
+            const id = document.getElementById('editNoteId').value;
+            const customerName = document.getElementById('noteCustomerName').value.trim();
+            const customerPhone = document.getElementById('noteCustomerPhone').value.trim();
+            const description = document.getElementById('noteDescription').value.trim();
+            const totalAmount = parseFloat(document.getElementById('noteTotalAmount').value);
+            const status = currentNotePaymentStatus;
+            const dueDate = document.getElementById('noteDueDate').value;
+            const paymentMethod = document.getElementById('notePaymentMethod').value;
+            const extraNotes = document.getElementById('noteExtraNotes').value.trim();
+            const sellerId = document.getElementById('noteSellerId')?.value || currentUser?.id;
+
+            if (!customerName) {
+                Swal.fire({ icon: 'warning', title: 'Nome Obrigatório', text: 'Informe o nome da pessoa / cliente.', background: '#150e0a', color: '#fff' });
+                document.getElementById('noteCustomerName').focus();
+                return;
+            }
+
+            if (isNaN(totalAmount) || totalAmount <= 0) {
+                Swal.fire({ icon: 'warning', title: 'Valor Obrigatório', text: 'Informe o valor total da anotação.', background: '#150e0a', color: '#fff' });
+                document.getElementById('noteTotalAmount').focus();
+                return;
+            }
+
+            const btn = document.getElementById('btnSaveNote');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<div class="spinner" style="width: 16px; height: 16px;"></div> Salvando...`;
+            btn.disabled = true;
+
+            try {
+                let url = '/api/admin/notes';
+                let method = 'POST';
+
+                if (id) {
+                    url = `/api/admin/notes/${id}`;
+                    method = 'PUT';
+                }
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken },
+                    body: JSON.stringify({
+                        customerName,
+                        customerPhone,
+                        description: description || 'Trufas Artesanais',
+                        totalAmount,
+                        status,
+                        paymentMethod,
+                        dueDate,
+                        notes: extraNotes,
+                        sellerId
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && (data.success || data.note)) {
+                    closeNoteForm();
+                    await loadAdminNotes();
+                    if (status === 'paid') {
+                        confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: id ? 'Anotação Atualizada!' : 'Anotado com Sucesso!',
+                        text: status === 'paid' ? 'Marcado como recebido no caderno.' : 'Registrado como a receber / fiado.',
+                        timer: 1600,
+                        showConfirmButton: false,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
+                } else {
+                    throw new Error(data.error || 'Erro ao salvar anotação.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function toggleNoteStatus(noteId) {
+            try {
+                const note = allNotes.find(n => n.id === noteId);
+                const isCurrentlyPending = note?.status === 'pending';
+
+                const res = await fetch(`/api/admin/notes/${noteId}/toggle-status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'authorization': adminToken }
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    await loadAdminNotes();
+                    if (isCurrentlyPending) {
+                        confetti({ particleCount: 110, spread: 75, origin: { y: 0.6 } });
+                        Swal.fire({
+                            icon: 'success',
+                            title: '🎉 Pagamento Registrado!',
+                            text: `Conta de ${data.note.customerName} (R$ ${Number(data.note.totalAmount).toFixed(2).replace('.', ',')}) marcada como PAGA!`,
+                            timer: 1800,
+                            showConfirmButton: false,
+                            background: '#150e0a',
+                            color: '#fff'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Reaberto',
+                            text: `Conta de ${data.note.customerName} marcada como PENDENTE novamente.`,
+                            timer: 1500,
+                            showConfirmButton: false,
+                            background: '#150e0a',
+                            color: '#fff'
+                        });
+                    }
+                } else {
+                    throw new Error(data.error || 'Falha ao alterar status da anotação.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            }
+        }
+
+        async function deleteNote(noteId, customerName) {
+            const confirm = await Swal.fire({
+                title: 'Excluir Anotação?',
+                html: `Deseja remover a anotação de <strong>${customerName}</strong> do caderno?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Sim, Excluir',
+                cancelButtonText: 'Cancelar',
+                background: '#150e0a',
+                color: '#fff'
+            });
+
+            if (confirm.isConfirmed) {
+                try {
+                    const res = await fetch(`/api/admin/notes/${noteId}`, {
+                        method: 'DELETE',
+                        headers: { 'authorization': adminToken }
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        await loadAdminNotes();
+                        Swal.fire({ icon: 'success', title: 'Removida!', text: 'Anotação excluída com sucesso.', timer: 1400, showConfirmButton: false, background: '#150e0a', color: '#fff' });
+                    } else {
+                        throw new Error(data.error || 'Erro ao excluir anotação.');
+                    }
+                } catch (e) {
+                    Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+                }
+            }
+        }
+
+        function chargeNoteViaPix(customerName, amount, desc) {
+            openCustomPixModal();
+            const amtInput = document.getElementById('customPixAmount');
+            const nameInput = document.getElementById('customPixCustomerName');
+            const descInput = document.getElementById('customPixDesc');
+            if (amtInput) amtInput.value = Number(amount).toFixed(2);
+            if (nameInput) nameInput.value = customerName;
+            if (descInput) descInput.value = desc || 'Trufas Gourmet';
+        }
+
+        // Sincronização periódica do estoque e anotações
+        setInterval(() => { 
+            loadProducts(); 
+            if (currentUser && adminToken) {
+                loadAdminNotes();
+            }
+        }, 8000);
 
         window.addEventListener('DOMContentLoaded', () => {
             initApp();

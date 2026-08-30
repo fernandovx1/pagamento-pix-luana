@@ -17,6 +17,7 @@ const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
 const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
 const TRANSFERS_FILE = path.join(DATA_DIR, 'transfers.json');
+const NOTES_FILE = path.join(DATA_DIR, 'notes.json');
 
 // Garantir diretório e arquivos de dados
 if (!fs.existsSync(DATA_DIR)) {
@@ -24,6 +25,26 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 // Helpers de Banco de Dados JSON
+function getNotes() {
+    try {
+        if (!fs.existsSync(NOTES_FILE)) return [];
+        const raw = fs.readFileSync(NOTES_FILE, 'utf-8');
+        return JSON.parse(raw || '[]');
+    } catch (e) {
+        console.error('Erro ao ler notes.json:', e);
+        return [];
+    }
+}
+
+function saveNotes(notes) {
+    try {
+        fs.writeFileSync(NOTES_FILE, JSON.stringify(notes, null, 2), 'utf-8');
+        return true;
+    } catch (e) {
+        console.error('Erro ao salvar notes.json:', e);
+        return false;
+    }
+}
 function getUsers() {
     try {
         if (!fs.existsSync(USERS_FILE)) return [];
@@ -1268,9 +1289,259 @@ app.get('/api/admin/orders', authenticateUser, (req, res) => {
     res.json(filteredOrders);
 });
 
+// ==========================================
+// CADERNO DE ANOTAÇÕES & CONTROLE DE QUEM PAGOU (FIADOS & ACERTOS)
+// ==========================================
+
+// Listar todas as anotações
+app.get('/api/admin/notes', authenticateUser, (req, res) => {
+    const notes = getNotes();
+    const { sellerId, status } = req.query;
+
+    const targetSellerId = (req.user.role === 'admin' && sellerId && sellerId !== 'all') 
+        ? sellerId 
+        : (req.user.role !== 'admin' ? req.user.id : null);
+
+    let filteredNotes = notes;
+
+    if (targetSellerId) {
+        filteredNotes = filteredNotes.filter(n => n.sellerId === targetSellerId);
+    }
+
+    if (status && status !== 'all') {
+        filteredNotes = filteredNotes.filter(n => n.status === status);
+    }
+
+    // Ordenar: primeiro os pendentes (mais urgentes), depois os pagos, por data mais recente
+    filteredNotes.sort((a, b) => {
+        if (a.status === 'pending' && b.status === 'paid') return -1;
+        if (a.status === 'paid' && b.status === 'pending') return 1;
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+
+    // Calcular resumo financeiro das anotações
+    let totalPendingAmount = 0;
+    let totalPaidAmount = 0;
+    let countPending = 0;
+    let countPaid = 0;
+
+    const allForStats = targetSellerId ? notes.filter(n => n.sellerId === targetSellerId) : notes;
+    for (const note of allForStats) {
+        const val = Number(note.totalAmount) || 0;
+        if (note.status === 'paid') {
+            totalPaidAmount += val;
+            countPaid++;
+        } else {
+            totalPendingAmount += val;
+            countPending++;
+        }
+    }
+
+    res.json({
+        notes: filteredNotes,
+        stats: {
+            totalPendingAmount,
+            totalPaidAmount,
+            countPending,
+            countPaid,
+            totalNotes: allForStats.length
+        }
+    });
+});
+
+// Criar nova anotação de cobrança / fiado / quem pagou
+app.post('/api/admin/notes', authenticateUser, (req, res) => {
+    const { 
+        customerName, 
+        customerPhone, 
+        description, 
+        totalAmount, 
+        status, 
+        paymentMethod, 
+        dueDate, 
+        notes: extraNotes, 
+        sellerId 
+    } = req.body;
+
+    if (!customerName || !customerName.trim()) {
+        return res.status(400).json({ error: 'O nome da pessoa / cliente é obrigatório.' });
+    }
+
+    const numAmount = parseFloat(totalAmount);
+    if (isNaN(numAmount) || numAmount < 0) {
+        return res.status(400).json({ error: 'Informe um valor válido.' });
+    }
+
+    const users = getUsers();
+    let assignedSellerId = req.user.id;
+    let assignedSellerName = req.user.name;
+
+    if (req.user.role === 'admin' && sellerId) {
+        const targetUser = users.find(u => u.id === sellerId);
+        if (targetUser) {
+            assignedSellerId = targetUser.id;
+            assignedSellerName = targetUser.name;
+        }
+    }
+
+    const isPaid = status === 'paid';
+    const nowIso = new Date().toISOString();
+
+    const newNote = {
+        id: `NOTA-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        sellerId: assignedSellerId,
+        sellerName: assignedSellerName,
+        customerName: customerName.trim(),
+        customerPhone: customerPhone ? customerPhone.trim() : '',
+        description: description ? description.trim() : 'Trufas Artesanais',
+        totalAmount: Number(numAmount.toFixed(2)),
+        status: isPaid ? 'paid' : 'pending',
+        paymentMethod: isPaid ? (paymentMethod || 'Dinheiro (Em mãos)') : '',
+        dueDate: dueDate || '',
+        notes: extraNotes ? extraNotes.trim() : '',
+        createdAt: nowIso,
+        paidAt: isPaid ? nowIso : null,
+        updatedAt: nowIso
+    };
+
+    const notesList = getNotes();
+    notesList.unshift(newNote);
+    saveNotes(notesList);
+
+    console.log(`[ANOTAÇÃO] Nova anotação criada: "${newNote.customerName}" - R$ ${newNote.totalAmount.toFixed(2)} (${newNote.status === 'paid' ? 'Já Pago' : 'Não Pagou / Fiado'}) por ${assignedSellerName}`);
+    res.status(201).json({ success: true, note: newNote });
+});
+
+// Editar uma anotação
+app.put('/api/admin/notes/:id', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    const { 
+        customerName, 
+        customerPhone, 
+        description, 
+        totalAmount, 
+        status, 
+        paymentMethod, 
+        dueDate, 
+        notes: extraNotes,
+        sellerId 
+    } = req.body;
+
+    const notesList = getNotes();
+    const index = notesList.findIndex(n => n.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ error: 'Anotação não encontrada.' });
+    }
+
+    // Permissão: admin ou dono da anotação
+    if (req.user.role !== 'admin' && notesList[index].sellerId !== req.user.id) {
+        return res.status(403).json({ error: 'Você só pode editar suas próprias anotações.' });
+    }
+
+    const isPaid = status !== undefined ? (status === 'paid') : (notesList[index].status === 'paid');
+    const wasPaid = notesList[index].status === 'paid';
+    let paidAt = notesList[index].paidAt;
+
+    if (isPaid && !wasPaid) {
+        paidAt = new Date().toISOString();
+    } else if (!isPaid) {
+        paidAt = null;
+    }
+
+    const users = getUsers();
+    let updatedSellerId = notesList[index].sellerId;
+    let updatedSellerName = notesList[index].sellerName;
+
+    if (req.user.role === 'admin' && sellerId) {
+        const targetUser = users.find(u => u.id === sellerId);
+        if (targetUser) {
+            updatedSellerId = targetUser.id;
+            updatedSellerName = targetUser.name;
+        }
+    }
+
+    notesList[index] = {
+        ...notesList[index],
+        sellerId: updatedSellerId,
+        sellerName: updatedSellerName,
+        customerName: customerName !== undefined ? customerName.trim() : notesList[index].customerName,
+        customerPhone: customerPhone !== undefined ? customerPhone.trim() : notesList[index].customerPhone,
+        description: description !== undefined ? description.trim() : notesList[index].description,
+        totalAmount: totalAmount !== undefined ? Number(parseFloat(totalAmount).toFixed(2)) : notesList[index].totalAmount,
+        status: isPaid ? 'paid' : 'pending',
+        paymentMethod: isPaid ? (paymentMethod || notesList[index].paymentMethod || 'Dinheiro (Em mãos)') : '',
+        dueDate: dueDate !== undefined ? dueDate : notesList[index].dueDate,
+        notes: extraNotes !== undefined ? extraNotes.trim() : notesList[index].notes,
+        paidAt: paidAt,
+        updatedAt: new Date().toISOString()
+    };
+
+    saveNotes(notesList);
+    res.json({ success: true, note: notesList[index] });
+});
+
+// Alternar status rápido com 1 clique (Pago <-> Não Pago / Pendente)
+app.patch('/api/admin/notes/:id/toggle-status', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    const { paymentMethod } = req.body || {};
+
+    const notesList = getNotes();
+    const note = notesList.find(n => n.id === id);
+
+    if (!note) {
+        return res.status(404).json({ error: 'Anotação não encontrada.' });
+    }
+
+    if (req.user.role !== 'admin' && note.sellerId !== req.user.id) {
+        return res.status(403).json({ error: 'Você só pode alterar status das suas próprias anotações.' });
+    }
+
+    if (note.status === 'pending') {
+        note.status = 'paid';
+        note.paidAt = new Date().toISOString();
+        note.paymentMethod = paymentMethod || 'Dinheiro (Em mãos)';
+        console.log(`[ANOTAÇÃO] "${note.customerName}" marcada como PAGA! (R$ ${note.totalAmount.toFixed(2)})`);
+    } else {
+        note.status = 'pending';
+        note.paidAt = null;
+        console.log(`[ANOTAÇÃO] "${note.customerName}" reaberta como PENDENTE.`);
+    }
+
+    note.updatedAt = new Date().toISOString();
+    saveNotes(notesList);
+
+    res.json({ 
+        success: true, 
+        message: note.status === 'paid' ? 'Marcado como Pago com sucesso!' : 'Marcado como Pendente!',
+        note 
+    });
+});
+
+// Excluir uma anotação
+app.delete('/api/admin/notes/:id', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    let notesList = getNotes();
+    const note = notesList.find(n => n.id === id);
+
+    if (!note) {
+        return res.status(404).json({ error: 'Anotação não encontrada.' });
+    }
+
+    if (req.user.role !== 'admin' && note.sellerId !== req.user.id) {
+        return res.status(403).json({ error: 'Você só pode excluir suas próprias anotações.' });
+    }
+
+    notesList = notesList.filter(n => n.id !== id);
+    saveNotes(notesList);
+
+    console.log(`[ANOTAÇÃO] Anotação excluída: "${note.customerName}"`);
+    res.json({ success: true, message: 'Anotação removida com sucesso.' });
+});
+
 // Zerar / Limpar Dados do Sistema (Admin)
 app.post('/api/admin/reset-all-data', authenticateUser, (req, res) => {
-    const { target } = req.body; // 'all' | 'products' | 'orders' | 'transfers'
+    const { target } = req.body; // 'all' | 'products' | 'orders' | 'transfers' | 'notes'
 
     if (req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Apenas o administrador pode zerar os dados do sistema.' });
@@ -1291,10 +1562,15 @@ app.post('/api/admin/reset-all-data', authenticateUser, (req, res) => {
         console.log('[RESET] Histórico de transferências zerado.');
     }
 
+    if (target === 'notes' || target === 'all') {
+        saveNotes([]);
+        console.log('[RESET] Caderno de anotações zerado.');
+    }
+
     res.json({
         success: true,
         message: target === 'all' 
-            ? 'Todos os dados (produtos, pedidos e transferências) foram zerados com sucesso!' 
+            ? 'Todos os dados (produtos, pedidos, transferências e anotações) foram zerados com sucesso!' 
             : `Dados de ${target} zerados com sucesso!`
     });
 });
