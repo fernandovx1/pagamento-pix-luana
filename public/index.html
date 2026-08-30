@@ -1105,16 +1105,16 @@
 
         .notes-summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            margin-bottom: 16px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
         .notes-summary-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border-subtle);
             border-radius: var(--radius-md);
-            padding: 12px 14px;
+            padding: 10px 6px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -1122,41 +1122,47 @@
 
         .notes-summary-card.pending {
             border-color: rgba(239, 68, 68, 0.45);
-            background: linear-gradient(145deg, rgba(239, 68, 68, 0.12), rgba(185, 28, 28, 0.22));
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.25));
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
         }
 
         .notes-summary-card.paid {
             border-color: rgba(16, 185, 129, 0.45);
-            background: linear-gradient(145deg, rgba(16, 185, 129, 0.12), rgba(5, 150, 105, 0.22));
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.25));
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
         }
 
         .notes-summary-card.total {
             border-color: rgba(245, 158, 11, 0.45);
-            background: linear-gradient(145deg, rgba(245, 158, 11, 0.12), rgba(180, 83, 9, 0.22));
+            background: linear-gradient(145deg, rgba(245, 158, 11, 0.15), rgba(180, 83, 9, 0.25));
             box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
         }
 
         .notes-summary-title {
-            font-size: 0.74rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .notes-summary-val {
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             font-weight: 800;
-            line-height: 1.1;
+            line-height: 1.15;
             margin-bottom: 2px;
         }
 
         .notes-summary-sub {
-            font-size: 0.73rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .notes-toolbar {
@@ -1414,13 +1420,34 @@
         }
 
         /* Painel Admin Completo */
-        .admin-modal-card { max-width: 850px; height: 92vh; }
+        .admin-modal-card { 
+            max-width: 850px; 
+            height: 94vh; 
+        }
+
+        .admin-main-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: rgba(20, 13, 9, 0.95);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            flex-shrink: 0;
+        }
+
+        .admin-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
 
         .admin-tabs {
             display: flex;
             gap: 8px;
             border-bottom: 1px solid var(--glass-border-subtle);
-            padding-bottom: 10px;
+            padding: 2px 2px 10px 2px;
             margin-bottom: 14px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -1429,22 +1456,44 @@
         .admin-tabs::-webkit-scrollbar { display: none; }
 
         .tab-btn {
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-muted);
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            padding: 7px 14px;
-            border-radius: var(--radius-sm);
+            padding: 7px 13px;
+            border-radius: 20px;
             cursor: pointer;
             white-space: nowrap;
             flex-shrink: 0;
+            transition: all 0.2s ease;
         }
 
         .tab-btn.active {
-            background: rgba(245, 158, 11, 0.18);
-            color: var(--amber-gold);
-            border: 1px solid var(--glass-border);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
+            color: #fbbf24;
+            border: 1px solid var(--amber-gold);
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.25);
+        }
+
+        @media (max-width: 640px) {
+            .modal-overlay#adminModal {
+                align-items: flex-start !important;
+                padding: 0 !important;
+            }
+            .modal-overlay#adminModal .modal-card.admin-modal-card {
+                height: 100vh !important;
+                max-height: 100vh !important;
+                max-width: 100vw !important;
+                width: 100vw !important;
+                border-radius: 0 !important;
+                border: none !important;
+                margin: 0 !important;
+                padding-bottom: 16px;
+            }
+            .admin-main-header {
+                padding: 10px 12px !important;
+            }
         }
 
         .admin-tab-content { display: none; }
@@ -1544,32 +1593,6 @@
 <body>
 
     <div class="bg-glow"></div>
-
-    <!-- BARRA SUPERIOR DO USUÁRIO LOGADO -->
-    <div id="loggedInUserBar" style="display: none; background: rgba(26, 17, 13, 0.95); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 10px 16px; position: sticky; top: 0; z-index: 10000; backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
-        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="userBarAvatar" style="font-size: 1.3rem;">👑</span>
-                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;" id="userBarName">Fernando</span>
-                <span id="userBarRole" class="spec-tag" style="background: rgba(245, 158, 11, 0.2); color: var(--amber-gold); border-color: rgba(245, 158, 11, 0.4); font-size: 0.72rem; padding: 2px 7px;">Admin</span>
-            </div>
-
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                <button class="pill-btn active" onclick="openAdminModal()" style="font-size: 0.8rem; padding: 6px 12px; font-weight: 700;">
-                    🌻 Painel & Estoque
-                </button>
-                <button class="pill-btn" onclick="openNotesQuickView()" style="background: rgba(245, 158, 11, 0.15); border-color: var(--amber-gold); color: #fbbf24; font-weight: 700; font-size: 0.8rem; padding: 6px 12px;">
-                    📝 Anotações & Fiados <span id="badgeTopNotesCount" class="tab-counter-badge" style="display: none; padding: 1px 6px; font-size: 0.68rem;">0</span>
-                </button>
-                <button class="pill-btn" onclick="openCustomPixModal()" style="background: rgba(0, 209, 255, 0.15); border-color: rgba(0, 209, 255, 0.4); color: #00D1FF; font-weight: 700; font-size: 0.8rem; padding: 6px 12px;">
-                    ⚡ Pix
-                </button>
-                <button class="pill-btn" onclick="adminLogout()" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.35); color: #f87171; font-size: 0.8rem; padding: 6px 10px;">
-                    🚪 Sair
-                </button>
-            </div>
-        </div>
-    </div>
 
     <div class="container">
         <!-- Cabeçalho -->
@@ -1928,37 +1951,91 @@
     <!-- PAINEL ADMINISTRATIVO MODAL -->
     <div class="modal-overlay" id="adminModal">
         <div class="modal-card admin-modal-card">
-            <div class="modal-header">
-                <div>
-                    <h3 class="modal-title" id="adminHeaderTitle">🌻 Painel de Trufas</h3>
-                    <small style="color: var(--amber-gold);" id="adminUserGreeting">Logado como Fernando (Admin)</small>
+            <div class="modal-header admin-main-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="adminAvatarHeader" style="font-size: 1.4rem;">👑</span>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <strong id="adminNameHeader" style="font-size: 1rem; color: #fff;">Fernando</strong>
+                            <span id="adminRoleBadge" class="spec-tag" style="background: rgba(245, 158, 11, 0.2); color: var(--amber-gold); border-color: rgba(245, 158, 11, 0.4); font-size: 0.7rem; padding: 1px 6px;">Admin</span>
+                        </div>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 6px; align-items: center;">
-                    <button class="pill-btn" style="background: rgba(239, 68, 68, 0.22); color: #fca5a5; border-color: rgba(239, 68, 68, 0.45); padding: 4px 9px; font-size: 0.75rem; font-weight: 700;" onclick="promptResetSystemData()" title="Zerar todos os dados do sistema">
-                        🗑️ Zerar Dados
+                <div class="admin-header-actions">
+                    <button class="pill-btn" style="background: rgba(0, 209, 255, 0.15); border-color: rgba(0, 209, 255, 0.4); color: #00D1FF; font-weight: 700; padding: 5px 10px; font-size: 0.78rem;" onclick="openCustomPixModal()" title="Gerar Cobrança Pix Avulsa">
+                        ⚡ Pix
                     </button>
-                    <button class="pill-btn" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); padding: 4px 8px; font-size: 0.75rem;" onclick="registerDeviceBiometrics()" title="Ativar Face ID neste celular">
-                        📱 Ativar Biometria
+                    <button class="pill-btn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); color: #e2e8f0; font-size: 0.78rem; padding: 5px 10px;" onclick="closeAdminModal()" title="Ver Vitrine da Loja">
+                        🛍️ Vitrine
                     </button>
-                    <button class="pill-btn" style="background: rgba(239,68,68,0.2); color: #f87171; border-color: rgba(239,68,68,0.3); padding: 4px 10px; font-size: 0.78rem;" onclick="adminLogout()">Sair</button>
-                    <button class="btn-close-modal" onclick="closeAdminModal()">✕</button>
+                    <button class="pill-btn" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239, 68, 68, 0.35); padding: 5px 10px; font-size: 0.78rem; font-weight: 700;" onclick="adminLogout()">
+                        🚪 Sair
+                    </button>
                 </div>
             </div>
-            <div class="modal-body">
-                <!-- Abas do Admin -->
+            <div class="modal-body" style="padding: 12px 14px;">
+                <!-- Abas do Admin com rolagem suave no celular -->
                 <div class="admin-tabs">
-                    <button class="tab-btn active" onclick="switchAdminTab('truffles', this)">📦 Estoque & Sabores</button>
-                    <button class="tab-btn" id="tabBtnNotes" onclick="switchAdminTab('notes', this)" style="background: rgba(245, 158, 11, 0.15); border-color: var(--amber-gold); color: #fbbf24; font-weight: 700;">
+                    <button class="tab-btn active" id="tabBtnNotes" onclick="switchAdminTab('notes', this)">
                         📝 Anotações & Fiados <span id="badgePendingNotesCount" class="tab-counter-badge" style="display:none;">0</span>
                     </button>
-                    <button class="tab-btn" onclick="switchAdminTab('transfers', this)">🔄 Repassar / Pedir Estoque</button>
+                    <button class="tab-btn" id="tabBtnTruffles" onclick="switchAdminTab('truffles', this)">📦 Estoque & Sabores</button>
+                    <button class="tab-btn" onclick="switchAdminTab('transfers', this)">🔄 Repassar Estoque</button>
                     <button class="tab-btn" onclick="switchAdminTab('stats', this)">📊 Vendas & Faturamento</button>
-                    <button class="tab-btn" onclick="switchAdminTab('orders', this)">🧾 Histórico Pedidos</button>
-                    <button class="tab-btn" id="tabBtnUsers" onclick="switchAdminTab('users', this)">👥 Vendedores / Contas</button>
+                    <button class="tab-btn" onclick="switchAdminTab('orders', this)">🧾 Histórico</button>
+                    <button class="tab-btn" id="tabBtnUsers" onclick="switchAdminTab('users', this)">👥 Vendedores</button>
                 </div>
 
-                <!-- ABA 1: GESTÃO DE TRUFAS -->
-                <div class="admin-tab-content active" id="tab-truffles">
+                <!-- ABA 1: CADERNO DE ANOTAÇÕES & QUEM PAGOU (FIADOS & ACERTOS) -->
+                <div class="admin-tab-content active" id="tab-notes">
+                    <!-- Resumo Financeiro no Topo (3 Cards elegantes lado a lado) -->
+                    <div class="notes-summary-grid">
+                        <div class="notes-summary-card pending">
+                            <div class="notes-summary-title">🔴 A Receber</div>
+                            <div class="notes-summary-val" style="color: #f87171;" id="notesSummaryPendingVal">R$ 0,00</div>
+                            <div class="notes-summary-sub" id="notesSummaryPendingCount">0 pendentes</div>
+                        </div>
+                        <div class="notes-summary-card paid">
+                            <div class="notes-summary-title">🟢 Recebido</div>
+                            <div class="notes-summary-val" style="color: #34d399;" id="notesSummaryPaidVal">R$ 0,00</div>
+                            <div class="notes-summary-sub" id="notesSummaryPaidCount">0 pagos</div>
+                        </div>
+                        <div class="notes-summary-card total">
+                            <div class="notes-summary-title">📋 Total</div>
+                            <div class="notes-summary-val" style="color: var(--amber-gold);" id="notesSummaryTotalVal">R$ 0,00</div>
+                            <div class="notes-summary-sub" id="notesSummaryTotalCount">0 registros</div>
+                        </div>
+                    </div>
+
+                    <!-- Botão Dourado Grande de Nova Anotação & Filtros -->
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
+                        <button class="pill-btn active" onclick="openNoteForm()" style="width: 100%; height: 46px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 0.95rem; border: none; border-radius: 12px; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            ✍️ + Nova Anotação / Fiado
+                        </button>
+
+                        <div style="display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;">
+                            <button class="pill-btn active" id="noteFilterAll" onclick="filterNotesStatus('all', this)" style="font-size: 0.78rem; padding: 6px 12px; border-radius: 16px;">✨ Todas (<span id="countPillAll">0</span>)</button>
+                            <button class="pill-btn" id="noteFilterPending" onclick="filterNotesStatus('pending', this)" style="font-size: 0.78rem; padding: 6px 12px; border-radius: 16px; border-color: rgba(239,68,68,0.4); color: #fca5a5;">🔴 Não Pagou (<span id="countPillPending">0</span>)</button>
+                            <button class="pill-btn" id="noteFilterPaid" onclick="filterNotesStatus('paid', this)" style="font-size: 0.78rem; padding: 6px 12px; border-radius: 16px; border-color: rgba(16,185,129,0.4); color: #6ee7b7;">🟢 Já Pagou (<span id="countPillPaid">0</span>)</button>
+                        </div>
+                    </div>
+
+                    <div class="search-box" style="margin-bottom: 14px;">
+                        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="noteSearchInput" placeholder="Buscar cliente, telefone, sabor..." oninput="handleNotesSearch()">
+                    </div>
+
+                    <!-- Lista de Anotações -->
+                    <div class="notes-grid-list" id="notesListContainer">
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                            <div class="spinner"></div>
+                            <p style="margin-top: 8px;">Carregando caderno de anotações...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA 2: GESTÃO DE TRUFAS -->
+                <div class="admin-tab-content" id="tab-truffles">
                     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
                         <div id="adminSellerFilterWrap">
                             <select id="adminSellerSelect" onchange="loadAdminProducts()" style="background: #000; color: #fff; border: 1px solid var(--amber-gold); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem;">
@@ -1987,55 +2064,6 @@
                             </thead>
                             <tbody id="adminProductsTable"></tbody>
                         </table>
-                    </div>
-                </div>
-
-                <!-- ABA: CADERNO DE ANOTAÇÕES & QUEM PAGOU (FIADOS & ACERTOS) -->
-                <div class="admin-tab-content" id="tab-notes">
-                    <!-- Resumo Financeiro no Topo -->
-                    <div class="notes-summary-grid">
-                        <div class="notes-summary-card pending">
-                            <div class="notes-summary-title">🔴 A Receber (Não Pagou)</div>
-                            <div class="notes-summary-val" style="color: #f87171;" id="notesSummaryPendingVal">R$ 0,00</div>
-                            <div class="notes-summary-sub" id="notesSummaryPendingCount">0 pendentes / fiado</div>
-                        </div>
-                        <div class="notes-summary-card paid">
-                            <div class="notes-summary-title">🟢 Já Recebido (Pago)</div>
-                            <div class="notes-summary-val" style="color: #34d399;" id="notesSummaryPaidVal">R$ 0,00</div>
-                            <div class="notes-summary-sub" id="notesSummaryPaidCount">0 recebidos</div>
-                        </div>
-                        <div class="notes-summary-card total">
-                            <div class="notes-summary-title">📋 Total Anotado</div>
-                            <div class="notes-summary-val" style="color: var(--amber-gold);" id="notesSummaryTotalVal">R$ 0,00</div>
-                            <div class="notes-summary-sub" id="notesSummaryTotalCount">0 registros</div>
-                        </div>
-                    </div>
-
-                    <!-- Barra de Controle & Filtros -->
-                    <div class="notes-toolbar">
-                        <div class="category-pills" style="margin-bottom: 0;">
-                            <button class="pill-btn active" id="noteFilterAll" onclick="filterNotesStatus('all', this)">✨ Todas (<span id="countPillAll">0</span>)</button>
-                            <button class="pill-btn" id="noteFilterPending" onclick="filterNotesStatus('pending', this)" style="border-color: rgba(239,68,68,0.4); color: #fca5a5;">🔴 Não Pagou (<span id="countPillPending">0</span>)</button>
-                            <button class="pill-btn" id="noteFilterPaid" onclick="filterNotesStatus('paid', this)" style="border-color: rgba(16,185,129,0.4); color: #6ee7b7;">🟢 Já Pagou (<span id="countPillPaid">0</span>)</button>
-                        </div>
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="pill-btn active" onclick="openNoteForm()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); padding: 8px 16px;">
-                                ✍️ + Nova Anotação / Fiado
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="search-box" style="margin-bottom: 14px;">
-                        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <input type="text" id="noteSearchInput" placeholder="Buscar por nome da pessoa, telefone ou sabor de trufa..." oninput="handleNotesSearch()">
-                    </div>
-
-                    <!-- Lista de Anotações -->
-                    <div class="notes-grid-list" id="notesListContainer">
-                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
-                            <div class="spinner"></div>
-                            <p style="margin-top: 8px;">Carregando caderno de anotações...</p>
-                        </div>
                     </div>
                 </div>
 
@@ -2594,12 +2622,7 @@
             if (!currentUser || !adminToken) {
                 openLoginModal(true);
             } else {
-                updateLoggedInUserBar();
-                const path = window.location.pathname.toLowerCase();
-                const hash = window.location.hash.toLowerCase();
-                if (path.includes('/admin') || path.includes('/login') || path.includes('/painel') || hash === '#admin' || hash === '#login') {
-                    openAdminModal();
-                }
+                openAdminModal();
             }
         }
 
@@ -3443,22 +3466,6 @@
             document.getElementById('loginModal').classList.remove('active');
         }
 
-        function updateLoggedInUserBar() {
-            const bar = document.getElementById('loggedInUserBar');
-            if (!bar) return;
-            if (currentUser && adminToken) {
-                bar.style.display = 'block';
-                const avatarEl = document.getElementById('userBarAvatar');
-                const nameEl = document.getElementById('userBarName');
-                const roleEl = document.getElementById('userBarRole');
-                if (avatarEl) avatarEl.innerText = currentUser.avatar || '🍫';
-                if (nameEl) nameEl.innerText = currentUser.name || 'Vendedor';
-                if (roleEl) roleEl.innerText = currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora';
-            } else {
-                bar.style.display = 'none';
-            }
-        }
-
         function renderLoginProfiles() {
             const grid = document.getElementById('loginProfilesGrid');
             if (!grid) return;
@@ -3507,7 +3514,6 @@
                     localStorage.setItem('trufas_admin_token', adminToken);
                     localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
                     
-                    updateLoggedInUserBar();
                     document.getElementById('loginModal').classList.remove('active');
                     openAdminModal();
 
@@ -3588,7 +3594,6 @@
                     localStorage.setItem('trufas_admin_token', adminToken);
                     localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
                     
-                    updateLoggedInUserBar();
                     document.getElementById('loginModal').classList.remove('active');
                     openAdminModal();
 
@@ -3691,7 +3696,6 @@
             currentUser = null;
             localStorage.removeItem('trufas_admin_token');
             localStorage.removeItem('trufas_current_user');
-            updateLoggedInUserBar();
             closeAdminModal();
             openLoginModal(true);
         }
@@ -3700,10 +3704,14 @@
         // PAINEL ADMINISTRATIVO & ESTOQUES SEPARADOS
         // ==========================================
         function openAdminModal() {
-            if (!currentUser) return openLoginModal();
+            if (!currentUser) return openLoginModal(true);
 
-            document.getElementById('adminHeaderTitle').innerText = `🌻 Estoque de ${currentUser.name}`;
-            document.getElementById('adminUserGreeting').innerText = `Logado como ${currentUser.avatar || ''} ${currentUser.name} (${currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora'}) • Visualizando apenas o seu estoque`;
+            const avatarEl = document.getElementById('adminAvatarHeader');
+            const nameEl = document.getElementById('adminNameHeader');
+            const roleEl = document.getElementById('adminRoleBadge');
+            if (avatarEl) avatarEl.innerText = currentUser.avatar || '🍫';
+            if (nameEl) nameEl.innerText = currentUser.name || 'Vendedor';
+            if (roleEl) roleEl.innerText = currentUser.role === 'admin' ? 'Admin Mestre' : 'Vendedora';
 
             const tabUsers = document.getElementById('tabBtnUsers');
             const sellerFilterWrap = document.getElementById('adminSellerFilterWrap');
@@ -3714,7 +3722,7 @@
             }
 
             if (currentUser.role === 'admin') {
-                if (tabUsers) tabUsers.style.display = 'block';
+                if (tabUsers) tabUsers.style.display = 'inline-block';
             } else {
                 if (tabUsers) tabUsers.style.display = 'none';
             }
