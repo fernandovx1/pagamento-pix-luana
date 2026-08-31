@@ -1,102 +1,101 @@
 [
   {
-    "id": "ing-leite-condensado",
-    "name": "Leite Condensado",
-    "category": "Laticínio",
-    "unit": "g",
-    "packageSize": 395,
-    "packagePrice": 6.20,
-    "unitCost": 0.015696,
-    "unitDisplay": "395g (Lata/Caixa)"
-  },
-  {
-    "id": "ing-creme-leite",
-    "name": "Creme de Leite",
-    "category": "Laticínio",
-    "unit": "g",
-    "packageSize": 200,
-    "packagePrice": 3.80,
-    "unitCost": 0.019,
-    "unitDisplay": "200g (Caixa)"
-  },
-  {
-    "id": "ing-chocolate-nobre",
-    "name": "Chocolate Nobre (Blend / Meio Amargo)",
+    "id": "ing-chocolate-barra-2kg",
+    "name": "Barra de Chocolate (Casquinhas)",
     "category": "Chocolate",
     "unit": "g",
+    "packageSize": 2000,
+    "packagePrice": 60.00,
+    "unitCost": 0.0300,
+    "unitDisplay": "Barra 2kg (Rende 80 casquinhas • 25g/un)",
+    "portionPerTruffle": 25
+  },
+  {
+    "id": "ing-recheio-nutella",
+    "name": "Recheio de Nutella",
+    "category": "Recheio",
+    "unit": "g",
     "packageSize": 1000,
-    "packagePrice": 39.90,
-    "unitCost": 0.0399,
-    "unitDisplay": "1.000g (Barra 1kg)"
+    "packagePrice": 45.00,
+    "unitCost": 0.0450,
+    "unitDisplay": "1kg (Rende 50 trufas • 20g/un)",
+    "portionPerTruffle": 20
   },
   {
-    "id": "ing-nutella",
-    "name": "Nutella Original",
+    "id": "ing-recheio-ninho",
+    "name": "Recheio de Leite Ninho",
     "category": "Recheio",
     "unit": "g",
-    "packageSize": 650,
-    "packagePrice": 46.00,
-    "unitCost": 0.070769,
-    "unitDisplay": "650g (Pote Grande)"
+    "packageSize": 1000,
+    "packagePrice": 35.00,
+    "unitCost": 0.0350,
+    "unitDisplay": "1kg (Rende 50 trufas • 20g/un)",
+    "portionPerTruffle": 20
   },
   {
-    "id": "ing-leite-ninho",
-    "name": "Leite Ninho em Pó",
-    "category": "Laticínio",
-    "unit": "g",
-    "packageSize": 380,
-    "packagePrice": 18.50,
-    "unitCost": 0.048684,
-    "unitDisplay": "380g (Lata)"
-  },
-  {
-    "id": "ing-doce-leite",
-    "name": "Doce de Leite Cremoso",
+    "id": "ing-recheio-doce-leite",
+    "name": "Recheio de Doce de Leite",
     "category": "Recheio",
     "unit": "g",
-    "packageSize": 400,
-    "packagePrice": 12.00,
-    "unitCost": 0.03,
-    "unitDisplay": "400g (Pote)"
+    "packageSize": 1000,
+    "packagePrice": 28.00,
+    "unitCost": 0.0280,
+    "unitDisplay": "1kg (Rende 50 trufas • 20g/un)",
+    "portionPerTruffle": 20
   },
   {
-    "id": "ing-kitkat",
-    "name": "Chocolate Kit Kat (Barrinha)",
-    "category": "Recheio",
-    "unit": "un",
-    "packageSize": 1,
-    "packagePrice": 3.99,
-    "unitCost": 3.99,
-    "unitDisplay": "1 un. (rende 4 trufas)"
-  },
-  {
-    "id": "ing-polpa-morango",
-    "name": "Preparo / Geleia de Morango",
-    "category": "Fruta",
-    "unit": "g",
-    "packageSize": 500,
-    "packagePrice": 16.00,
-    "unitCost": 0.032,
-    "unitDisplay": "500g (Pote)"
-  },
-  {
-    "id": "ing-ovomaltine",
-    "name": "Ovomaltine Crocante",
+    "id": "ing-recheio-maracuja",
+    "name": "Recheio de Mousse de Maracujá",
     "category": "Recheio",
     "unit": "g",
-    "packageSize": 300,
-    "packagePrice": 15.90,
-    "unitCost": 0.053,
-    "unitDisplay": "300g (Pacote)"
+    "packageSize": 1000,
+    "packagePrice": 32.00,
+    "unitCost": 0.0320,
+    "unitDisplay": "1kg (Rende 50 trufas • 20g/un)",
+    "portionPerTruffle": 20
   },
   {
-    "id": "ing-embalagem",
+    "id": "ing-recheio-morango",
+    "name": "Recheio de Sensação Morango",
+    "category": "Recheio",
+    "unit": "g",
+    "packageSize": 1000,
+    "packagePrice": 32.00,
+    "unitCost": 0.0320,
+    "unitDisplay": "1kg (Rende 50 trufas • 20g/un)",
+    "portionPerTruffle": 20
+  },
+  {
+    "id": "ing-recheio-kitkat",
+    "name": "Recheio de Kit Kat",
+    "category": "Recheio",
+    "unit": "g",
+    "packageSize": 1000,
+    "packagePrice": 42.00,
+    "unitCost": 0.0420,
+    "unitDisplay": "1kg (Rende 50 trufas • 20g/un)",
+    "portionPerTruffle": 20
+  },
+  {
+    "id": "ing-recheio-ovomaltine",
+    "name": "Recheio de Ovomaltine Crocante",
+    "category": "Recheio",
+    "unit": "g",
+    "packageSize": 1000,
+    "packagePrice": 36.00,
+    "unitCost": 0.0360,
+    "unitDisplay": "1kg (Rende 50 trufas • 20g/un)",
+    "portionPerTruffle": 20
+  },
+  {
+    "id": "ing-embalagem-forminha",
     "name": "Embalagem Metalizada + Forminha",
     "category": "Embalagem",
     "unit": "un",
-    "packageSize": 50,
-    "packagePrice": 10.00,
-    "unitCost": 0.20,
-    "unitDisplay": "Pacote c/ 50 unidades"
+    "packageSize": 100,
+    "packagePrice": 15.00,
+    "unitCost": 0.1500,
+    "unitDisplay": "Pacote c/ 100 un. (R$ 0,15/un)",
+    "portionPerTruffle": 1
   }
 ]

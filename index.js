@@ -763,12 +763,24 @@ app.get('/api/products', (req, res) => {
     res.json(products);
 });
 
-// Listar produtos para o painel de quem está logado (Estoque estritamente individual)
+// Listar produtos para o painel de quem está logado (Estoque estritamente individual ou geral se admin)
 app.get('/api/admin/products', authenticateUser, (req, res) => {
     let products = getProducts();
+    const { sellerId } = req.query;
 
-    // Cada vendedor (Fernando ou Luana) acessa estritamente apenas o seu próprio estoque
-    products = products.filter(p => p.sellerId === req.user.id);
+    if (sellerId && sellerId !== 'all') {
+        products = products.filter(p => p.sellerId === sellerId);
+    } else if (sellerId === 'all' && req.user.role === 'admin') {
+        // Admin pode visualizar todos os produtos de todos os vendedores
+    } else {
+        // Por padrão, lista os produtos do usuário logado (ou todos se admin sem filtro específico)
+        if (req.user.role === 'admin') {
+            products = products.filter(p => !p.sellerId || p.sellerId === req.user.id || p.sellerId === 'user-fernando');
+            if (products.length === 0) products = getProducts(); // fallback para exibir produtos cadastrados
+        } else {
+            products = products.filter(p => p.sellerId === req.user.id);
+        }
+    }
 
     res.json(products);
 });

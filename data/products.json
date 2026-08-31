@@ -7,12 +7,12 @@
     "price": 4,
     "weight": "45g",
     "size": "Médio",
-    "stock": 20,
+    "stock": 0,
     "category": "Gourmet",
-    "description": "Deliciosa trufa artesanal recheada com Nutella cremosa e nobre.",
+    "description": "Deliciosa trufa artesanal com casquinha crocante e recheio nobre de Nutella cremosa.",
     "icon": "🍫",
     "active": true,
-    "cost": 1.5
+    "cost": 1.80
   },
   {
     "id": "trufa-ninho",
@@ -22,12 +22,12 @@
     "price": 4,
     "weight": "45g",
     "size": "Médio",
-    "stock": 20,
+    "stock": 0,
     "category": "Gourmet",
-    "description": "Trufa artesanal com recheio cremoso e aveludado de Leite Ninho.",
+    "description": "Trufa artesanal com recheio cremoso e aveludado de puro Leite Ninho.",
     "icon": "🍫",
     "active": true,
-    "cost": 1.5
+    "cost": 1.60
   },
   {
     "id": "trufa-doce-leite",
@@ -37,12 +37,12 @@
     "price": 4,
     "weight": "45g",
     "size": "Médio",
-    "stock": 20,
+    "stock": 0,
     "category": "Gourmet",
     "description": "Deliciosa trufa artesanal recheada com doce de leite artesanal nobre.",
     "icon": "🍯",
     "active": true,
-    "cost": 1.5
+    "cost": 1.46
   },
   {
     "id": "trufa-kit-kat",
@@ -52,12 +52,12 @@
     "price": 4,
     "weight": "45g",
     "size": "Médio",
-    "stock": 20,
+    "stock": 0,
     "category": "Gourmet",
     "description": "Deliciosa trufa artesanal recheada com pedaços crocantes de Kit Kat.",
     "icon": "🍫",
     "active": true,
-    "cost": 1.5
+    "cost": 1.74
   },
   {
     "id": "trufa-morango",
@@ -67,12 +67,12 @@
     "price": 4,
     "weight": "45g",
     "size": "Médio",
-    "stock": 20,
+    "stock": 0,
     "category": "Frutas",
-    "description": "Deliciosa trufa artesanal recheada com morango e chocolate nobre.",
+    "description": "Deliciosa trufa artesanal com recheio sensação de morango e chocolate nobre.",
     "icon": "🍓",
     "active": true,
-    "cost": 1.5
+    "cost": 1.54
   },
   {
     "id": "trufa-ovomaltine",
@@ -82,26 +82,26 @@
     "price": 4,
     "weight": "45g",
     "size": "Médio",
-    "stock": 20,
+    "stock": 0,
     "category": "Gourmet",
     "description": "Deliciosa trufa artesanal recheada com Ovomaltine crocante.",
     "icon": "🍫",
     "active": true,
-    "cost": 1.5
+    "cost": 1.62
   },
   {
-    "id": "trufa-1788179056785",
+    "id": "trufa-maracuja",
     "sellerId": "user-fernando",
     "sellerName": "Fernando",
     "flavor": "Trufa de Maracuja",
     "price": 5,
     "weight": "45g",
     "size": "Médio",
-    "stock": 20,
+    "stock": 0,
     "category": "Frutas",
-    "description": "Deliciosa trufa artesanal com mousse cremosa de maracujá.",
-    "icon": "🍫",
+    "description": "Deliciosa trufa artesanal com mousse cremosa e azedinha de maracujá da fruta.",
+    "icon": "🍋",
     "active": true,
-    "cost": 1.5
+    "cost": 1.54
   }
 ]

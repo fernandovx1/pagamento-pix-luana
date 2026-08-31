@@ -2,77 +2,78 @@
   {
     "flavor": "Nutella",
     "icon": "🍫",
-    "description": "Casquinha de chocolate nobre, brigadeiro cremoso gourmet e coração de pura Nutella.",
+    "description": "Casquinha de chocolate nobre (25g), puro recheio de Nutella cremosa (20g) e embalagem.",
     "ingredients": [
-      { "ingredientId": "ing-chocolate-nobre", "amount": 20, "unit": "g" },
-      { "ingredientId": "ing-leite-condensado", "amount": 12, "unit": "g" },
-      { "ingredientId": "ing-creme-leite", "amount": 5, "unit": "g" },
-      { "ingredientId": "ing-nutella", "amount": 8, "unit": "g" },
-      { "ingredientId": "ing-embalagem", "amount": 1, "unit": "un" }
+      { "ingredientId": "ing-chocolate-barra-2kg", "amount": 25, "unit": "g" },
+      { "ingredientId": "ing-recheio-nutella", "amount": 20, "unit": "g" },
+      { "ingredientId": "ing-embalagem-forminha", "amount": 1, "unit": "un" }
     ],
-    "estimatedCost": 1.75
+    "estimatedCost": 1.80
   },
   {
     "flavor": "Ninho",
     "icon": "🍫",
-    "description": "Casquinha de chocolate nobre e recheio cremoso e aveludado de puro Leite Ninho.",
+    "description": "Casquinha de chocolate nobre (25g), recheio aveludado de Leite Ninho (20g) e embalagem.",
     "ingredients": [
-      { "ingredientId": "ing-chocolate-nobre", "amount": 20, "unit": "g" },
-      { "ingredientId": "ing-leite-condensado", "amount": 15, "unit": "g" },
-      { "ingredientId": "ing-creme-leite", "amount": 5, "unit": "g" },
-      { "ingredientId": "ing-leite-ninho", "amount": 6, "unit": "g" },
-      { "ingredientId": "ing-embalagem", "amount": 1, "unit": "un" }
-    ],
-    "estimatedCost": 1.52
-  },
-  {
-    "flavor": "Doce de leite",
-    "icon": "🍯",
-    "description": "Casquinha de chocolate nobre recheada com doce de leite artesanal premium.",
-    "ingredients": [
-      { "ingredientId": "ing-chocolate-nobre", "amount": 20, "unit": "g" },
-      { "ingredientId": "ing-doce-leite", "amount": 22, "unit": "g" },
-      { "ingredientId": "ing-embalagem", "amount": 1, "unit": "un" }
-    ],
-    "estimatedCost": 1.66
-  },
-  {
-    "flavor": "Kit Kat",
-    "icon": "🍫",
-    "description": "Casquinha de chocolate nobre com brigadeiro e pedaços crocantes de Kit Kat.",
-    "ingredients": [
-      { "ingredientId": "ing-chocolate-nobre", "amount": 20, "unit": "g" },
-      { "ingredientId": "ing-leite-condensado", "amount": 12, "unit": "g" },
-      { "ingredientId": "ing-creme-leite", "amount": 5, "unit": "g" },
-      { "ingredientId": "ing-kitkat", "amount": 0.25, "unit": "un" },
-      { "ingredientId": "ing-embalagem", "amount": 1, "unit": "un" }
-    ],
-    "estimatedCost": 2.08
-  },
-  {
-    "flavor": "Morango",
-    "icon": "🍓",
-    "description": "Casquinha de chocolate nobre com brigadeiro cremoso e redução especial de morango.",
-    "ingredients": [
-      { "ingredientId": "ing-chocolate-nobre", "amount": 20, "unit": "g" },
-      { "ingredientId": "ing-leite-condensado", "amount": 12, "unit": "g" },
-      { "ingredientId": "ing-creme-leite", "amount": 5, "unit": "g" },
-      { "ingredientId": "ing-polpa-morango", "amount": 10, "unit": "g" },
-      { "ingredientId": "ing-embalagem", "amount": 1, "unit": "un" }
+      { "ingredientId": "ing-chocolate-barra-2kg", "amount": 25, "unit": "g" },
+      { "ingredientId": "ing-recheio-ninho", "amount": 20, "unit": "g" },
+      { "ingredientId": "ing-embalagem-forminha", "amount": 1, "unit": "un" }
     ],
     "estimatedCost": 1.60
   },
   {
+    "flavor": "Doce de leite",
+    "icon": "🍯",
+    "description": "Casquinha de chocolate nobre (25g), doce de leite artesanal nobre (20g) e embalagem.",
+    "ingredients": [
+      { "ingredientId": "ing-chocolate-barra-2kg", "amount": 25, "unit": "g" },
+      { "ingredientId": "ing-recheio-doce-leite", "amount": 20, "unit": "g" },
+      { "ingredientId": "ing-embalagem-forminha", "amount": 1, "unit": "un" }
+    ],
+    "estimatedCost": 1.46
+  },
+  {
+    "flavor": "Kit Kat",
+    "icon": "🍫",
+    "description": "Casquinha de chocolate nobre (25g), recheio com pedaços crocantes de Kit Kat (20g) e embalagem.",
+    "ingredients": [
+      { "ingredientId": "ing-chocolate-barra-2kg", "amount": 25, "unit": "g" },
+      { "ingredientId": "ing-recheio-kitkat", "amount": 20, "unit": "g" },
+      { "ingredientId": "ing-embalagem-forminha", "amount": 1, "unit": "un" }
+    ],
+    "estimatedCost": 1.74
+  },
+  {
+    "flavor": "Morango",
+    "icon": "🍓",
+    "description": "Casquinha de chocolate nobre (25g), recheio cremoso sensação de morango (20g) e embalagem.",
+    "ingredients": [
+      { "ingredientId": "ing-chocolate-barra-2kg", "amount": 25, "unit": "g" },
+      { "ingredientId": "ing-recheio-morango", "amount": 20, "unit": "g" },
+      { "ingredientId": "ing-embalagem-forminha", "amount": 1, "unit": "un" }
+    ],
+    "estimatedCost": 1.54
+  },
+  {
     "flavor": "OvoMaltine",
     "icon": "🍫",
-    "description": "Casquinha de chocolate nobre com brigadeiro aveludado e flocos crocantes de Ovomaltine.",
+    "description": "Casquinha de chocolate nobre (25g), recheio cremoso e crocante de Ovomaltine (20g) e embalagem.",
     "ingredients": [
-      { "ingredientId": "ing-chocolate-nobre", "amount": 20, "unit": "g" },
-      { "ingredientId": "ing-leite-condensado", "amount": 12, "unit": "g" },
-      { "ingredientId": "ing-creme-leite", "amount": 5, "unit": "g" },
-      { "ingredientId": "ing-ovomaltine", "amount": 8, "unit": "g" },
-      { "ingredientId": "ing-embalagem", "amount": 1, "unit": "un" }
+      { "ingredientId": "ing-chocolate-barra-2kg", "amount": 25, "unit": "g" },
+      { "ingredientId": "ing-recheio-ovomaltine", "amount": 20, "unit": "g" },
+      { "ingredientId": "ing-embalagem-forminha", "amount": 1, "unit": "un" }
     ],
-    "estimatedCost": 1.70
+    "estimatedCost": 1.62
+  },
+  {
+    "flavor": "Trufa de Maracuja",
+    "icon": "🍋",
+    "description": "Casquinha de chocolate nobre (25g), mousse cremosa de maracujá da fruta (20g) e embalagem.",
+    "ingredients": [
+      { "ingredientId": "ing-chocolate-barra-2kg", "amount": 25, "unit": "g" },
+      { "ingredientId": "ing-recheio-maracuja", "amount": 20, "unit": "g" },
+      { "ingredientId": "ing-embalagem-forminha", "amount": 1, "unit": "un" }
+    ],
+    "estimatedCost": 1.54
   }
 ]

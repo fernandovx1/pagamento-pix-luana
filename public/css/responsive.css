@@ -1,0 +1,48 @@
+        /* Mobile Drawer & Backdrop */
+        .admin-sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 100015;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Responsive Mobile Styles */
+        @media (max-width: 899px) {
+            .admin-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+            }
+            .admin-sidebar.open {
+                transform: translateX(0);
+            }
+            .admin-sidebar-backdrop.open {
+                display: block;
+                opacity: 1;
+            }
+            .admin-sidebar-close-btn {
+                display: flex;
+            }
+            .btn-sidebar-hamburger {
+                display: flex;
+            }
+            .admin-top-bar {
+                padding: 10px 12px;
+            }
+            .admin-main-scroll {
+                padding: 14px 12px 60px;
+            }
+            .admin-current-title {
+                font-size: 1.02rem;
+            }
+            .admin-current-sub {
+                display: none;
+            }
+        }
+

@@ -1,0 +1,302 @@
+        :root {
+            --bg-body: #0c0806;
+            --bg-card: rgba(26, 17, 13, 0.88);
+            --bg-card-hover: rgba(42, 26, 19, 0.95);
+            --choco-primary: #78350f;
+            --choco-dark: #451a03;
+            --amber-gold: #f59e0b;
+            --amber-light: #fbbf24;
+            --amber-glow: rgba(245, 158, 11, 0.3);
+            --pix-blue: #00D1FF;
+            --pix-gradient: linear-gradient(135deg, #0052FF 0%, #00D1FF 100%);
+            --bio-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+            --text-main: #fef3c7;
+            --text-muted: #d6bfa8;
+            --glass-border: rgba(245, 158, 11, 0.22);
+            --glass-border-subtle: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --safe-top: env(safe-area-inset-top, 12px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: calc(100px + var(--safe-bottom));
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fundo Animado & Iluminação Suave */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 15%, rgba(120, 53, 15, 0.35) 0%, transparent 45%),
+                radial-gradient(circle at 90% 75%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(18, 11, 8, 0.98) 0%, #080504 100%);
+        }
+
+        /* ==========================================
+           BORBOLETAS SUAVES QUE PASSAM POR CIMA DE TODAS AS TELAS
+           ========================================== */
+        .butterfly-canvas-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 99999; /* Passa por cima de todas as telas, cards e modais */
+            overflow: hidden;
+        }
+
+        .floating-butterfly {
+            position: absolute;
+            pointer-events: none;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            filter: drop-shadow(0 0 10px rgba(0, 209, 255, 0.6)) drop-shadow(0 0 16px rgba(245, 158, 11, 0.4));
+            will-change: transform, opacity;
+            transition: opacity 1s ease;
+        }
+
+        .butterfly-wing-wrap {
+            display: inline-block;
+            font-size: 1.8rem;
+            animation: butterflyFlap 0.28s ease-in-out infinite alternate;
+            transform-origin: center;
+            user-select: none;
+        }
+
+        @keyframes butterflyFlap {
+            0% { transform: scaleX(1) scaleY(1) rotate(0deg); }
+            100% { transform: scaleX(0.3) scaleY(1.12) rotate(14deg); }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px 14px;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Botão Discreto de Admin - Girassol no Canto Superior Direito */
+        .btn-admin-discrete {
+            position: fixed;
+            top: calc(12px + var(--safe-top));
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            background: rgba(26, 17, 13, 0.85);
+            border: 1.5px solid rgba(245, 158, 11, 0.45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px var(--amber-glow);
+            touch-action: manipulation;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-admin-discrete:hover, .btn-admin-discrete:active {
+            transform: scale(1.15) rotate(15deg);
+            background: rgba(245, 158, 11, 0.25);
+            border-color: var(--amber-gold);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Header Principal */
+        .header {
+            text-align: center;
+            padding: 15px 10px 18px;
+            position: relative;
+        }
+
+        .header-logo-wrap {
+            display: inline-block;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .logo-img {
+            max-width: 220px;
+            width: 70vw;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.3));
+            animation: floatLogo 4s ease-in-out infinite;
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.85rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fffbeb 0%, #fbbf24 60%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+
+        /* Seletor de Estoque / Vendedor (Frente de Caixa) */
+        .seller-switcher-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .seller-tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .seller-tab-btn.active {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(120, 53, 15, 0.4));
+            color: var(--amber-light);
+            border-color: var(--amber-gold);
+            box-shadow: 0 4px 15px var(--amber-glow);
+        }
+
+        /* Barra de Filtros e Busca */
+        .toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px;
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .category-pills::-webkit-scrollbar { display: none; }
+
+        .pill-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .pill-btn:active, .pill-btn.active {
+            background: var(--amber-gold);
+            color: #1a0f0b;
+            border-color: var(--amber-gold);
+            font-weight: 700;
+            box-shadow: 0 3px 12px var(--amber-glow);
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: 25px;
+            padding: 11px 16px 11px 40px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: 0.25s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--amber-gold);
+            box-shadow: 0 0 12px var(--amber-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Grade de Produtos Mobile-First */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;

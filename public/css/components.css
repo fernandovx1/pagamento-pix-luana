@@ -1,0 +1,398 @@
+        /* Chips de Sabores no Card */
+        .schedule-flavors-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 6px 0;
+        }
+
+        .schedule-flavor-chip {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: #fef3c7;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 9px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .schedule-flavor-chip .qty-badge {
+            background: rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 1px 5px;
+            border-radius: 5px;
+        }
+
+        /* Caixa de Resumo de Produção Consolidado */
+        .production-summary-box {
+            background: linear-gradient(135deg, rgba(38, 24, 17, 0.95), rgba(20, 12, 8, 0.95));
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .production-summary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .production-flavor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .production-flavor-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(245, 158, 11, 0.22);
+            border-radius: 10px;
+            padding: 7px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s ease;
+        }
+
+        .production-flavor-badge:hover {
+            transform: scale(1.03);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .production-flavor-badge .p-flavor-name {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .production-flavor-badge .p-flavor-qty {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--amber-gold);
+            margin-top: 2px;
+        }
+
+        /* Seletor de Sabores no Modal */
+        .modal-flavor-picker-container {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px;
+            margin-bottom: 8px;
+            scrollbar-width: thin;
+        }
+
+        .modal-flavor-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+            transition: background 0.15s ease;
+        }
+
+        .modal-flavor-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-flavor-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .modal-flavor-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .modal-flavor-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-flavor-price {
+            font-size: 0.75rem;
+            color: var(--amber-light);
+        }
+
+        .modal-flavor-stepper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stepper-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #fbbf24;
+            font-size: 1.1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .stepper-btn:hover {
+            background: var(--amber-gold);
+            color: #000;
+        }
+
+        .stepper-btn:active {
+            transform: scale(0.92);
+        }
+
+        .stepper-input {
+            width: 44px;
+            height: 30px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .stepper-input:focus {
+            border-color: var(--amber-gold);
+            outline: none;
+        }
+
+        /* ==========================================
+           CONFEITARIA: INSUMOS, FICHAS TÉCNICAS & LISTA DE COMPRAS
+           ========================================== */
+        .confectionery-box-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            margin-bottom: 20px;
+        }
+
+        .confectionery-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .confectionery-box-title {
+            color: var(--amber-gold);
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .recipe-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .recipe-card-item {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .recipe-card-item:hover {
+            border-color: rgba(245, 158, 11, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .recipe-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .recipe-card-flavor {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .recipe-card-cost {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .recipe-ingredients-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        .recipe-ingredient-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        /* Lista de Compras do Mercado */
+        .shopping-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .shopping-item-card {
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .shopping-item-info h5 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #fef3c7;
+            margin: 0 0 3px;
+        }
+
+        .shopping-item-info span {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .shopping-item-qty {
+            text-align: right;
+        }
+
+        .shopping-item-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+        }
+
+        /* ==========================================
+           PORTAL DO CLIENTE DE ENCOMENDAS
+           ========================================== */
+        .client-step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .client-step-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .client-step-dot.active {
+            background: var(--amber-gold);
+            color: #000;
+            border-color: var(--amber-gold);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+        }
+
+        .client-step-line {
+            width: 24px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .client-flavor-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 12px;
+        }
+
+        .client-flavor-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: all 0.15s ease;
+        }
+
+        .client-flavor-card:hover {
+            border-color: rgba(245, 158, 11, 0.35);
+            background: rgba(245, 158, 11, 0.04);
+        }
