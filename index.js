@@ -21,6 +21,19 @@ const NOTES_FILE = path.join(DATA_DIR, 'notes.json');
 const SCHEDULES_FILE = path.join(DATA_DIR, 'schedules.json');
 const INGREDIENTS_FILE = path.join(DATA_DIR, 'ingredients.json');
 const RECIPES_FILE = path.join(DATA_DIR, 'recipes.json');
+const LEGACY_APP_BACKUP_FILE = path.join(__dirname, 'public', 'index.backup.html');
+let legacyAppSource;
+
+function getLegacyAppSource() {
+    if (legacyAppSource) return legacyAppSource;
+
+    const backupHtml = fs.readFileSync(LEGACY_APP_BACKUP_FILE, 'utf-8');
+    const match = backupHtml.match(/<script>\s*([\s\S]*?)\s*<\/script>\s*<\/body>/);
+    if (!match) throw new Error('Script legado não encontrado no backup.');
+
+    legacyAppSource = match[1];
+    return legacyAppSource;
+}
 
 // Garantir diretório e arquivos de dados
 if (!fs.existsSync(DATA_DIR)) {
@@ -401,6 +414,17 @@ app.use((req, res, next) => {
 // ==========================================
 
 // 1. Rota Principal e Vitrine dos Clientes (Design Oficial dos Clientes)
+// Compatibilidade temporária: mantém a lógica original auditada fora do HTML
+// enquanto os módulos são alinhados aos contratos atuais da interface.
+app.get('/js/legacy-app.js', (req, res) => {
+    try {
+        res.type('application/javascript').send(getLegacyAppSource());
+    } catch (error) {
+        console.error('Erro ao carregar script de compatibilidade:', error);
+        res.status(500).type('application/javascript').send('throw new Error("Não foi possível carregar a aplicação.");');
+    }
+});
+
 app.get(['/', '/cardapio', '/loja', '/cliente', '/pedir', '/encomendas', '/pedidos.html'], (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
     res.setHeader('Pragma', 'no-cache');

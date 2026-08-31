@@ -57,7 +57,23 @@ export function toggleClientAddressField(type) {
     }
 }
 
-export function checkReturningClient() {}
+export async function checkReturningClient(phone) {
+    const cleanPhone = String(phone || '').replace(/\D/g, '');
+    if (cleanPhone.length < 10) return;
+
+    try {
+        const res = await fetch(`/api/client/orders/${cleanPhone}`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const nameInput = document.getElementById('clientOrderName');
+        if (data.clientName && nameInput && !nameInput.value) {
+            nameInput.value = data.clientName;
+        }
+    } catch (error) {
+        console.warn('Não foi possível recuperar o nome do cliente.', error);
+    }
+}
 
 export function renderClientBookingFlavors() {
     const container = document.getElementById('clientBookingFlavorsList');
