@@ -400,18 +400,24 @@ app.use((req, res, next) => {
 // 🌐 ROTAS DE PÁGINAS SEPARADAS (CLIENTES vs GESTORES)
 // ==========================================
 
-// 1. Link Exclusivo do Painel Administrativo de Vocês (Fernando & Luana)
-app.get(['/admin', '/login', '/painel', '/gestao'], (req, res) => {
+// 1. Rota Principal e Catálogo Completo dos Clientes & Gestores
+app.get(['/', '/index.html', '/cardapio', '/loja', '/cliente', '/admin', '/login', '/painel', '/gestao'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 2. Link Exclusivo dos Clientes (Cardápio & Encomendas Online)
-app.get(['/', '/pedir', '/encomendas', '/cardapio', '/loja', '/cliente'], (req, res) => {
+// 2. Encomendas / Pedidos
+app.get(['/pedir', '/encomendas', '/pedidos.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.sendFile(path.join(__dirname, 'public', 'pedidos.html'));
 });
 
 app.use(express.static('public', {
-    index: false, // Desativa servir index.html automaticamente na raiz para priorizar pedidos.html
+    index: false,
     etag: false,
     lastModified: false,
     maxAge: 0,

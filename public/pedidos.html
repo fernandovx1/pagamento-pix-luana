@@ -699,8 +699,8 @@
     </div>
 
     <!-- Barra Flutuante de Pedido -->
-    <div class="floating-cart-bar hidden" id="floatingCartBar" onclick="openClientBookingModal()">
-        <div class="floating-cart-info">
+    <div class="floating-cart-bar hidden" id="floatingCartBar">
+        <div class="floating-cart-info" onclick="openClientBookingModal()" style="cursor: pointer; flex: 1;">
             <div class="cart-icon-badge">
                 🍫
                 <span class="cart-count" id="cartBadgeCount">0</span>
@@ -710,9 +710,14 @@
                 <div style="font-size: 1.15rem; font-weight: 800; color: var(--amber-gold);" id="cartTotalVal">R$ 0,00</div>
             </div>
         </div>
-        <button class="btn-finish-cart">
-            Avançar Pedido ➔
-        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="cart-bar-btn-cancel" onclick="clearClientCartPrompt(event)" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 8px 14px; border-radius: 25px; font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; gap: 4px; cursor: pointer;" title="Cancelar e Limpar Carrinho">
+                <span>🗑️</span> <span>Cancelar</span>
+            </button>
+            <button type="button" class="btn-finish-cart" onclick="openClientBookingModal()">
+                Avançar Pedido ➔
+            </button>
+        </div>
     </div>
 
     <!-- MODAL DE ENCOMENDA ONLINE DO CLIENTE -->
@@ -720,7 +725,12 @@
         <div class="modal-card">
             <div class="modal-header">
                 <h3 class="modal-title">🍫 Finalizar Encomenda</h3>
-                <button class="btn-close-modal" onclick="closeClientBookingModal()">✕</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer;" onclick="clearClientCartPrompt(event)">
+                        🗑️ Limpar
+                    </button>
+                    <button class="btn-close-modal" onclick="closeClientBookingModal()">✕</button>
+                </div>
             </div>
             
             <div class="modal-body">
@@ -753,39 +763,19 @@
                 <!-- 2. Data e Entrega (Exclusivo Sextas-Feiras) -->
                 <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border-subtle); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px;">
                     <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
-                        <span>📅 2. Data de Entrega / Retirada</span>
+                        <span>📅 2. Escolha a Sexta-Feira desejada:</span>
                         <span style="font-size: 0.72rem; color: var(--amber-light); font-weight: 700; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.3);">
                             🌟 Toda Sexta-Feira
                         </span>
                     </div>
 
-                    <!-- Banner de Aviso de Sexta-feira -->
-                    <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; font-size: 0.78rem; color: #fef3c7; line-height: 1.4;">
-                        🍫 <strong>Fornadas Especiais:</strong> Nossas entregas e retiradas acontecem <strong>apenas às Sextas-feiras</strong> para garantir trufas fresquinhas!
-                    </div>
-
-                    <div style="font-size: 0.78rem; color: #cbd5e1; font-weight: 600; margin-bottom: 6px;">Escolha a Sexta-Feira desejada:</div>
-                    <div class="date-quick-chips" id="fridayChipsContainer" style="margin-bottom: 10px;">
+                    <div class="date-quick-chips" id="fridayChipsContainer" style="margin-bottom: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px;">
                         <!-- Chips das próximas sextas-feiras gerados dinamicamente via JS -->
                     </div>
-
-                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px; margin-bottom: 8px;">
-                        <div class="input-group" style="margin-bottom: 0;">
-                            <label for="orderCustDate">Ou escolha no Calendário:</label>
-                            <div class="input-wrapper">
-                                <input type="date" id="orderCustDate" style="color: #fff; font-weight: 600;" onchange="handleDateChange(this)">
-                            </div>
-                        </div>
-                        <div class="input-group" style="margin-bottom: 0;">
-                            <label for="orderCustTime">Horário Previsto</label>
-                            <div class="input-wrapper">
-                                <input type="time" id="orderCustTime" value="15:00" style="color: #fff; font-weight: 600;">
-                            </div>
-                        </div>
-                    </div>
+                    <input type="hidden" id="orderCustDate">
 
                     <div class="input-group" style="margin-bottom: 8px; margin-top: 10px;">
-                        <label>Tipo de Recebimento:</label>
+                        <label style="font-weight: 700; font-size: 0.82rem; color: #fef3c7;">Tipo de Recebimento: *</label>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                             <label style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
                                 <input type="radio" name="deliveryType" value="delivery" checked onchange="toggleAddressField(true)">
@@ -809,9 +799,10 @@
                 <!-- 3. Pagamento & Observação -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
                     <div class="input-group" style="margin-bottom: 0;">
-                        <label for="orderPaymentPref">Forma de Pagamento:</label>
+                        <label for="orderPaymentPref" style="font-weight: 700; font-size: 0.82rem; color: #fef3c7;">Forma de Pagamento: *</label>
                         <div class="input-wrapper">
-                            <select id="orderPaymentPref">
+                            <select id="orderPaymentPref" onchange="handlePedidosPaymentMethodChange()" style="font-size: 0.82rem; font-weight: 600;">
+                                <option value="pay_day_next_month" selected>📅 Pagar no Pagamento (5º Dia Útil)</option>
                                 <option value="pay_delivery">💵 Pagar na Entrega / Retirada</option>
                                 <option value="pix_deposit">⚡ Sinal 50% Pix (Garante produção)</option>
                                 <option value="pix_total">⚡ Total 100% Pix (Antecipado)</option>
@@ -1061,13 +1052,114 @@
             document.getElementById('clientBookingModal').classList.remove('active');
         }
 
-        function getUpcomingFridays(count = 4) {
+        function getFifthBusinessDayOfNextMonth(baseDate = new Date()) {
+            let year = baseDate.getFullYear();
+            let month = baseDate.getMonth() + 1;
+            if (month > 11) {
+                month = 0;
+                year += 1;
+            }
+            
+            const fixedHolidays = [
+                '01-01', '04-21', '05-01', '09-07', '10-12', '11-02', '11-15', '11-20', '12-25'
+            ];
+            
+            let businessDays = 0;
+            let day = 1;
+            let targetDate = null;
+            
+            while (businessDays < 5 && day <= 31) {
+                const d = new Date(year, month, day);
+                if (d.getMonth() !== month) break;
+                
+                const dow = d.getDay();
+                const mm = String(month + 1).padStart(2, '0');
+                const dd = String(day).padStart(2, '0');
+                const holidayKey = `${mm}-${dd}`;
+                
+                if (dow !== 0 && dow !== 6 && !fixedHolidays.includes(holidayKey)) {
+                    businessDays++;
+                    if (businessDays === 5) {
+                        targetDate = d;
+                        break;
+                    }
+                }
+                day++;
+            }
+            
+            if (!targetDate) targetDate = new Date(year, month, 7);
+            
+            const dayStr = String(targetDate.getDate()).padStart(2, '0');
+            const monthStr = String(targetDate.getMonth() + 1).padStart(2, '0');
+            const yearStr = targetDate.getFullYear();
+            
+            return {
+                date: targetDate,
+                formattedShort: `${dayStr}/${monthStr}`,
+                formattedFull: `${dayStr}/${monthStr}/${yearStr}`,
+                iso: `${yearStr}-${monthStr}-${dayStr}`
+            };
+        }
+
+        function clearClientCartPrompt(event) {
+            if (event) event.stopPropagation();
+            Swal.fire({
+                title: 'Cancelar Pedido?',
+                text: 'Deseja realmente cancelar e limpar todos os itens do carrinho?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '🗑️ Sim, Cancelar',
+                cancelButtonText: 'Continuar Comprando',
+                background: '#170f0b',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    clientCart = {};
+                    updateCartBar();
+                    renderTruffles();
+                    closeClientBookingModal();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Carrinho Cancelado',
+                        text: 'Os itens foram removidos do carrinho.',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#170f0b',
+                        color: '#fff'
+                    });
+                }
+            });
+        }
+
+        function handlePedidosPaymentMethodChange() {
+            const select = document.getElementById('orderPaymentPref');
+            const method = select ? select.value : 'pay_day_next_month';
+            const btn = document.getElementById('btnSubmitOrder');
+            const fifthBiz = getFifthBusinessDayOfNextMonth();
+            if (!btn) return;
+
+            if (method === 'pay_day_next_month') {
+                btn.style.background = 'linear-gradient(135deg, #d97706, #f59e0b)';
+                btn.innerHTML = `📅 Confirmar Encomenda (Pagar no 5º Dia Útil - ${fifthBiz.formattedShort}) ➔`;
+            } else if (method === 'pay_delivery') {
+                btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                btn.innerHTML = `💵 Confirmar Encomenda (Pagar na Entrega) ➔`;
+            } else if (method === 'pix_deposit') {
+                btn.style.background = 'linear-gradient(135deg, #00D1FF, #0077b6)';
+                btn.innerHTML = `⚡ Confirmar Encomenda (Sinal 50% Pix) ➔`;
+            } else {
+                btn.style.background = 'linear-gradient(135deg, #00D1FF, #0077b6)';
+                btn.innerHTML = `⚡ Confirmar Encomenda (Total 100% Pix) ➔`;
+            }
+        }
+
+        function getUpcomingFridays(count = 8) {
             const fridays = [];
             let current = new Date();
             
-            // Sexta-feira = 5 (0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab)
             let daysUntilFriday = (5 - current.getDay() + 7) % 7;
-            // Se hoje já for sexta e for após 18h, pula para a próxima semana
             if (daysUntilFriday === 0 && current.getHours() >= 18) {
                 daysUntilFriday = 7;
             }
@@ -1081,7 +1173,7 @@
                 const dayNum = String(d.getDate()).padStart(2, '0');
                 
                 let label = `Sexta (${dayNum}/${m})`;
-                if (i === 0) label = `Sexta Próxima (${dayNum}/${m})`;
+                if (i === 0) label = (daysUntilFriday === 0) ? `Hoje (${dayNum}/${m})` : `Sexta Próxima (${dayNum}/${m})`;
                 else if (i === 1) label = `Sexta Seguinte (${dayNum}/${m})`;
 
                 fridays.push({
@@ -1096,10 +1188,10 @@
         function renderFridayDateChips() {
             const container = document.getElementById('fridayChipsContainer');
             if (!container) return;
-            const fridays = getUpcomingFridays(4);
+            const fridays = getUpcomingFridays(8);
 
             container.innerHTML = fridays.map((f, idx) => `
-                <button type="button" class="date-chip-btn ${idx === 0 ? 'selected-friday' : ''}" onclick="selectFridayDate('${f.dateIso}', this)">
+                <button type="button" class="date-chip-btn ${idx === 0 ? 'selected-friday' : ''}" onclick="selectFridayDate('${f.dateIso}', this)" style="padding: 7px 10px; font-size: 0.78rem; text-align: center; justify-content: center;">
                     📅 ${f.label}
                 </button>
             `).join('');
@@ -1107,8 +1199,14 @@
             const dateInput = document.getElementById('orderCustDate');
             if (dateInput && fridays.length > 0) {
                 dateInput.value = fridays[0].dateIso;
-                dateInput.min = fridays[0].dateIso; // Não permite selecionar datas passadas
             }
+
+            const select = document.getElementById('orderPaymentPref');
+            if (select && select.options.length > 0) {
+                const fifthBiz = getFifthBusinessDayOfNextMonth();
+                select.options[0].text = `📅 Pagar no Pagamento (5º Dia Útil - ${fifthBiz.formattedShort})`;
+            }
+            handlePedidosPaymentMethodChange();
         }
 
         function selectFridayDate(isoDate, btnEl) {
@@ -1290,18 +1388,21 @@
             const items = Object.values(clientCart).filter(i => (i.quantity || 0) > 0);
             const totalAmount = items.reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
 
-            let depositAmount = 0;
-            let paymentStatus = 'pending';
-            let paymentMethodLabel = 'Na Entrega / Retirada';
+            const isPayDay = paymentPref === 'pay_day_next_month';
+            const fifthBiz = getFifthBusinessDayOfNextMonth();
+            let paymentDueDate = '';
+            let paymentMethodLabel = '💵 Pagar na Entrega / Retirada';
 
-            if (paymentPref === 'pix_deposit') {
-                depositAmount = totalAmount / 2;
-                paymentStatus = 'deposit_paid';
-                paymentMethodLabel = 'Sinal 50% Pix';
+            if (isPayDay) {
+                paymentMethodLabel = `📅 Pagar no Pagamento (5º Dia Útil - ${fifthBiz.formattedShort})`;
+                paymentDueDate = fifthBiz.iso;
+            } else if (paymentPref === 'pay_delivery') {
+                paymentMethodLabel = '💵 Pagar na Entrega / Retirada';
+                paymentDueDate = scheduleDate;
+            } else if (paymentPref === 'pix_deposit') {
+                paymentMethodLabel = '⚡ Sinal 50% Pix (Garante produção)';
             } else if (paymentPref === 'pix_total') {
-                depositAmount = totalAmount;
-                paymentStatus = 'paid';
-                paymentMethodLabel = 'Total 100% Pix';
+                paymentMethodLabel = '⚡ Total 100% Pix (Antecipado)';
             }
 
             localStorage.setItem('client_booking_phone', customerPhone);
@@ -1312,21 +1413,25 @@
             btn.innerHTML = '⏳ Enviando Pedido...';
             btn.disabled = true;
 
+            const deliveryTypeLabel = deliveryType === 'delivery' ? 'Entrega' : 'Retirada';
+            const [sy, sm, sd] = scheduleDate.split('-');
+            const formattedScheduleDate = `${sd}/${sm}/${sy}`;
+            const itemsSummary = items.map(i => `${i.quantity}x ${i.flavor}`).join(', ');
+
             try {
-                const res = await fetch('/api/client/orders', {
+                const res = await fetch('/api/create-direct-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         customerName,
                         customerPhone,
-                        deliveryType,
+                        deliveryType: deliveryTypeLabel,
                         deliveryAddress,
-                        scheduleDate,
-                        scheduleTime,
-                        items,
-                        paymentStatus,
+                        deliveryDate: `Sexta-Feira (${formattedScheduleDate})`,
+                        paymentDueDate: paymentDueDate,
+                        paymentCondition: 'pay_later',
                         paymentMethod: paymentMethodLabel,
-                        depositAmount,
+                        items,
                         notes
                     })
                 });
@@ -1340,7 +1445,7 @@
                     updateCartBar();
                     renderTruffles();
 
-                    const waText = data.whatsappMessageText || '';
+                    const waMsg = encodeURIComponent(`Olá Luana & Fernando! Fiz meu pedido de trufas gourmet (${itemsSummary}) no valor de R$ ${totalAmount.toFixed(2).replace('.', ',')} para entrega na Sexta-Feira (${formattedScheduleDate}) - ${deliveryTypeLabel}.\n💰 Forma de Pagamento: ${paymentMethodLabel}${isPayDay ? ' (Vencimento: ' + fifthBiz.formattedFull + ')' : ''}${deliveryAddress ? '\n📍 Endereço: ' + deliveryAddress : ''}${notes ? '\n📝 Obs: ' + notes : ''}\nMuito obrigado!`);
 
                     Swal.fire({
                         icon: 'success',
@@ -1348,9 +1453,15 @@
                         html: `
                             <div style="text-align: left; font-size: 0.95rem; line-height: 1.5; color: #ddd;">
                                 <p>Muito obrigado, <strong>${customerName}</strong>!</p>
-                                <p style="margin-top: 6px;">Recebemos sua encomenda para <strong>Sexta-feira</strong> com sucesso.</p>
+                                <p style="margin-top: 6px;">Recebemos seu pedido com sucesso e o estoque está garantido.</p>
+                                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; margin: 12px 0; font-size: 0.88rem;">
+                                    <strong>📅 Entrega:</strong> Sexta-Feira (${formattedScheduleDate}) - ${deliveryTypeLabel}<br>
+                                    <strong>💰 Pagamento:</strong> ${paymentMethodLabel}<br>
+                                    ${isPayDay ? `<strong>🗓️ Data do Vencimento:</strong> ${fifthBiz.formattedFull} (5º dia útil)<br>` : ''}
+                                    <strong>🍫 Total:</strong> R$ ${totalAmount.toFixed(2).replace('.', ',')}
+                                </div>
                                 <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 10px; margin: 12px 0;">
-                                    <p style="color: #34d399; font-weight: 700; margin: 0;">📲 Clique abaixo para enviar a confirmação no WhatsApp de Luana & Fernando:</p>
+                                    <p style="color: #34d399; font-weight: 700; margin: 0;">📲 Clique abaixo para enviar a confirmação no WhatsApp:</p>
                                 </div>
                             </div>
                         `,
@@ -1362,7 +1473,7 @@
                         cancelButtonText: 'Concluir'
                     }).then((r) => {
                         if (r.isConfirmed) {
-                            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`;
+                            const waUrl = `https://wa.me/?text=${waMsg}`;
                             window.open(waUrl, '_blank');
                         }
                     });
@@ -1374,6 +1485,7 @@
             } finally {
                 btn.innerHTML = origHtml;
                 btn.disabled = false;
+                handlePedidosPaymentMethodChange();
             }
         }
 
