@@ -618,17 +618,61 @@
         }
 
         .cart-bar-btn {
-            background: var(--pix-gradient);
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
             border: none;
             color: #fff;
-            padding: 10px 16px;
+            padding: 10px 18px;
             border-radius: 20px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             display: flex;
             align-items: center;
-            gap: 4px;
-            box-shadow: 0 4px 12px rgba(0, 209, 255, 0.35);
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .cart-bar-btn:hover {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            transform: scale(1.02);
+        }
+
+        .cart-bar-btn-cancel {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1.5px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+            padding: 9px 13px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .cart-bar-btn-cancel:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: #ef4444;
+            color: #fff;
+            transform: scale(1.02);
+        }
+
+        .cart-bar-btn-cancel:active {
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 400px) {
+            .cart-bar-btn-cancel span.cancel-txt {
+                display: none;
+            }
+            .cart-bar-btn-cancel {
+                padding: 9px 10px;
+            }
         }
 
         /* Modais */
@@ -1028,6 +1072,80 @@
             border-color: var(--amber-gold);
             color: #000;
             font-weight: 700;
+        }
+
+        /* Seletor de Sextas-Feiras & Tipo de Recebimento (Checkout) */
+        .friday-chips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .friday-chip-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px;
+            color: #e2e8f0;
+            padding: 9px 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .friday-chip-btn:hover {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--amber-gold);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .friday-chip-btn.active {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
+            border-color: var(--amber-gold);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 0 14px var(--amber-glow);
+        }
+
+        .delivery-type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .delivery-type-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid var(--glass-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .delivery-type-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 209, 255, 0.4);
+        }
+
+        .delivery-type-card.active {
+            background: rgba(0, 209, 255, 0.12);
+            border-color: #00D1FF;
+            box-shadow: 0 0 14px rgba(0, 209, 255, 0.25);
         }
 
         .order-summary-pill {
@@ -2395,10 +2513,10 @@
     </div>
 
     <!-- Barra Flutuante de Carrinho -->
-    <div class="floating-cart-bar hidden" id="floatingCart" onclick="openCartModal()">
-        <div class="cart-bar-info">
+    <div class="floating-cart-bar hidden" id="floatingCart">
+        <div class="cart-bar-info" onclick="openCartModal()" style="cursor: pointer; flex: 1; display: flex; align-items: center; gap: 10px;">
             <div class="cart-icon-badge">
-                🛒
+                🍫
                 <span class="cart-count" id="cartBadgeCount">0</span>
             </div>
             <div>
@@ -2406,9 +2524,14 @@
                 <div class="cart-bar-total" id="cartBarTotal">R$ 0,00</div>
             </div>
         </div>
-        <button class="cart-bar-btn">
-            Ver Pedido ➔
-        </button>
+        <div class="cart-bar-actions" style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="cart-bar-btn-cancel" onclick="clearCartPrompt(event)" title="Cancelar e Limpar Carrinho">
+                <span>🗑️</span> <span class="cancel-txt">Cancelar</span>
+            </button>
+            <button type="button" class="cart-bar-btn" onclick="openCartModal()">
+                Avançar Pedido ➔
+            </button>
+        </div>
     </div>
 
     <!-- MODAL DO CARRINHO & CHECKOUT -->
@@ -2416,7 +2539,12 @@
         <div class="modal-card">
             <div class="modal-header">
                 <h3 class="modal-title">🛒 Seu Carrinho</h3>
-                <button class="btn-close-modal" onclick="closeCartModal()">✕</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="pill-btn" style="padding: 5px 10px; font-size: 0.76rem; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #fca5a5; display: flex; align-items: center; gap: 4px;" onclick="clearCartPrompt(event)" title="Limpar Carrinho">
+                        🗑️ Limpar
+                    </button>
+                    <button class="btn-close-modal" onclick="closeCartModal()">✕</button>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="cart-items-list" id="cartItemsContainer"></div>
@@ -2453,13 +2581,65 @@
                         <input type="email" id="custEmail" placeholder="seu@email.com">
                     </div>
                 </div>
+
+                <!-- SELEÇÃO DE SEXTA-FEIRA E TIPO DE RECEBIMENTO -->
+                <div style="margin-top: 14px; margin-bottom: 6px; border-top: 1px dashed var(--glass-border); padding-top: 14px;">
+                    <label style="font-size: 0.88rem; font-weight: 700; color: var(--amber-light); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <span>📅</span> Escolha a Sexta-Feira desejada: *
+                    </label>
+                    
+                    <div class="friday-chips-grid" id="cartFridayChips"></div>
+
+                    <label style="font-size: 0.88rem; font-weight: 700; color: var(--amber-light); margin-top: 14px; margin-bottom: 8px; display: block;">
+                        Tipo de Recebimento: *
+                    </label>
+                    <div class="delivery-type-grid">
+                        <div class="delivery-type-card active" id="cartDeliveryTypeEntrega" onclick="setCartDeliveryType('Entrega')">
+                            <input type="radio" name="cartDeliveryRadio" id="radioEntrega" checked style="accent-color: #00D1FF; width: 16px; height: 16px; pointer-events: none;">
+                            <span style="font-size: 1.1rem;">🛵</span>
+                            <span style="font-weight: 600; font-size: 0.92rem; color: #fff;">Entrega</span>
+                        </div>
+                        <div class="delivery-type-card" id="cartDeliveryTypeRetirada" onclick="setCartDeliveryType('Retirada')">
+                            <input type="radio" name="cartDeliveryRadio" id="radioRetirada" style="accent-color: #00D1FF; width: 16px; height: 16px; pointer-events: none;">
+                            <span style="font-size: 1.1rem;">🏪</span>
+                            <span style="font-weight: 600; font-size: 0.92rem; color: #fff;">Retirada</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="cartDeliveryAddressGroup" style="margin-top: 10px; margin-bottom: 0;">
+                        <label for="cartDeliveryAddress">Endereço de Entrega (Rua, Número, Bairro) *</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            <input type="text" id="cartDeliveryAddress" placeholder="Ex: Rua das Palmeiras, 250 - Centro">
+                        </div>
+                    </div>
+
+                    <!-- FORMA DE PAGAMENTO & OBSERVAÇÃO -->
+                    <div class="cart-checkout-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;">
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label for="cartPaymentMethod">Forma de Pagamento: *</label>
+                            <div class="input-wrapper">
+                                <select id="cartPaymentMethod" onchange="handleCartPaymentMethodChange()" style="padding-left: 10px; font-weight: 600; font-size: 0.82rem; color: #fff; background: rgba(26, 17, 13, 0.95); border: 1.5px solid var(--glass-border); border-radius: var(--radius-sm); height: 44px; width: 100%; cursor: pointer;">
+                                    <option value="pay_day_next_month" selected>📅 Pagar no Pagamento (5º Dia Útil)</option>
+                                    <option value="pay_on_delivery">💵 Pagar na Entrega / Retirada</option>
+                                    <option value="pix_50">⚡ Sinal 50% Pix (Garante produção)</option>
+                                    <option value="pix_100">⚡ Total 100% Pix (Antecipado)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label for="cartOrderNotes">Observação:</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="cartOrderNotes" placeholder="Ex: Caixa de presente, deixar na portaria...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer" style="display: flex; flex-direction: column; gap: 8px;">
-                <button class="btn-checkout-pix" id="btnCheckoutPix" onclick="submitPixOrder()">
-                    ⚡ Gerar Pix Instantâneo
-                </button>
-                <button class="btn-checkout-direct" id="btnCheckoutDirect" onclick="openDirectOrderModal()">
-                    💵 Pago no Balcão / Dinheiro (Baixar Estoque)
+                <button class="btn-checkout-pix" id="btnCheckoutPix" onclick="submitCartOrder()">
+                    📅 Confirmar Pedido (Pagar no 5º Dia Útil)
                 </button>
             </div>
         </div>
@@ -2541,6 +2721,7 @@
                     </div>
                     <!-- Botões Rápidos de Data -->
                     <div class="date-quick-chips">
+                        <button type="button" class="date-chip-btn" onclick="setQuickDueFifthBusinessDay()">📅 5º Dia Útil (Pagamento)</button>
                         <button type="button" class="date-chip-btn" onclick="setQuickDueDate(0, 'Hoje')">Hoje</button>
                         <button type="button" class="date-chip-btn" onclick="setQuickDueDate(1, 'Amanhã')">Amanhã</button>
                         <button type="button" class="date-chip-btn" onclick="setQuickDueDateNextDay(5, 'Sexta')">Sexta-feira</button>
@@ -4471,13 +4652,263 @@
             }
         }
 
+        // ==========================================
+        // CÁLCULO DO 5º DIA ÚTIL DO PRÓXIMO MÊS
+        // ==========================================
+        function getFifthBusinessDayOfNextMonth(baseDate = new Date()) {
+            let year = baseDate.getFullYear();
+            let month = baseDate.getMonth() + 1; // 0-indexed: próximo mês
+            if (month > 11) {
+                month = 0;
+                year += 1;
+            }
+            
+            // Feriados nacionais fixos no Brasil (MM-DD)
+            const fixedHolidays = [
+                '01-01', // Confraternização Universal
+                '04-21', // Tiradentes
+                '05-01', // Dia do Trabalho
+                '09-07', // Independência do Brasil
+                '10-12', // Nossa Senhora Aparecida
+                '11-02', // Finados
+                '11-15', // Proclamação da República
+                '11-20', // Consciência Negra
+                '12-25'  // Natal
+            ];
+            
+            let businessDays = 0;
+            let day = 1;
+            let targetDate = null;
+            
+            while (businessDays < 5 && day <= 31) {
+                const d = new Date(year, month, day);
+                if (d.getMonth() !== month) break;
+                
+                const dow = d.getDay(); // 0 = Domingo, 6 = Sábado
+                const mm = String(month + 1).padStart(2, '0');
+                const dd = String(day).padStart(2, '0');
+                const holidayKey = `${mm}-${dd}`;
+                
+                if (dow !== 0 && dow !== 6 && !fixedHolidays.includes(holidayKey)) {
+                    businessDays++;
+                    if (businessDays === 5) {
+                        targetDate = d;
+                        break;
+                    }
+                }
+                day++;
+            }
+            
+            if (!targetDate) {
+                targetDate = new Date(year, month, 7);
+            }
+            
+            const dayStr = String(targetDate.getDate()).padStart(2, '0');
+            const monthStr = String(targetDate.getMonth() + 1).padStart(2, '0');
+            const yearStr = targetDate.getFullYear();
+            
+            return {
+                date: targetDate,
+                dayStr,
+                monthStr,
+                yearStr,
+                formattedShort: `${dayStr}/${monthStr}`,
+                formattedFull: `${dayStr}/${monthStr}/${yearStr}`,
+                iso: `${yearStr}-${monthStr}-${dayStr}`
+            };
+        }
+
+        // ==========================================
+        // SELETOR DE SEXTAS-FEIRAS & ENTREGA (CHECKOUT)
+        // ==========================================
+        let selectedCartFriday = null;
+        let selectedCartDeliveryType = 'Entrega';
+
+        function getUpcomingFridays(count = 8) {
+            const fridays = [];
+            const now = new Date();
+            
+            // 0 = Domingo, 1 = Segunda, ..., 5 = Sexta, 6 = Sábado
+            let d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const dayOfWeek = d.getDay();
+            let daysUntilFriday = (5 - dayOfWeek + 7) % 7;
+            
+            // Se hoje é sexta-feira após as 17:00, pula para a próxima
+            if (daysUntilFriday === 0 && now.getHours() >= 17) {
+                daysUntilFriday = 7;
+            }
+            
+            d.setDate(d.getDate() + daysUntilFriday);
+            
+            for (let i = 0; i < count; i++) {
+                const curDate = new Date(d);
+                curDate.setDate(d.getDate() + (i * 7));
+                
+                const dayNum = String(curDate.getDate()).padStart(2, '0');
+                const monthNum = String(curDate.getMonth() + 1).padStart(2, '0');
+                const yearNum = curDate.getFullYear();
+                const shortFormatted = `${dayNum}/${monthNum}`;
+                const iso = `${yearNum}-${monthNum}-${dayNum}`;
+                
+                let label = '';
+                if (i === 0) {
+                    label = (daysUntilFriday === 0) ? `Hoje (${shortFormatted})` : `Sexta Próxima (${shortFormatted})`;
+                } else if (i === 1) {
+                    label = `Sexta Seguinte (${shortFormatted})`;
+                } else {
+                    label = `Sexta (${shortFormatted})`;
+                }
+                
+                fridays.push({
+                    label: label,
+                    shortFormatted: shortFormatted,
+                    fullFormatted: `Sexta-Feira (${shortFormatted})`,
+                    iso: iso
+                });
+            }
+            return fridays;
+        }
+
+        function initCartFridayPicker() {
+            const container = document.getElementById('cartFridayChips');
+            if (!container) return;
+            
+            const fridays = getUpcomingFridays(8);
+            if (!selectedCartFriday || !fridays.some(f => f.iso === selectedCartFriday.iso)) {
+                selectedCartFriday = fridays[0];
+            }
+            
+            container.innerHTML = fridays.map(f => {
+                const isActive = selectedCartFriday && selectedCartFriday.iso === f.iso;
+                return `
+                    <button type="button" 
+                            class="friday-chip-btn ${isActive ? 'active' : ''}" 
+                            onclick="selectCartFriday('${f.iso}', '${f.label}', '${f.fullFormatted}', '${f.shortFormatted}')">
+                        <span>📅</span>
+                        <span>${f.label}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectCartFriday(iso, label, fullFormatted, shortFormatted) {
+            selectedCartFriday = { iso, label, fullFormatted, shortFormatted };
+            initCartFridayPicker();
+        }
+
+        function setCartDeliveryType(type) {
+            selectedCartDeliveryType = type;
+            const cardEntrega = document.getElementById('cartDeliveryTypeEntrega');
+            const cardRetirada = document.getElementById('cartDeliveryTypeRetirada');
+            const radioEntrega = document.getElementById('radioEntrega');
+            const radioRetirada = document.getElementById('radioRetirada');
+            const addressGroup = document.getElementById('cartDeliveryAddressGroup');
+            
+            if (type === 'Entrega') {
+                cardEntrega?.classList.add('active');
+                cardRetirada?.classList.remove('active');
+                if (radioEntrega) radioEntrega.checked = true;
+                if (radioRetirada) radioRetirada.checked = false;
+                if (addressGroup) addressGroup.style.display = 'block';
+            } else {
+                cardEntrega?.classList.remove('active');
+                cardRetirada?.classList.add('active');
+                if (radioEntrega) radioEntrega.checked = false;
+                if (radioRetirada) radioRetirada.checked = true;
+                if (addressGroup) addressGroup.style.display = 'none';
+            }
+        }
+
+        function initCartPaymentMethods() {
+            const select = document.getElementById('cartPaymentMethod');
+            if (!select) return;
+            const fifthBiz = getFifthBusinessDayOfNextMonth();
+            
+            if (select.options && select.options.length > 0) {
+                select.options[0].text = `📅 Pagar no Pagamento (5º Dia Útil - ${fifthBiz.formattedShort})`;
+            }
+            handleCartPaymentMethodChange();
+        }
+
+        function handleCartPaymentMethodChange() {
+            const select = document.getElementById('cartPaymentMethod');
+            const method = select ? select.value : 'pay_day_next_month';
+            const btn = document.getElementById('btnCheckoutPix');
+            const total = calculateCartTotal();
+            const fifthBiz = getFifthBusinessDayOfNextMonth();
+            
+            if (!btn) return;
+            
+            if (method === 'pay_day_next_month') {
+                btn.style.background = 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)';
+                btn.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.4)';
+                btn.innerHTML = `📅 Confirmar Pedido (Pagar no 5º Dia Útil - ${fifthBiz.formattedShort})`;
+            } else if (method === 'pay_on_delivery') {
+                btn.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+                btn.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                btn.innerHTML = `💵 Confirmar Pedido (Pagar na Entrega)`;
+            } else if (method === 'pix_50') {
+                const half = total / 2;
+                btn.style.background = 'var(--pix-gradient)';
+                btn.style.boxShadow = '0 6px 20px rgba(0, 209, 255, 0.4)';
+                btn.innerHTML = `⚡ Gerar Pix 50% (Sinal R$ ${half.toFixed(2).replace('.', ',')})`;
+            } else { // pix_100
+                btn.style.background = 'var(--pix-gradient)';
+                btn.style.boxShadow = '0 6px 20px rgba(0, 209, 255, 0.4)';
+                btn.innerHTML = `⚡ Gerar Pix 100% (R$ ${total.toFixed(2).replace('.', ',')})`;
+            }
+        }
+
+        function setQuickDueFifthBusinessDay() {
+            const fifthBiz = getFifthBusinessDayOfNextMonth();
+            document.getElementById('directPaymentDueDate').value = fifthBiz.iso;
+            document.querySelectorAll('.date-chip-btn').forEach(btn => {
+                if (btn.innerText.includes('5º Dia Útil')) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
         function openCartModal() {
             renderCartModalItems();
+            initCartFridayPicker();
+            initCartPaymentMethods();
             document.getElementById('cartModal').classList.add('active');
         }
 
         function closeCartModal() {
             document.getElementById('cartModal').classList.remove('active');
+        }
+
+        function clearCartPrompt(event) {
+            if (event) event.stopPropagation();
+            
+            Swal.fire({
+                title: 'Cancelar Pedido?',
+                text: 'Deseja realmente cancelar e limpar todos os itens do carrinho?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '🗑️ Sim, Cancelar',
+                cancelButtonText: 'Continuar Comprando',
+                background: '#150e0a',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cart = {};
+                    updateCartDisplay();
+                    closeCartModal();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Carrinho Cancelado',
+                        text: 'Seu carrinho foi limpo com sucesso.',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
+                }
+            });
         }
 
         function renderCartModalItems() {
@@ -4511,37 +4942,161 @@
             }).join('');
         }
 
-        async function submitPixOrder() {
-            const items = Object.values(cart).map(i => ({ id: i.product.id, quantity: i.quantity }));
+        async function submitCartOrder() {
+            const items = Object.values(cart).map(i => ({ 
+                id: i.product.id, 
+                productId: i.product.id,
+                flavor: i.product.flavor,
+                quantity: i.quantity 
+            }));
             if (items.length === 0) return;
 
             const customerName = document.getElementById('custName').value.trim() || 'Cliente Balcão';
             const customerPhone = document.getElementById('custPhone').value.trim();
             const customerEmail = document.getElementById('custEmail').value.trim();
+            const deliveryAddress = (selectedCartDeliveryType === 'Entrega' ? document.getElementById('cartDeliveryAddress')?.value?.trim() : '') || '';
+            const paymentMethodSelect = document.getElementById('cartPaymentMethod')?.value || 'pay_day_next_month';
+            const notes = document.getElementById('cartOrderNotes')?.value?.trim() || '';
+
+            if (selectedCartDeliveryType === 'Entrega' && !deliveryAddress) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Endereço Obrigatório',
+                    text: 'Por favor, informe seu endereço de entrega (Rua, Número, Bairro) para receber as trufas.',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+                document.getElementById('cartDeliveryAddress')?.focus();
+                return;
+            }
+
+            const deliveryDate = selectedCartFriday ? selectedCartFriday.fullFormatted : 'Sexta-Feira';
+            const deliveryType = selectedCartDeliveryType;
+            const fifthBiz = getFifthBusinessDayOfNextMonth();
+            const totalVal = calculateCartTotal();
+            const itemsSummary = items.map(i => `${i.quantity}x ${i.flavor}`).join(', ');
 
             const btn = document.getElementById('btnCheckoutPix');
             btn.disabled = true;
-            btn.innerHTML = `<div class="spinner" style="width: 18px; height: 18px;"></div> Gerando Pix...`;
 
-            try {
-                const response = await fetch('/api/create-pix', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items, customerName, customerPhone, customerEmail })
-                });
+            // 1. Caso: Pagar no Pagamento (5º Dia Útil) ou Pagar na Entrega
+            if (paymentMethodSelect === 'pay_day_next_month' || paymentMethodSelect === 'pay_on_delivery') {
+                const isPayDay = paymentMethodSelect === 'pay_day_next_month';
+                const paymentMethodName = isPayDay 
+                    ? `📅 Pagar no Pagamento (5º Dia Útil - ${fifthBiz.formattedShort})` 
+                    : `💵 Pagar na Entrega / Retirada`;
+                const paymentDueDate = isPayDay ? fifthBiz.iso : (selectedCartFriday ? selectedCartFriday.iso : '');
 
-                const data = await response.json();
-                if (!response.ok || data.error) throw new Error(data.error || 'Falha ao gerar o Pix.');
+                btn.innerHTML = `<div class="spinner" style="width: 18px; height: 18px;"></div> Registrando Pedido...`;
 
-                closeCartModal();
-                showPixPaymentModal(data);
-            } catch (err) {
-                Swal.fire({ icon: 'error', title: 'Aviso', text: err.message, background: '#150e0a', color: '#fff' });
-                loadProducts();
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `⚡ Gerar Pix Instantâneo`;
+                try {
+                    const response = await fetch('/api/create-direct-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            items,
+                            customerName,
+                            customerPhone,
+                            customerEmail,
+                            paymentMethod: paymentMethodName,
+                            paymentCondition: 'pay_later',
+                            paymentDueDate: paymentDueDate,
+                            deliveryDate: deliveryDate,
+                            deliveryType: deliveryType,
+                            deliveryAddress: deliveryAddress,
+                            notes: notes
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok || data.error) throw new Error(data.error || 'Falha ao registrar pedido.');
+
+                    closeCartModal();
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    cart = {};
+                    updateCartDisplay();
+                    await loadProducts();
+
+                    // Link do WhatsApp
+                    const cleanPhone = (customerPhone || '').replace(/\D/g, '');
+                    const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+                    const waMsg = encodeURIComponent(`Olá! Fiz meu pedido de trufas gourmet (${itemsSummary}) no valor de R$ ${totalVal.toFixed(2).replace('.', ',')} para entrega em ${deliveryDate} (${deliveryType}).\n💰 Forma de Pagamento: ${paymentMethodName}${isPayDay ? ' (Data: ' + fifthBiz.formattedFull + ')' : ''}${deliveryAddress ? '\n📍 Endereço: ' + deliveryAddress : ''}${notes ? '\n📝 Obs: ' + notes : ''}\nMuito obrigado!`);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '🎉 Pedido Confirmado!',
+                        html: `
+                            <p style="margin-bottom: 12px; font-size: 0.95rem;">Seu pedido foi registrado e seu estoque está garantido!</p>
+                            <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--glass-border); border-radius: 10px; padding: 12px; font-size: 0.88rem; text-align: left; margin-bottom: 15px; line-height: 1.5;">
+                                <strong>📅 Entrega:</strong> ${deliveryDate} (${deliveryType})<br>
+                                ${deliveryAddress ? `<strong>📍 Endereço:</strong> ${deliveryAddress}<br>` : ''}
+                                <strong>💰 Pagamento:</strong> ${paymentMethodName}<br>
+                                ${isPayDay ? `<strong>🗓️ Data do Vencimento:</strong> ${fifthBiz.formattedFull} (5º dia útil)<br>` : ''}
+                                <strong>🍫 Total:</strong> R$ ${totalVal.toFixed(2).replace('.', ',')}
+                                ${notes ? `<br><strong>📝 Obs:</strong> ${notes}` : ''}
+                            </div>
+                            ${cleanPhone ? `<a href="https://wa.me/${waNumber}?text=${waMsg}" target="_blank" class="btn-checkout-direct" style="display: flex; text-decoration: none; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; height: 44px;">📲 Conversar no WhatsApp</a>` : ''}
+                        `,
+                        background: '#150e0a',
+                        color: '#fff',
+                        confirmButtonColor: '#f59e0b',
+                        confirmButtonText: 'Fechar'
+                    });
+
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'Aviso', text: err.message, background: '#150e0a', color: '#fff' });
+                } finally {
+                    btn.disabled = false;
+                    handleCartPaymentMethodChange();
+                }
+
+            // 2. Caso: Pix 100% ou Pix 50%
+            } else {
+                const isFraction50 = paymentMethodSelect === 'pix_50';
+                const pixFraction = isFraction50 ? 0.5 : 1.0;
+                const paymentMethodName = isFraction50 
+                    ? `⚡ Sinal 50% Pix (Restante na Entrega)` 
+                    : `⚡ Pix Instantâneo (100%)`;
+
+                btn.innerHTML = `<div class="spinner" style="width: 18px; height: 18px;"></div> Gerando Pix...`;
+
+                try {
+                    const response = await fetch('/api/create-pix', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            items, 
+                            customerName, 
+                            customerPhone, 
+                            customerEmail,
+                            deliveryDate,
+                            deliveryType,
+                            deliveryAddress,
+                            paymentMethod: paymentMethodName,
+                            paymentDueDate: isFraction50 ? (selectedCartFriday ? selectedCartFriday.iso : '') : '',
+                            notes,
+                            pixFraction
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok || data.error) throw new Error(data.error || 'Falha ao gerar o Pix.');
+
+                    closeCartModal();
+                    showPixPaymentModal(data);
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'Aviso', text: err.message, background: '#150e0a', color: '#fff' });
+                    loadProducts();
+                } finally {
+                    btn.disabled = false;
+                    handleCartPaymentMethodChange();
+                }
             }
+        }
+
+        // Suporte a chamada legada se houver
+        function submitPixOrder() {
+            submitCartOrder();
         }
 
         // ==========================================
@@ -6012,7 +6567,12 @@
                     const itemsDesc = (o.items || []).map(i => `${i.quantity}x ${i.flavor}`).join(', ');
                     const dateStr = new Date(o.createdAt).toLocaleString('pt-BR');
                     const isApproved = o.status === 'approved';
-                    const isPayLater = o.paymentCondition === 'pay_later' || o.paymentMethod?.includes('Prazo') || o.paymentMethod?.includes('Depois');
+                    const isPayLater = o.paymentCondition === 'pay_later' || 
+                                       o.paymentMethod?.includes('Prazo') || 
+                                       o.paymentMethod?.includes('Pagamento') || 
+                                       o.paymentMethod?.includes('5º') || 
+                                       o.paymentMethod?.includes('Entrega') || 
+                                       o.paymentMethod?.includes('Depois');
                     
                     let formattedDueDate = '';
                     if (o.paymentDueDate) {
@@ -6026,12 +6586,20 @@
                     const hasPhone = cleanPhone.length >= 10;
                     const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
 
+                    // Detalhes da Entrega
+                    const deliveryDetails = o.deliveryDate 
+                        ? `\n📅 Entrega/Retirada: ${o.deliveryDate} (${o.deliveryType || 'Entrega'})${o.deliveryAddress ? '\n📍 Endereço: ' + o.deliveryAddress : ''}` 
+                        : '';
+
                     // Mensagem amigável para WhatsApp
+                    const paymentText = o.paymentMethod || 'Dinheiro';
+                    const dueDateText = formattedDueDate ? ` (Combinado para ${formattedDueDate}${o.paymentMethod?.includes('5º') || o.paymentMethod?.includes('Pagamento') ? ' - 5º dia útil' : ''})` : '';
+
                     let waMessage = '';
                     if (!isApproved && isPayLater) {
-                        waMessage = encodeURIComponent(`Olá ${o.customerName}! Tudo bem? Passando para confirmar suas trufas gourmet (${itemsDesc}), valor total de R$ ${Number(o.totalAmount).toFixed(2).replace('.', ',')}, com pagamento combinado para ${formattedDueDate || 'os próximos dias'}. Qualquer dúvida estou à disposição! 🍫✨`);
+                        waMessage = encodeURIComponent(`Olá ${o.customerName}! Tudo bem? Passando para confirmar suas trufas gourmet (${itemsDesc}), valor total de R$ ${Number(o.totalAmount).toFixed(2).replace('.', ',')}.\n💰 Pagamento: ${paymentText}${dueDateText}.${deliveryDetails}\nQualquer dúvida estou à disposição! 🍫✨`);
                     } else {
-                        waMessage = encodeURIComponent(`Olá ${o.customerName}! Segue o comprovante da sua compra de trufas gourmet (${itemsDesc}) no valor de R$ ${Number(o.totalAmount).toFixed(2).replace('.', ',')}. Muito obrigado pela preferência e bom proveito! 🍫🎉`);
+                        waMessage = encodeURIComponent(`Olá ${o.customerName}! Segue o comprovante da sua compra de trufas gourmet (${itemsDesc}) no valor de R$ ${Number(o.totalAmount).toFixed(2).replace('.', ',')}.\n💰 Pagamento: ${paymentText}${deliveryDetails}\nMuito obrigado pela preferência e bom proveito! 🍫🎉`);
                     }
 
                     return `
@@ -6046,6 +6614,14 @@
                                         ${o.customerPhone}
                                     </a>
                                 ` : (o.customerPhone ? `<br><small style="color: var(--text-muted);">${o.customerPhone}</small>` : '')}
+                                ${o.deliveryDate ? `
+                                    <div style="margin-top: 5px;">
+                                        <span class="stock-badge high" style="font-size: 0.72rem; padding: 2px 8px; background: rgba(0, 209, 255, 0.15); border: 1px solid rgba(0, 209, 255, 0.4); color: #00D1FF; display: inline-block;">
+                                            ${o.deliveryType === 'Retirada' ? '🏪 Retirada' : '🛵 Entrega'}: ${o.deliveryDate}
+                                        </span>
+                                        ${o.deliveryAddress ? `<br><small style="color: var(--text-muted); font-size: 0.72rem;">📍 ${o.deliveryAddress}</small>` : ''}
+                                    </div>
+                                ` : ''}
                             </td>
                             <td>
                                 <span style="font-size: 0.82rem;">${itemsDesc}</span>
@@ -6055,7 +6631,7 @@
                             <td>
                                 ${isPayLater ? `
                                     <span class="stock-badge ${isApproved ? 'high' : 'low'}" style="${!isApproved ? 'background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #f59e0b;' : ''}">
-                                        📅 ${isApproved ? 'Pago em ' + formattedDueDate : 'Paga em: ' + (formattedDueDate || 'A Prazo')}
+                                        📅 ${isApproved ? 'Pago em ' + formattedDueDate : (o.paymentMethod?.includes('5º') || o.paymentMethod?.includes('Pagamento') ? '5º Dia Útil: ' + (formattedDueDate || 'Próximo Mês') : (formattedDueDate ? 'Paga em: ' + formattedDueDate : o.paymentMethod))}
                                     </span>
                                 ` : `
                                     <span style="font-size: 0.8rem; color: #cbd5e1;">${o.paymentMethod || 'Dinheiro (Balcão)'}</span>

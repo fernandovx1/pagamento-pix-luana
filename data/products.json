@@ -88,5 +88,20 @@
     "icon": "🍫",
     "active": true,
     "cost": 1.5
+  },
+  {
+    "id": "trufa-1788179056785",
+    "sellerId": "user-fernando",
+    "sellerName": "Fernando",
+    "flavor": "Trufa de Maracuja",
+    "price": 5,
+    "weight": "45g",
+    "size": "Médio",
+    "stock": 20,
+    "category": "Frutas",
+    "description": "Deliciosa trufa artesanal com mousse cremosa de maracujá.",
+    "icon": "🍫",
+    "active": true,
+    "cost": 1.5
   }
 ]

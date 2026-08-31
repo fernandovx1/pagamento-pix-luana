@@ -424,7 +424,7 @@ app.use(express.static('public', {
 
 // Rota de versão para garantir sincronização
 app.get('/api/version', (req, res) => {
-    res.json({ version: '2026.08.28-v3.3-balcao-fixed', time: Date.now() });
+    res.json({ version: '2026.08.31-v3.4-fridays-delivery', time: Date.now() });
 });
 
 // Gerenciamento de Sessão / Tokens
@@ -1031,7 +1031,7 @@ app.post('/api/admin/stock/transfer', authenticateUser, (req, res) => {
 
 // Criar Pedido Pix
 app.post('/api/create-pix', async (req, res) => {
-    const { items, customerName, customerEmail, customerPhone, cpf } = req.body;
+    const { items, customerName, customerEmail, customerPhone, cpf, deliveryDate, deliveryType, deliveryAddress, paymentMethod, paymentCondition, paymentDueDate, notes, pixFraction } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'O carrinho está vazio.' });
@@ -1079,9 +1079,14 @@ app.post('/api/create-pix', async (req, res) => {
         return res.status(400).json({ error: 'Nenhum item válido no carrinho.' });
     }
 
+    const fraction = Number(pixFraction) > 0 && Number(pixFraction) <= 1 ? Number(pixFraction) : 1.0;
+    const pixAmountToCharge = Number((calculatedTotal * fraction).toFixed(2));
+
     const orderId = `TRUFA-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const itemsDescription = orderItems.map(i => `${i.quantity}x ${i.flavor}`).join(', ');
-    const description = `Trufas (${totalQty} un): ${itemsDescription}`.slice(0, 120);
+    const description = fraction < 1 
+        ? `Sinal 50% Trufas (${totalQty} un): ${itemsDescription}`.slice(0, 120)
+        : `Trufas (${totalQty} un): ${itemsDescription}`.slice(0, 120);
 
     try {
         let qrCode = '';
@@ -1091,7 +1096,7 @@ app.post('/api/create-pix', async (req, res) => {
 
         if (paymentClient) {
             const mpBody = {
-                transaction_amount: Number(calculatedTotal.toFixed(2)),
+                transaction_amount: pixAmountToCharge,
                 description: description,
                 payment_method_id: 'pix',
                 payer: {
@@ -1106,6 +1111,9 @@ app.post('/api/create-pix', async (req, res) => {
                     order_id: orderId,
                     customer_name: customerName,
                     customer_phone: customerPhone,
+                    delivery_date: deliveryDate || '',
+                    delivery_type: deliveryType || 'Entrega',
+                    delivery_address: deliveryAddress || '',
                     items_summary: itemsDescription
                 }
             };
@@ -1117,7 +1125,7 @@ app.post('/api/create-pix', async (req, res) => {
             status = paymentResult.status || 'pending';
         } else {
             mpPaymentId = `SIM-${Date.now()}`;
-            qrCode = `00020126580014br.gov.bcb.pix0136pix-trufas-${orderId}520400005303986540${calculatedTotal.toFixed(2)}5802BR5925TRUFAS GOURMET6009SAO PAULO62070503***6304`;
+            qrCode = `00020126580014br.gov.bcb.pix0136pix-trufas-${orderId}520400005303986540${pixAmountToCharge.toFixed(2)}5802BR5925TRUFAS GOURMET6009SAO PAULO62070503***6304`;
             status = 'pending';
         }
 
@@ -1127,6 +1135,14 @@ app.post('/api/create-pix', async (req, res) => {
             customerName: customerName || 'Cliente Balcão',
             customerEmail: customerEmail || '',
             customerPhone: customerPhone || '',
+            deliveryDate: deliveryDate || '',
+            deliveryType: deliveryType || 'Entrega',
+            deliveryAddress: deliveryAddress || '',
+            paymentMethod: paymentMethod || (fraction < 1 ? '⚡ Sinal 50% Pix (Restante na Entrega)' : '⚡ Pix Instantâneo (100%)'),
+            paymentCondition: paymentCondition || (fraction < 1 ? 'pay_later' : 'paid_now'),
+            paymentDueDate: paymentDueDate || '',
+            notes: notes ? notes.trim() : '',
+            pixAmount: pixAmountToCharge,
             items: orderItems,
             totalAmount: Number(calculatedTotal.toFixed(2)),
             totalQuantity: totalQty,
@@ -1147,7 +1163,14 @@ app.post('/api/create-pix', async (req, res) => {
             qr_code_base64: qrCodeBase64,
             status: status,
             totalAmount: calculatedTotal,
+            pixAmount: pixAmountToCharge,
             totalQuantity: totalQty,
+            deliveryDate: newOrder.deliveryDate,
+            deliveryType: newOrder.deliveryType,
+            deliveryAddress: newOrder.deliveryAddress,
+            paymentMethod: newOrder.paymentMethod,
+            paymentDueDate: newOrder.paymentDueDate,
+            notes: newOrder.notes,
             items: orderItems
         });
 
@@ -1157,9 +1180,9 @@ app.post('/api/create-pix', async (req, res) => {
     }
 });
 
-// Venda Presencial / Dinheiro / Balcão / A Prazo (Baixa Imediata no Estoque e Histórico)
+// Venda Presencial / Dinheiro / Balcão / A Prazo / Pagar no Pagamento (Baixa Imediata no Estoque e Histórico)
 app.post('/api/create-direct-order', (req, res) => {
-    const { items, customerName, customerEmail, customerPhone, paymentMethod, paymentCondition, paymentDueDate, notes } = req.body;
+    const { items, customerName, customerEmail, customerPhone, paymentMethod, paymentCondition, paymentDueDate, notes, deliveryDate, deliveryType, deliveryAddress } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: 'O carrinho está vazio.' });
@@ -1207,7 +1230,13 @@ app.post('/api/create-direct-order', (req, res) => {
         return res.status(400).json({ error: 'Nenhum item válido no carrinho.' });
     }
 
-    const isPayLater = paymentCondition === 'pay_later' || paymentMethod === 'A Prazo / Fiado' || paymentMethod === 'Pagar em Outro Dia';
+    const isPayLater = paymentCondition === 'pay_later' || 
+                       paymentMethod?.includes('Prazo') || 
+                       paymentMethod?.includes('Pagamento') || 
+                       paymentMethod?.includes('5º') || 
+                       paymentMethod?.includes('Entrega') || 
+                       paymentMethod === 'Pagar em Outro Dia';
+
     const isPaidNow = !isPayLater;
     const finalStatus = isPaidNow ? 'approved' : 'pending';
     const paidAt = isPaidNow ? new Date().toISOString() : null;
@@ -1216,9 +1245,12 @@ app.post('/api/create-direct-order', (req, res) => {
     const newOrder = {
         id: orderId,
         paymentId: `DIR-${Date.now()}`,
-        paymentMethod: paymentMethod || (isPayLater ? 'A Prazo / Pagar Depois' : 'Dinheiro (Balcão)'),
+        paymentMethod: paymentMethod || (isPayLater ? '📅 Pagar no Pagamento (5º Dia Útil)' : 'Dinheiro (Balcão)'),
         paymentCondition: isPayLater ? 'pay_later' : 'paid_now',
         paymentDueDate: paymentDueDate || (isPayLater ? '' : new Date().toISOString().split('T')[0]),
+        deliveryDate: deliveryDate || '',
+        deliveryType: deliveryType || 'Retirada',
+        deliveryAddress: deliveryAddress || '',
         customerName: customerName ? customerName.trim() : 'Cliente Balcão',
         customerEmail: customerEmail ? customerEmail.trim() : '',
         customerPhone: customerPhone ? customerPhone.trim() : '',
@@ -1239,11 +1271,11 @@ app.post('/api/create-direct-order', (req, res) => {
     orders.unshift(newOrder);
     saveOrders(orders);
 
-    console.log(`[VENDA PRESENCIAL] Pedido ${orderId} concluído com sucesso. Total: R$ ${newOrder.totalAmount.toFixed(2)} - Método: ${newOrder.paymentMethod} - Condição: ${newOrder.paymentCondition} - Vencimento: ${newOrder.paymentDueDate || 'Hoje'}`);
+    console.log(`[VENDA PRESENCIAL/PAGAMENTO] Pedido ${orderId} registrado. Total: R$ ${newOrder.totalAmount.toFixed(2)} - Método: ${newOrder.paymentMethod} - Vencimento: ${newOrder.paymentDueDate || 'Hoje'}`);
     res.json({
         success: true,
         message: isPayLater 
-            ? 'Venda a prazo registrada com sucesso! Estoque baixado e agendado.'
+            ? 'Pedido agendado com sucesso! Estoque garantido e baixado.'
             : 'Venda presencial registrada e paga com sucesso! Estoque baixado.',
         order: newOrder
     });
