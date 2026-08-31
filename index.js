@@ -913,6 +913,354 @@ app.delete('/api/admin/products/:id', authenticateUser, (req, res) => {
 });
 
 // ==========================================
+// 🤖 IA CRIADORA DE SABORES & ANÚNCIOS DE TRUFAS
+// ==========================================
+function generateInternalFlavorAI(rawPrompt, sellerName = 'Luana & Fernando') {
+    const promptLower = rawPrompt.toLowerCase();
+
+    // 1. Extração do Preço (se digitado no prompt, ex: "por 5 reais", "R$ 6", "valor 4.50")
+    let customPrice = null;
+    const priceMatch = rawPrompt.match(/(?:r\$|\$|por|valor|pre[çc]o)\s*(\d+(?:[.,]\d{1,2})?)/i);
+    if (priceMatch) {
+        customPrice = parseFloat(priceMatch[1].replace(',', '.'));
+    }
+
+    // 2. Base de Conhecimento Gastronômico de Sabores
+    const flavorDB = [
+        {
+            keys: ['pistache', 'pistachio'],
+            name: 'Trufa Gourmet de Pistache Belga',
+            category: 'Gourmet',
+            icon: '🌰',
+            defaultPrice: 6.00,
+            cost: 2.20,
+            desc: 'Casquinha nobre de chocolate artesanal recheada com ganache aveludada de puro pistache com pedacinhos crocantes.',
+            obs: 'Sabor premium mais pedido para presentes e momentos especiais.',
+            headline: '💚 NOVIDADE IRRESISTÍVEL: Trufa de Pistache Artesanal!'
+        },
+        {
+            keys: ['maracuja', 'maracujá', 'mousse de maracuja'],
+            name: 'Trufa Gourmet de Mousse de Maracujá',
+            category: 'Frutas',
+            icon: '🍋',
+            defaultPrice: 4.50,
+            cost: 1.40,
+            desc: 'Equilíbrio perfeito entre o chocolate nobre e o recheio cremoso azedinho do puro maracujá da fruta.',
+            obs: 'Super refrescante e cremosa. Campeã de elogios!',
+            headline: '💛 A QUERIDINHA VOLTOU: Trufa de Mousse de Maracujá!'
+        },
+        {
+            keys: ['morango', 'sensacao', 'sensação'],
+            name: 'Trufa Gourmet Sensação (Morango com Chocolate)',
+            category: 'Frutas',
+            icon: '🍓',
+            defaultPrice: 4.50,
+            cost: 1.50,
+            desc: 'Combinação clássica irresistível: recheio suave e cremoso de morango envolto em chocolate meio amargo nobre.',
+            obs: 'Feita artesanalmente com sabor marcante de fruta fresca.',
+            headline: '🍓 EXPERIMENTE A PURA SENSAÇÃO: Trufa de Morango Nobre!'
+        },
+        {
+            keys: ['nutella', 'avela', 'avelã', 'ferrero'],
+            name: 'Trufa Gourmet Nutella com Avelã Crocante',
+            category: 'Gourmet',
+            icon: '🍫',
+            defaultPrice: 5.00,
+            cost: 1.80,
+            desc: 'Recheio farto e cremoso de autêntica Nutella com toque crocante de avelãs selecionadas.',
+            obs: 'Puro requinte e sabor intenso para os apaixonados por chocolate.',
+            headline: '🍫 PARA OS APAIXONADOS POR NUTELLA: Trufa Artesanal Especial!'
+        },
+        {
+            keys: ['ninho', 'leite ninho', 'ninho com nutella'],
+            name: 'Trufa Gourmet de Leite Ninho Cremoso',
+            category: 'Gourmet',
+            icon: '🥛',
+            defaultPrice: 4.50,
+            cost: 1.50,
+            desc: 'Recheio aveludado e suave de puro Leite Ninho com cobertura de chocolate nobre.',
+            obs: 'Textura que derrete na boca a cada mordida.',
+            headline: '🥛 DERRETE NA BOCA: Trufa Gourmet de Leite Ninho!'
+        },
+        {
+            keys: ['doce de leite', 'churros', 'caramelo'],
+            name: 'Trufa Gourmet de Doce de Leite com Canela',
+            category: 'Gourmet',
+            icon: '🍯',
+            defaultPrice: 4.50,
+            cost: 1.40,
+            desc: 'Doce de leite artesanal cozido lentamente, com textura cremosa e toque aromático suave de canela.',
+            obs: 'Sabor aconchegante que lembra doces tradicionais de infância.',
+            headline: '🍯 CREMOSIDADE INIGUALÁVEL: Trufa de Doce de Leite Artesanal!'
+        },
+        {
+            keys: ['kit kat', 'kitkat'],
+            name: 'Trufa Gourmet Crocante de Kit Kat',
+            category: 'Gourmet',
+            icon: '🍫',
+            defaultPrice: 5.00,
+            cost: 1.70,
+            desc: 'Recheio cremoso de chocolate com generosos pedaços crocantes do autêntico Kit Kat.',
+            obs: 'Crocância e cremosidade em perfeita harmonia.',
+            headline: '🍫 CROCÂNCIA PURA: Nova Trufa Gourmet Kit Kat!'
+        },
+        {
+            keys: ['ovomaltine'],
+            name: 'Trufa Gourmet Ovomaltine Crocante',
+            category: 'Gourmet',
+            icon: '🍫',
+            defaultPrice: 4.50,
+            cost: 1.50,
+            desc: 'Ganache de chocolate com flocos crocantes inconfundíveis de Ovomaltine.',
+            obs: 'Ideal para um lanche da tarde ou momento de doce pausa.',
+            headline: '🍫 MEGA CROCANTE: Trufa Artesanal de Ovomaltine!'
+        },
+        {
+            keys: ['cafe', 'café', 'cappuccino', 'espresso'],
+            name: 'Trufa Especial de Cappuccino com Toque de Canela',
+            category: 'Especial',
+            icon: '☕',
+            defaultPrice: 5.00,
+            cost: 1.60,
+            desc: 'Harmonia refinada entre café arábica aromático, chocolate nobre e leve toque de canela.',
+            obs: 'Combina perfeitamente com um bom café espresso.',
+            headline: '☕ O PAR PERFEITO DO SEU CAFÉ: Trufa Especial de Cappuccino!'
+        },
+        {
+            keys: ['limao', 'limão', 'torta de limao'],
+            name: 'Trufa Gourmet Torta de Limão Siciliano',
+            category: 'Frutas',
+            icon: '🍋',
+            defaultPrice: 4.50,
+            cost: 1.30,
+            desc: 'Creme de limão siciliano azedinho e refrescante com casquinha de chocolate branco nobre.',
+            obs: 'Uma explosão cítrica e equilibrada de sabor.',
+            headline: '🍋 CÍTRICA & PERFEITA: Trufa de Limão Siciliano Artesanal!'
+        },
+        {
+            keys: ['coco', 'beijinho', 'prestigio', 'prestígio'],
+            name: 'Trufa Tradicional Prestígio com Coco Fresco',
+            category: 'Tradicional',
+            icon: '🥥',
+            defaultPrice: 4.00,
+            cost: 1.30,
+            desc: 'Recheio artesanal de coco ralado úmido envolvido em casca generosa de chocolate ao leite.',
+            obs: 'O clássico brasileiro que agrada a todos os paladares.',
+            headline: '🥥 O CLÁSSICO IRRESISTÍVEL: Trufa de Prestígio Artesanal!'
+        },
+        {
+            keys: ['oreo', 'cookies', 'cookies & cream', 'cookies and cream'],
+            name: 'Trufa Gourmet Cookies & Cream (Oreo)',
+            category: 'Gourmet',
+            icon: '🍪',
+            defaultPrice: 5.00,
+            cost: 1.70,
+            desc: 'Creme de baunilha suave com pedaços de biscoito black crocante e chocolate nobre.',
+            obs: 'Favorita absoluta de jovens e adultos.',
+            headline: '🍪 EXPLOSÃO DE SABOR: Trufa Gourmet Cookies & Cream!'
+        },
+        {
+            keys: ['cereja', 'licor', 'floresta negra'],
+            name: 'Trufa Especial Floresta Negra com Cereja ao Licor',
+            category: 'Especial',
+            icon: '🍒',
+            defaultPrice: 5.50,
+            cost: 1.90,
+            desc: 'Ganache de chocolate nobre com cereja inteira macerada em leve calda licorosa.',
+            obs: 'Toque sofisticado para presentear e comemorar.',
+            headline: '🍒 REQUINTE & TRADIÇÃO: Trufa Floresta Negra com Cereja!'
+        },
+        {
+            keys: ['brigadeiro', 'tradicional', 'cacau', 'chocolate'],
+            name: 'Trufa Tradicional de Brigadeiro Gourmet',
+            category: 'Tradicional',
+            icon: '🍫',
+            defaultPrice: 4.00,
+            cost: 1.30,
+            desc: 'Autêntico brigadeiro de panela feito com cacau nobre, macio e extremamente aveludado.',
+            obs: 'Feita do jeitinho que todo brasileiro ama.',
+            headline: '🍫 O PURO SABOR DO BRIGADEIRO: Trufa Artesanal Tradicional!'
+        },
+        {
+            keys: ['amendoim', 'pacoquinha', 'paçoca', 'pacoquita'],
+            name: 'Trufa Gourmet de Paçoca Artesanal',
+            category: 'Gourmet',
+            icon: '🥜',
+            defaultPrice: 4.50,
+            cost: 1.30,
+            desc: 'Recheio aveludado de pasta de amendoim torrado e paçoca de verdade com chocolate nobre.',
+            obs: 'Sabor marcante e autêntico que surpreende.',
+            headline: '🥜 PURA GOSTOSURA: Trufa Artesanal de Paçoca!'
+        }
+    ];
+
+    // Busca melhor match por palavra-chave no banco culinário
+    let matched = flavorDB.find(f => f.keys.some(k => promptLower.includes(k)));
+
+    let finalFlavorName = '';
+    let finalCategory = 'Gourmet';
+    let finalIcon = '🍫';
+    let finalPrice = customPrice || 4.50;
+    let finalCost = 1.50;
+    let finalDesc = '';
+    let finalObs = 'Produzida artesanalmente com ingredientes frescos de altíssima qualidade.';
+    let finalHeadline = '';
+
+    if (matched) {
+        finalFlavorName = matched.name;
+        finalCategory = matched.category;
+        finalIcon = matched.icon;
+        finalPrice = customPrice || matched.defaultPrice;
+        finalCost = matched.cost;
+        finalDesc = matched.desc;
+        finalObs = matched.obs;
+        finalHeadline = matched.headline;
+    } else {
+        let extractedFlavor = rawPrompt
+            .replace(/cria(?:r)?/gi, '')
+            .replace(/an[uú]ncio(?:s)?/gi, '')
+            .replace(/trufa(?:s)?/gi, '')
+            .replace(/de/gi, '')
+            .replace(/sabor/gi, '')
+            .replace(/por\s*\d+(?:[.,]\d+)?/gi, '')
+            .replace(/reais/gi, '')
+            .replace(/r\$/gi, '')
+            .trim();
+
+        if (!extractedFlavor || extractedFlavor.length < 3) {
+            extractedFlavor = 'Especial da Casa';
+        }
+
+        extractedFlavor = extractedFlavor.charAt(0).toUpperCase() + extractedFlavor.slice(1);
+        finalFlavorName = `Trufa Gourmet de ${extractedFlavor}`;
+        finalPrice = customPrice || 5.00;
+        finalCost = 1.60;
+        finalCategory = 'Gourmet';
+        finalIcon = '🍫';
+        finalDesc = `Deliciosa trufa artesanal recheada com ganache nobre e cremosa de ${extractedFlavor}, coberta com chocolate selecionado.`;
+        finalObs = `Receita exclusiva de ${sellerName}, preparada com amor e técnica artesanal.`;
+        finalHeadline = `✨ NOVIDADE ESPECIAL: ${finalFlavorName}!`;
+    }
+
+    const priceFormatted = `R$ ${finalPrice.toFixed(2).replace('.', ',')}`;
+
+    const whatsappAd = `${finalHeadline}
+
+Olá pessoal! 🍫✨
+Acabamos de preparar uma fornada fresquinha e irresistível:
+
+👉 *${finalFlavorName}* (${finalIcon})
+${finalDesc}
+
+💰 *Apenas ${priceFormatted}* (45g de pura cremosidade!)
+🛵 *Entregas e retiradas programadas para esta Sexta-Feira!*
+📍 *Garanta as suas antes que esgote o lote fresquinho da semana.*
+
+📲 *Faça sua encomenda online de forma rápida:*
+Peça pelo link ou envie sua mensagem aqui no WhatsApp!
+_Feito com amor por ${sellerName}_ ❤️`;
+
+    const instagramAd = `${finalHeadline} 🤤🍫
+
+${finalDesc}
+
+✨ Feita artesanalmente com chocolate nobre e recheio farto que derrete na boca!
+💰 Valor: ${priceFormatted} (45g)
+📅 Fornadas fresquinhas para retirada e entrega toda Sexta-Feira!
+
+👉 Clique no link da bio para encomendar a sua agora mesmo!
+
+#trufasgourmet #trufasartesanais #chocolate #docesgourmet #${finalFlavorName.toLowerCase().replace(/[^a-z0-9]/g, '')} #chocolatelovers #confeitaria`;
+
+    return {
+        flavor: finalFlavorName,
+        price: finalPrice,
+        cost: finalCost,
+        category: finalCategory,
+        weight: '45g',
+        size: 'Médio',
+        icon: finalIcon,
+        initialStock: 20,
+        description: finalDesc,
+        observation: finalObs,
+        whatsappAd: whatsappAd,
+        instagramAd: instagramAd,
+        punchline: finalHeadline
+    };
+}
+
+app.post('/api/admin/ai-generate-flavor', authenticateUser, async (req, res) => {
+    try {
+        const { prompt, sellerId } = req.body;
+        if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
+            return res.status(400).json({ error: 'Por favor, informe o que deseja criar (ex: "cria anúncio trufa de pistache").' });
+        }
+
+        const userPrompt = prompt.trim();
+        const users = getUsers();
+        const seller = users.find(u => u.id === (sellerId || req.user.id)) || req.user;
+
+        // Se houver chave do Gemini no .env, tenta consultar modelo
+        if (process.env.GEMINI_API_KEY) {
+            try {
+                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+                const sysPrompt = `Você é uma IA confeiteira e especialista em marketing para trufas gourmet artesanais de Luana Menato & Fernando.
+Com base no pedido do usuário, crie os dados da trufa e anúncios persuasivos.
+Responda ESTRITAMENTE em formato JSON com:
+{
+  "flavor": "Nome da trufa",
+  "price": 5.0,
+  "cost": 1.5,
+  "category": "Gourmet",
+  "weight": "45g",
+  "size": "Médio",
+  "icon": "🍫",
+  "initialStock": 20,
+  "description": "Descrição sensorial irresistível",
+  "observation": "Dica de harmonização",
+  "whatsappAd": "Texto de anúncio com emojis para WhatsApp destacando entregas de sexta",
+  "instagramAd": "Texto para Instagram com hashtags",
+  "punchline": "Frase de impacto"
+}`;
+                const geminiRes = await fetch(geminiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: sysPrompt },
+                                { text: `Pedido: ${userPrompt}` }
+                            ]
+                        }]
+                    })
+                });
+
+                if (geminiRes.ok) {
+                    const geminiData = await geminiRes.json();
+                    const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        const jsonMatch = text.match(/\{[\s\S]*\}/);
+                        if (jsonMatch) {
+                            const parsed = JSON.parse(jsonMatch[0]);
+                            return res.json({ success: true, aiResponse: parsed, source: 'gemini' });
+                        }
+                    }
+                }
+            } catch (geminiErr) {
+                console.warn('Fallback para motor IA interno:', geminiErr.message);
+            }
+        }
+
+        const generated = generateInternalFlavorAI(userPrompt, seller.name);
+        return res.json({ success: true, aiResponse: generated, source: 'internal_ai' });
+
+    } catch (e) {
+        console.error('Erro na IA interna:', e);
+        res.status(500).json({ error: 'Falha ao processar IA: ' + e.message });
+    }
+});
+
+// ==========================================
 // TRANSFERÊNCIA E SOLICITAÇÃO DE ESTOQUE (FERNANDO <-> LUANA)
 // ==========================================
 

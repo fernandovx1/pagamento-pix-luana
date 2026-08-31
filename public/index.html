@@ -2912,6 +2912,9 @@
                     <button class="tab-btn active" id="tabBtnStats" onclick="switchAdminTab('stats', this)">
                         📊 Vendas & Faturamento
                     </button>
+                    <button class="tab-btn" id="tabBtnAiCreator" onclick="switchAdminTab('ai-creator', this)" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(168, 85, 247, 0.25)); border-color: rgba(168, 85, 247, 0.4); color: #e9d5ff;">
+                        ✨ 🤖 IA Criadora de Sabores & Anúncios
+                    </button>
                     <button class="tab-btn" id="tabBtnNotes" onclick="switchAdminTab('notes', this)">
                         📝 Anotações & Fiados <span id="badgePendingNotesCount" class="tab-counter-badge" style="display:none;">0</span>
                     </button>
@@ -2935,8 +2938,126 @@
                     </button>
                 </div>
 
+                <!-- ABA IA: CRIADORA DE SABORES & ANÚNCIOS (INTELIGÊNCIA ARTIFICIAL) -->
+                <div class="admin-tab-content" id="tab-ai-creator">
+                    <!-- Banner Moderno da IA -->
+                    <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(245, 158, 11, 0.12) 100%); border: 1.5px solid rgba(168, 85, 247, 0.4); border-radius: 16px; padding: 16px; margin-bottom: 16px; position: relative; overflow: hidden;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);">
+                                    ✨
+                                </div>
+                                <div>
+                                    <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">IA Confeiteira & Marketing</h4>
+                                    <span style="font-size: 0.76rem; color: #d8b4fe;">Crie novos sabores, preços, descrições e anúncios prontos para WhatsApp e Instagram em segundos!</span>
+                                </div>
+                            </div>
+                            <span style="background: rgba(168, 85, 247, 0.25); border: 1px solid rgba(168, 85, 247, 0.5); color: #f3e8ff; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 12px;">
+                                ⚡ IA Ativa
+                            </span>
+                        </div>
+
+                        <!-- Prompt Input -->
+                        <div style="margin-top: 14px;">
+                            <label style="font-size: 0.82rem; font-weight: 700; color: #fef3c7; margin-bottom: 6px; display: block;">
+                                💬 Digite o que você quer criar (ou clique em uma sugestão abaixo):
+                            </label>
+                            <div style="position: relative;">
+                                <textarea id="aiPromptInput" rows="2" placeholder="Ex: Cria anúncio trufa de pistache com chocolate branco por 6 reais, para entrega sexta-feira..." style="width: 100%; background: rgba(15, 10, 8, 0.9); border: 1.5px solid rgba(168, 85, 247, 0.4); border-radius: 12px; padding: 12px 14px; color: #fff; font-size: 0.92rem; font-family: var(--font-sans); resize: vertical; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);"></textarea>
+                            </div>
+
+                            <!-- Sugestões Rápidas de Prompt -->
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;">
+                                <button type="button" class="date-chip-btn" onclick="setAiPromptText('Cria anúncio trufa de Pistache Belga com Chocolate Branco por 6 reais')" style="font-size: 0.74rem; background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.3); color: #e9d5ff;">🌰 Pistache Belga</button>
+                                <button type="button" class="date-chip-btn" onclick="setAiPromptText('Cria anúncio trufa de Mousse de Maracujá da fruta')" style="font-size: 0.74rem; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3); color: #fef08a;">🍋 Maracujá Trufado</button>
+                                <button type="button" class="date-chip-btn" onclick="setAiPromptText('Cria anúncio trufa de Nutella com Ninho Cremoso')" style="font-size: 0.74rem; background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;">🍫 Nutella com Ninho</button>
+                                <button type="button" class="date-chip-btn" onclick="setAiPromptText('Cria anúncio trufa Sensação de Morango com Chocolate')" style="font-size: 0.74rem; background: rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.3); color: #fbcfe8;">🍓 Sensação Morango</button>
+                                <button type="button" class="date-chip-btn" onclick="setAiPromptText('Cria anúncio trufa de Cappuccino Nobre com Canela')" style="font-size: 0.74rem; background: rgba(217, 119, 6, 0.12); border-color: rgba(217, 119, 6, 0.3); color: #fed7aa;">☕ Cappuccino Nobre</button>
+                                <button type="button" class="date-chip-btn" onclick="setAiPromptText('Cria anúncio trufa de Cookies and Cream Oreo')" style="font-size: 0.74rem; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #fff;">🍪 Cookies & Cream</button>
+                            </div>
+
+                            <!-- Botão Gerador com IA -->
+                            <button type="button" id="btnRunAiFlavor" onclick="generateAiFlavorAndAds()" style="width: 100%; height: 48px; margin-top: 14px; background: linear-gradient(135deg, #a855f7 0%, #d946ef 50%, #f59e0b 100%); border: none; border-radius: 12px; color: #fff; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 20px rgba(168, 85, 247, 0.45); transition: all 0.25s ease;">
+                                <span>✨</span> Gerar Sabor, Preço & Anúncios com IA
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Área de Resultados da IA (Cards Gerados) -->
+                    <div id="aiResultsContainer" style="display: none;">
+                        <!-- Grid com Prévia do Produto e Anúncio -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin-bottom: 16px;">
+                            
+                            <!-- Card 1: Prévia da Trufa & Dados Comerciais -->
+                            <div style="background: rgba(26, 17, 13, 0.95); border: 1.5px solid var(--amber-gold); border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
+                                    <span style="font-size: 0.8rem; font-weight: 700; color: var(--amber-gold);">🍫 Ficha do Novo Sabor</span>
+                                    <span class="stock-badge high" id="aiResultCategoryBadge">Gourmet</span>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="font-size: 2.2rem;" id="aiResultIcon">🍫</div>
+                                    <div>
+                                        <h4 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0;" id="aiResultFlavorTitle">Trufa</h4>
+                                        <span style="font-size: 0.78rem; color: var(--text-muted);" id="aiResultWeightSize">45g • Médio</span>
+                                    </div>
+                                </div>
+
+                                <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 14px; background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; border-left: 3px solid var(--amber-gold);" id="aiResultDescription">
+                                    Descrição gerada...
+                                </p>
+
+                                <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; text-align: center;">
+                                    <div>
+                                        <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Preço Venda</span>
+                                        <strong style="color: #34d399; font-size: 1.05rem;" id="aiResultPriceDisplay">R$ 0,00</strong>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Custo Estimado</span>
+                                        <strong style="color: #fbbf24; font-size: 0.95rem;" id="aiResultCostDisplay">R$ 0,00</strong>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Lucro por Trufa</span>
+                                        <strong style="color: #38bdf8; font-size: 0.95rem;" id="aiResultProfitDisplay">R$ 0,00</strong>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 14px; font-size: 0.8rem; color: #fed7aa; background: rgba(217, 119, 6, 0.1); padding: 8px 10px; border-radius: 8px;">
+                                    💡 <strong>Observação da IA:</strong> <span id="aiResultObservation">...</span>
+                                </div>
+
+                                <!-- Botão de Adicionar ao Estoque Diretamente -->
+                                <button type="button" id="btnAddAiFlavorToCatalog" onclick="addAiGeneratedProductToCatalog()" style="width: 100%; height: 46px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; border-radius: 12px; color: #fff; font-weight: 800; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+                                    <span>🚀</span> Adicionar ao Catálogo e Estoque Agora
+                                </button>
+                            </div>
+
+                            <!-- Card 2: Anúncio Pronto para WhatsApp -->
+                            <div style="background: rgba(26, 17, 13, 0.95); border: 1.5px solid rgba(16, 185, 129, 0.5); border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: flex; flex-direction: column;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                                    <span style="font-size: 0.82rem; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 6px;">
+                                        <span>📲</span> Anúncio Pronto para WhatsApp (Status & Grupos)
+                                    </span>
+                                </div>
+
+                                <textarea id="aiWhatsappAdText" rows="9" readonly style="width: 100%; flex: 1; min-height: 180px; background: rgba(10, 15, 12, 0.9); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 12px; color: #e2e8f0; font-size: 0.82rem; font-family: monospace; line-height: 1.45; resize: none; margin-bottom: 12px;"></textarea>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                    <button type="button" onclick="copyAiWhatsappAd()" style="height: 42px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                        <span>📋</span> Copiar Anúncio
+                                    </button>
+                                    <button type="button" onclick="shareAiAdOnWhatsapp()" style="height: 42px; background: linear-gradient(135deg, #25D366, #128C7E); border: none; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);">
+                                        <span>💬</span> Postar no Status
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ABA 1: CADERNO DE ANOTAÇÕES & QUEM PAGOU (FIADOS & ACERTOS) -->
-                <div class="admin-tab-content active" id="tab-notes">
+                <div class="admin-tab-content" id="tab-notes">
                     <!-- Resumo Financeiro no Topo (3 Cards elegantes lado a lado) -->
                     <div class="notes-summary-grid">
                         <div class="notes-summary-card pending">
@@ -5927,6 +6048,10 @@
             const target = document.getElementById(`tab-${tabId}`);
             if (target) target.classList.add('active');
 
+            if (tabId === 'ai-creator') {
+                const input = document.getElementById('aiPromptInput');
+                if (input) setTimeout(() => input.focus(), 150);
+            }
             if (tabId === 'notes') loadAdminNotes();
             if (tabId === 'schedules') loadAdminSchedules();
             if (tabId === 'confectionery') loadAdminConfectionery();
@@ -5937,6 +6062,216 @@
                 initTransferTabDropdowns();
                 loadAdminTransfers();
             }
+        }
+
+        // ==========================================
+        // 🤖 IA CRIADORA DE SABORES & MARKETING DE ANÚNCIOS
+        // ==========================================
+        let lastGeneratedAiProduct = null;
+
+        function setAiPromptText(txt) {
+            const input = document.getElementById('aiPromptInput');
+            if (input) {
+                input.value = txt;
+                input.focus();
+            }
+        }
+
+        async function generateAiFlavorAndAds() {
+            const promptInput = document.getElementById('aiPromptInput');
+            const prompt = promptInput ? promptInput.value.trim() : '';
+
+            if (!prompt) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Digite seu Pedido',
+                    text: 'Escreva o sabor ou ideia que deseja criar (ex: "Cria anúncio trufa de pistache com chocolate branco por 6 reais").',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+                return;
+            }
+
+            const btn = document.getElementById('btnRunAiFlavor');
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = `<span>⏳</span> Criando Sabor & Anúncio com IA...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/admin/ai-generate-flavor', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authorization': adminToken
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        sellerId: currentUser?.id
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success && data.aiResponse) {
+                    const ai = data.aiResponse;
+                    lastGeneratedAiProduct = ai;
+
+                    // Preenche a interface com os dados da IA
+                    document.getElementById('aiResultFlavorTitle').innerText = ai.flavor || 'Trufa Gourmet';
+                    document.getElementById('aiResultCategoryBadge').innerText = ai.category || 'Gourmet';
+                    document.getElementById('aiResultIcon').innerText = ai.icon || '🍫';
+                    document.getElementById('aiResultWeightSize').innerText = `${ai.weight || '45g'} • ${ai.size || 'Médio'}`;
+                    document.getElementById('aiResultDescription').innerText = ai.description || '';
+                    document.getElementById('aiResultPriceDisplay').innerText = `R$ ${(ai.price || 0).toFixed(2).replace('.', ',')}`;
+                    document.getElementById('aiResultCostDisplay').innerText = `R$ ${(ai.cost || 0).toFixed(2).replace('.', ',')}`;
+                    
+                    const profit = (ai.price || 0) - (ai.cost || 0);
+                    document.getElementById('aiResultProfitDisplay').innerText = `R$ ${profit.toFixed(2).replace('.', ',')}`;
+                    
+                    document.getElementById('aiResultObservation').innerText = ai.observation || '';
+                    document.getElementById('aiWhatsappAdText').value = ai.whatsappAd || '';
+
+                    // Exibe o container com animação
+                    const container = document.getElementById('aiResultsContainer');
+                    container.style.display = 'block';
+                    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.7 } });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✨ Criado com Sucesso!',
+                        text: `A IA gerou a ficha de "${ai.flavor}" e o anúncio de alta conversão para você.`,
+                        timer: 2200,
+                        showConfirmButton: false,
+                        background: '#150e0a',
+                        color: '#fff'
+                    });
+                } else {
+                    throw new Error(data.error || 'Erro ao gerar dados com a IA.');
+                }
+            } catch (e) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro na IA',
+                    text: e.message,
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        async function addAiGeneratedProductToCatalog() {
+            if (!lastGeneratedAiProduct) {
+                Swal.fire({ icon: 'warning', title: 'Nenhum Produto Gerado', text: 'Gere um sabor com a IA primeiro.', background: '#150e0a', color: '#fff' });
+                return;
+            }
+
+            const ai = lastGeneratedAiProduct;
+            const btn = document.getElementById('btnAddAiFlavorToCatalog');
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = `<span>⏳</span> Adicionando ao Estoque...`;
+            btn.disabled = true;
+
+            try {
+                const payload = {
+                    flavor: ai.flavor,
+                    price: ai.price,
+                    cost: ai.cost,
+                    category: ai.category,
+                    weight: ai.weight,
+                    size: ai.size,
+                    icon: ai.icon,
+                    stock: ai.initialStock || 20,
+                    description: ai.description,
+                    active: true,
+                    sellerId: currentUser?.id
+                };
+
+                const res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authorization': adminToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    playSaleNotificationSound();
+                    confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
+
+                    await loadAdminProducts();
+                    await loadProducts();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '🚀 Trufa Adicionada!',
+                        html: `
+                            <div style="text-align: left; font-size: 0.95rem; color: #ddd; line-height: 1.5;">
+                                <p>A trufa <strong>${ai.flavor}</strong> (${ai.icon}) foi cadastrada com sucesso!</p>
+                                <ul style="margin: 8px 0; padding-left: 18px; color: #fed7aa; font-size: 0.85rem;">
+                                    <li>💰 Preço de Venda: <strong>R$ ${ai.price.toFixed(2).replace('.', ',')}</strong></li>
+                                    <li>📦 Estoque Inicial: <strong>${ai.initialStock || 20} unidades</strong></li>
+                                    <li>🏷️ Categoria: <strong>${ai.category}</strong></li>
+                                </ul>
+                                <p style="color: #34d399; margin-top: 6px;">Já está visível no cardápio online e no estoque!</p>
+                            </div>
+                        `,
+                        background: '#150e0a',
+                        color: '#fff',
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: 'Perfeito!'
+                    });
+                } else {
+                    throw new Error(data.error || 'Erro ao adicionar trufa ao catálogo.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#150e0a', color: '#fff' });
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        function copyAiWhatsappAd() {
+            const textarea = document.getElementById('aiWhatsappAdText');
+            if (!textarea || !textarea.value) return;
+
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: '📋 Copiado!',
+                    text: 'Texto do anúncio copiado para a área de transferência. Agora é só colar no WhatsApp!',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+            }).catch(() => {
+                textarea.select();
+                document.execCommand('copy');
+                Swal.fire({
+                    icon: 'success',
+                    title: '📋 Copiado!',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: '#150e0a',
+                    color: '#fff'
+                });
+            });
+        }
+
+        function shareAiAdOnWhatsapp() {
+            const textarea = document.getElementById('aiWhatsappAdText');
+            if (!textarea || !textarea.value) return;
+
+            const text = encodeURIComponent(textarea.value);
+            const waUrl = `https://api.whatsapp.com/send?text=${text}`;
+            window.open(waUrl, '_blank');
         }
 
         async function loadAdminData() {
