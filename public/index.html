@@ -2503,7 +2503,7 @@
             <p style="margin-bottom: 12px; color: var(--amber-light); font-weight: 600;">🍫 Trufas Artesanais Gourmet • Luana Menato & Fernando</p>
             <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
                 <button onclick="openLoginModal()" style="display: inline-flex; align-items: center; gap: 6px; color: var(--amber-gold); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; background: rgba(26, 17, 13, 0.75); padding: 8px 18px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
-                    🌻 Acesso do Vendedor / Painel Administrativo
+                    🔒 Painel de Administrador
                 </button>
             </div>
         </footer>
@@ -2838,7 +2838,7 @@
         <div class="modal-card" style="max-width: 440px; border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 35px rgba(245, 158, 11, 0.2);">
             <div class="modal-header" style="text-align: center; display: block; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 16px;">
                 <div style="font-size: 2.4rem; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6));">🌻</div>
-                <h3 class="modal-title" style="font-size: 1.25rem; font-weight: 800; color: #fff;">Painel do Vendedor & Admin</h3>
+                <h3 class="modal-title" style="font-size: 1.25rem; font-weight: 800; color: #fff;">Painel de Administrador</h3>
                 <small style="color: var(--amber-gold); font-size: 0.82rem; display: block; margin-top: 2px;">Trufas Gourmet • Luana Menato & Fernando</small>
                 <button class="btn-close-modal" onclick="closeLoginModal()" style="position: absolute; right: 16px; top: 16px;">✕</button>
             </div>
@@ -5803,11 +5803,18 @@
             document.getElementById('loginModal').classList.remove('active');
         }
 
+        const FALLBACK_USERS_LIST = [
+            { id: 'user-fernando', username: 'fernando', name: 'Fernando', role: 'admin', avatar: '👑' },
+            { id: 'user-luana', username: 'luana', name: 'Luana Menato', role: 'seller', avatar: '🌻' }
+        ];
+
         function renderLoginProfiles() {
             const grid = document.getElementById('loginProfilesGrid');
             if (!grid) return;
 
-            grid.innerHTML = allUsers.map((u, i) => `
+            const usersToRender = (Array.isArray(allUsers) && allUsers.length > 0) ? allUsers : FALLBACK_USERS_LIST;
+
+            grid.innerHTML = usersToRender.map((u, i) => `
                 <div class="user-profile-card ${i === 0 ? 'selected' : ''}" onclick="selectLoginProfile('${u.username}', this)">
                     <div class="user-avatar-icon">${u.avatar || '🍫'}</div>
                     <div class="user-card-name">${u.name}</div>
@@ -5815,9 +5822,9 @@
                 </div>
             `).join('');
 
-            if (allUsers.length > 0) {
-                document.getElementById('loginUsername').value = allUsers[0].username;
-            }
+            const selectedUsername = usersToRender[0]?.username || 'fernando';
+            const usernameInput = document.getElementById('loginUsername');
+            if (usernameInput) usernameInput.value = selectedUsername;
         }
 
         function selectLoginProfile(username, el) {
@@ -5829,11 +5836,23 @@
 
         // Login com Senha
         async function submitPasswordLogin() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+            const usernameInput = document.getElementById('loginUsername');
+            let username = usernameInput ? usernameInput.value.trim() : '';
+            if (!username) username = 'fernando';
+
+            const passwordInput = document.getElementById('loginPassword');
+            const password = passwordInput ? passwordInput.value.trim() : '';
 
             if (!password) {
-                Swal.fire({ icon: 'warning', title: 'Digite a senha', background: '#150e0a', color: '#fff' });
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Digite a senha',
+                    text: 'Por favor, informe a senha de acesso.',
+                    background: '#150e0a',
+                    color: '#fff',
+                    confirmButtonColor: '#f59e0b'
+                });
+                if (passwordInput) passwordInput.focus();
                 return;
             }
 
@@ -5845,7 +5864,7 @@
                 });
 
                 const data = await res.json();
-                if (data.success && data.token) {
+                if (res.ok && data.success && data.token) {
                     adminToken = data.token;
                     currentUser = data.user;
                     localStorage.setItem('trufas_admin_token', adminToken);
@@ -5863,17 +5882,35 @@
                     Swal.fire({
                         icon: 'success',
                         title: `Olá, ${currentUser.name}! 🌻`,
-                        text: 'Acesso liberado com sucesso!',
+                        text: 'Acesso liberado com sucesso ao Painel de Administrador!',
                         timer: 1400,
                         showConfirmButton: false,
                         background: '#150e0a',
                         color: '#fff'
                     });
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Senha Incorreta', text: data.error || 'Tente novamente.', background: '#150e0a', color: '#fff' });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Senha Incorreta',
+                        text: data.error || 'Senha incorreta para o perfil selecionado.',
+                        background: '#150e0a',
+                        color: '#fff',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    if (passwordInput) {
+                        passwordInput.value = '';
+                        passwordInput.focus();
+                    }
                 }
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'Erro ao entrar', text: e.message, background: '#150e0a', color: '#fff' });
+            } catch (err) {
+                console.error('Erro no login:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro de Conexão',
+                    text: 'Não foi possível conectar ao servidor. Tente novamente.',
+                    background: '#150e0a',
+                    color: '#fff'
+                });
             }
         }
 
