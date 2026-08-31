@@ -644,9 +644,9 @@
         <!-- Barra de Contato Topo -->
         <div class="top-notice-bar">
             <span>✨ Trufas Gourmet Artesanais Feitas com Amor</span>
-            <a href="https://wa.me/5511999999999" target="_blank" class="top-notice-link">
+            <button type="button" onclick="openWhatsAppChoiceModal()" class="top-notice-link" style="background: none; border: none; font-family: inherit; font-size: inherit; cursor: pointer; color: inherit; display: inline-flex; align-items: center; gap: 4px;">
                 <span>📱 Falar no WhatsApp</span> ➔
-            </a>
+            </button>
         </div>
 
         <!-- Cabeçalho Principal -->
@@ -868,6 +868,46 @@
         let clientCart = {};
         let currentCategory = 'all';
         let searchQuery = '';
+
+        function openWhatsAppChoiceModal(customMessage = '') {
+            const defaultMsg = customMessage || encodeURIComponent('Olá! Vim pelo site e gostaria de tirar uma dúvida sobre as trufas gourmet 🍫');
+            const urlLuana = `https://wa.me/5519991264632?text=${defaultMsg}`;
+            const urlFernando = `https://wa.me/5519992861518?text=${defaultMsg}`;
+
+            Swal.fire({
+                title: '💬 Falar no WhatsApp',
+                text: 'Escolha com quem você deseja conversar:',
+                background: '#170f0b',
+                color: '#fff',
+                showConfirmButton: false,
+                showCloseButton: true,
+                html: `
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                        <a href="${urlLuana}" target="_blank" onclick="Swal.close()" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #fff; text-decoration: none; font-weight: 700; transition: all 0.2s ease;">
+                            <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                                <span style="font-size: 1.6rem;">🌻</span>
+                                <div>
+                                    <div style="color: #4ade80; font-size: 1rem;">Luana Menato</div>
+                                    <div style="color: #cbd5e1; font-size: 0.82rem; font-weight: normal;">(19) 99126-4632</div>
+                                </div>
+                            </div>
+                            <span style="background: #22c55e; color: #000; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800;">Chamar ➔</span>
+                        </a>
+
+                        <a href="${urlFernando}" target="_blank" onclick="Swal.close()" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fff; text-decoration: none; font-weight: 700; transition: all 0.2s ease;">
+                            <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                                <span style="font-size: 1.6rem;">🍫</span>
+                                <div>
+                                    <div style="color: var(--amber-gold); font-size: 1rem;">Fernando</div>
+                                    <div style="color: #cbd5e1; font-size: 0.82rem; font-weight: normal;">(19) 99286-1518</div>
+                                </div>
+                            </div>
+                            <span style="background: var(--amber-gold); color: #000; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800;">Chamar ➔</span>
+                        </a>
+                    </div>
+                `
+            });
+        }
 
         async function initClientApp() {
             renderFridayDateChips();
@@ -1473,8 +1513,7 @@
                         cancelButtonText: 'Concluir'
                     }).then((r) => {
                         if (r.isConfirmed) {
-                            const waUrl = `https://wa.me/?text=${waMsg}`;
-                            window.open(waUrl, '_blank');
+                            openWhatsAppChoiceModal(waMsg);
                         }
                     });
                 } else {
