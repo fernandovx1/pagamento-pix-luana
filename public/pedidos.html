@@ -1414,8 +1414,8 @@
             btn.disabled = true;
 
             const deliveryTypeLabel = deliveryType === 'delivery' ? 'Entrega' : 'Retirada';
-            const [sy, sm, sd] = scheduleDate.split('-');
-            const formattedScheduleDate = `${sd}/${sm}/${sy}`;
+            const [dateY, dateM, dateD] = scheduleDate.split('-');
+            const formattedScheduleDate = `${dateD}/${dateM}/${dateY}`;
             const itemsSummary = items.map(i => `${i.quantity}x ${i.flavor}`).join(', ');
 
             try {

@@ -4506,10 +4506,8 @@
             await loadUsersList();
             await loadProducts();
 
-            // EXIGIR VALIDAÇÃO DE SEGURANÇA COM SENHA AO ENTRAR NO PAINEL ADMIN
-            if (!currentUser || !adminToken) {
-                openLoginModal(true);
-            } else {
+            // Validação de autenticação se já houver sessão salva
+            if (currentUser && adminToken) {
                 try {
                     const authRes = await fetch(`/api/auth/me?_t=${Date.now()}`, {
                         headers: { 'authorization': adminToken }
@@ -4518,13 +4516,15 @@
                         const authData = await authRes.json();
                         currentUser = authData.user;
                         localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
-                        openAdminModal();
                     } else {
-                        // Se o token expirou ou é inválido, limpa e força tela de login
-                        adminLogout();
+                        // Se o token expirou, limpa silenciosamente sem interromper o cliente
+                        currentUser = null;
+                        adminToken = '';
+                        localStorage.removeItem('trufas_admin_token');
+                        localStorage.removeItem('trufas_current_user');
                     }
                 } catch (e) {
-                    openLoginModal(true);
+                    console.warn('Sessão admin não pôde ser validada:', e);
                 }
             }
         }
@@ -4532,16 +4532,21 @@
         async function loadUsersList() {
             try {
                 const res = await fetch(`/api/auth/users-list?_t=${Date.now()}`);
-                allUsers = await res.json();
-                renderLoginProfiles();
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        allUsers = data;
+                        renderLoginProfiles();
 
-                const statSelect = document.getElementById('statSellerSelect');
-                if (statSelect && allUsers && allUsers.length > 0) {
-                    const currentVal = statSelect.value || 'all';
-                    statSelect.innerHTML = `<option value="all">👑 + 🍫 Visão Consolidada (Geral)</option>` +
-                        allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} ${u.name}</option>`).join('');
-                    if (allUsers.some(u => u.id === currentVal) || currentVal === 'all') {
-                        statSelect.value = currentVal;
+                        const statSelect = document.getElementById('statSellerSelect');
+                        if (statSelect && allUsers && allUsers.length > 0) {
+                            const currentVal = statSelect.value || 'all';
+                            statSelect.innerHTML = `<option value="all">👑 + 🍫 Visão Consolidada (Geral)</option>` +
+                                allUsers.map(u => `<option value="${u.id}">${u.avatar || ''} ${u.name}</option>`).join('');
+                            if (allUsers.some(u => u.id === currentVal) || currentVal === 'all') {
+                                statSelect.value = currentVal;
+                            }
+                        }
                     }
                 }
             } catch (e) {
@@ -4550,28 +4555,34 @@
         }
 
         async function loadProducts() {
-            // 1. Carrega do cache local instantaneamente
+            // 1. Carrega do cache local instantaneamente se existir
             try {
                 const cached = localStorage.getItem('trufas_products_cache');
                 if (cached && (!allProducts || allProducts.length === 0)) {
-                    allProducts = JSON.parse(cached);
-                    renderProductsGrid();
+                    const parsed = JSON.parse(cached);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        allProducts = parsed;
+                        renderProductsGrid();
+                    }
                 }
             } catch (e) {}
 
             try {
                 const response = await fetch(`/api/products?_t=${Date.now()}`);
-                const data = await response.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    allProducts = data;
-                    localStorage.setItem('trufas_products_cache', JSON.stringify(allProducts));
-                } else if (!allProducts || allProducts.length === 0) {
-                    allProducts = data || [];
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        allProducts = data;
+                        localStorage.setItem('trufas_products_cache', JSON.stringify(allProducts));
+                    } else if (Array.isArray(data)) {
+                        allProducts = data;
+                    }
                 }
                 renderProductsGrid();
                 updateCartDisplay();
             } catch (err) {
                 console.error('Erro ao buscar produtos:', err);
+                renderProductsGrid();
             }
         }
 
@@ -9319,10 +9330,6 @@ Muito obrigado pela preferência e carinho! Qualquer dúvida estamos à disposi�
         }
 
         async function submitClientBookingOrder() {
-            const customerPhone = document.getElementById('clientOrderPhone').value.trim();
-            const customerName = document.getElementById('clientOrderName').value.trim();
-            const scheduleDate = document.getElementById('clientOrderDate').value;
-            const scheduleTime = document.getElementById('clientOrderTime').value;
             const phoneInput = document.getElementById('clientOrderPhone');
             const nameInput = document.getElementById('clientOrderName');
             const dateInput = document.getElementById('clientOrderDate');
