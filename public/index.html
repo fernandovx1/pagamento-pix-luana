@@ -2505,9 +2505,6 @@
                 <button onclick="openLoginModal()" style="display: inline-flex; align-items: center; gap: 6px; color: var(--amber-gold); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; background: rgba(26, 17, 13, 0.75); padding: 8px 18px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
                     🌻 Acesso do Vendedor / Painel Administrativo
                 </button>
-                <button onclick="openCustomPixModal()" style="display: inline-flex; align-items: center; gap: 6px; color: #00D1FF; border: 1px solid rgba(0, 209, 255, 0.35); border-radius: 20px; background: rgba(0, 209, 255, 0.08); padding: 8px 16px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
-                    ⚡ Cobrança Pix Avulsa
-                </button>
             </div>
         </footer>
     </div>
@@ -4213,6 +4210,7 @@
                         <label for="clientPaymentPreference">Forma de Pagamento:</label>
                         <div class="input-wrapper">
                             <select id="clientPaymentPreference">
+                                <option value="pay_day_next_month" selected>📅 Pagar no Pagamento (5º Dia Útil)</option>
                                 <option value="pay_on_delivery">💵 Pagar na Entrega / Retirada</option>
                                 <option value="pix_deposit">⚡ Sinal 50% no Pix (Garante produção)</option>
                                 <option value="pix_total">⚡ Total 100% no Pix (Antecipado)</option>
@@ -9408,18 +9406,23 @@ Muito obrigado pela preferência e carinho! Qualquer dúvida estamos à disposi�
             }
 
             const totalAmount = items.reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+            const isPayDay = paymentPref === 'pay_day_next_month';
+            const fifthBiz = typeof getFifthBusinessDayOfNextMonth === 'function' ? getFifthBusinessDayOfNextMonth() : null;
             let depositAmount = 0;
             let paymentStatus = 'pending';
-            let paymentMethodLabel = 'Na Entrega / Retirada';
+            let paymentMethodLabel = '💵 Pagar na Entrega / Retirada';
 
-            if (paymentPref === 'pix_deposit') {
+            if (isPayDay) {
+                const dateLabel = fifthBiz ? ` - ${fifthBiz.formattedShort}` : '';
+                paymentMethodLabel = `📅 Pagar no Pagamento (5º Dia Útil${dateLabel})`;
+            } else if (paymentPref === 'pix_deposit') {
                 depositAmount = totalAmount / 2;
                 paymentStatus = 'deposit_paid';
-                paymentMethodLabel = 'Sinal 50% Pix';
+                paymentMethodLabel = '⚡ Sinal 50% Pix';
             } else if (paymentPref === 'pix_total') {
                 depositAmount = totalAmount;
                 paymentStatus = 'paid';
-                paymentMethodLabel = 'Total 100% Pix';
+                paymentMethodLabel = '⚡ Total 100% Pix';
             }
 
             // Salva dados do cliente localmente

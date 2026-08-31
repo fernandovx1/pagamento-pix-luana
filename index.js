@@ -400,20 +400,20 @@ app.use((req, res, next) => {
 // 🌐 ROTAS DE PÁGINAS SEPARADAS (CLIENTES vs GESTORES)
 // ==========================================
 
-// 1. Rota Principal e Catálogo Completo dos Clientes & Gestores
-app.get(['/', '/index.html', '/cardapio', '/loja', '/cliente', '/admin', '/login', '/painel', '/gestao'], (req, res) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// 2. Encomendas / Pedidos
-app.get(['/pedir', '/encomendas', '/pedidos.html'], (req, res) => {
+// 1. Rota Principal e Vitrine dos Clientes (Design Oficial dos Clientes)
+app.get(['/', '/cardapio', '/loja', '/cliente', '/pedir', '/encomendas', '/pedidos.html'], (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     res.sendFile(path.join(__dirname, 'public', 'pedidos.html'));
+});
+
+// 2. Painel Administrativo / Vendedor / Gestão
+app.get(['/admin', '/login', '/painel', '/gestao', '/adm', '/index.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.use(express.static('public', {
