@@ -18,6 +18,9 @@ const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
 const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
 const TRANSFERS_FILE = path.join(DATA_DIR, 'transfers.json');
 const NOTES_FILE = path.join(DATA_DIR, 'notes.json');
+const SCHEDULES_FILE = path.join(DATA_DIR, 'schedules.json');
+const INGREDIENTS_FILE = path.join(DATA_DIR, 'ingredients.json');
+const RECIPES_FILE = path.join(DATA_DIR, 'recipes.json');
 
 // Garantir diretório e arquivos de dados
 if (!fs.existsSync(DATA_DIR)) {
@@ -25,6 +28,69 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 // Helpers de Banco de Dados JSON
+function getIngredients() {
+    try {
+        if (!fs.existsSync(INGREDIENTS_FILE)) return [];
+        const raw = fs.readFileSync(INGREDIENTS_FILE, 'utf-8');
+        return JSON.parse(raw || '[]');
+    } catch (e) {
+        console.error('Erro ao ler ingredients.json:', e);
+        return [];
+    }
+}
+
+function saveIngredients(ingredients) {
+    try {
+        fs.writeFileSync(INGREDIENTS_FILE, JSON.stringify(ingredients, null, 2), 'utf-8');
+        return true;
+    } catch (e) {
+        console.error('Erro ao salvar ingredients.json:', e);
+        return false;
+    }
+}
+
+function getRecipes() {
+    try {
+        if (!fs.existsSync(RECIPES_FILE)) return [];
+        const raw = fs.readFileSync(RECIPES_FILE, 'utf-8');
+        return JSON.parse(raw || '[]');
+    } catch (e) {
+        console.error('Erro ao ler recipes.json:', e);
+        return [];
+    }
+}
+
+function saveRecipes(recipes) {
+    try {
+        fs.writeFileSync(RECIPES_FILE, JSON.stringify(recipes, null, 2), 'utf-8');
+        return true;
+    } catch (e) {
+        console.error('Erro ao salvar recipes.json:', e);
+        return false;
+    }
+}
+
+function getSchedules() {
+    try {
+        if (!fs.existsSync(SCHEDULES_FILE)) return [];
+        const raw = fs.readFileSync(SCHEDULES_FILE, 'utf-8');
+        return JSON.parse(raw || '[]');
+    } catch (e) {
+        console.error('Erro ao ler schedules.json:', e);
+        return [];
+    }
+}
+
+function saveSchedules(schedules) {
+    try {
+        fs.writeFileSync(SCHEDULES_FILE, JSON.stringify(schedules, null, 2), 'utf-8');
+        return true;
+    } catch (e) {
+        console.error('Erro ao salvar schedules.json:', e);
+        return false;
+    }
+}
+
 function getNotes() {
     try {
         if (!fs.existsSync(NOTES_FILE)) return [];
@@ -76,6 +142,7 @@ function getDefaultProductsList() {
             sellerName: "Fernando",
             flavor: "Nutella",
             price: 4.00,
+            cost: 1.50,
             weight: "45g",
             size: "Médio",
             stock: 20,
@@ -90,6 +157,7 @@ function getDefaultProductsList() {
             sellerName: "Fernando",
             flavor: "Ninho",
             price: 4.00,
+            cost: 1.50,
             weight: "45g",
             size: "Médio",
             stock: 20,
@@ -104,6 +172,7 @@ function getDefaultProductsList() {
             sellerName: "Fernando",
             flavor: "Doce de leite",
             price: 4.00,
+            cost: 1.50,
             weight: "45g",
             size: "Médio",
             stock: 20,
@@ -118,6 +187,7 @@ function getDefaultProductsList() {
             sellerName: "Fernando",
             flavor: "Kit Kat",
             price: 4.00,
+            cost: 1.50,
             weight: "45g",
             size: "Médio",
             stock: 20,
@@ -132,6 +202,7 @@ function getDefaultProductsList() {
             sellerName: "Fernando",
             flavor: "Morango",
             price: 4.00,
+            cost: 1.50,
             weight: "45g",
             size: "Médio",
             stock: 20,
@@ -146,6 +217,7 @@ function getDefaultProductsList() {
             sellerName: "Fernando",
             flavor: "OvoMaltine",
             price: 4.00,
+            cost: 1.50,
             weight: "45g",
             size: "Médio",
             stock: 20,
@@ -324,12 +396,22 @@ app.use((req, res, next) => {
     next();
 });
 
-// Rotas diretas para Painel de Login e Administração
-app.get(['/admin', '/login', '/painel'], (req, res) => {
+// ==========================================
+// 🌐 ROTAS DE PÁGINAS SEPARADAS (CLIENTES vs GESTORES)
+// ==========================================
+
+// 1. Link Exclusivo do Painel Administrativo de Vocês (Fernando & Luana)
+app.get(['/admin', '/login', '/painel', '/gestao'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// 2. Link Exclusivo dos Clientes (Cardápio & Encomendas Online)
+app.get(['/', '/pedir', '/encomendas', '/cardapio', '/loja', '/cliente'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'pedidos.html'));
+});
+
 app.use(express.static('public', {
+    index: false, // Desativa servir index.html automaticamente na raiz para priorizar pedidos.html
     etag: false,
     lastModified: false,
     maxAge: 0,
@@ -486,6 +568,11 @@ app.post('/api/auth/login', (req, res) => {
         token,
         user: { id: user.id, name: user.name, username: user.username, role: user.role, avatar: user.avatar }
     });
+});
+
+// Verificar Sessão Ativa / Validação de Token no Admin
+app.get('/api/auth/me', authenticateUser, (req, res) => {
+    res.json({ success: true, user: req.user });
 });
 
 // Rota de Compatibilidade do Admin Antigo
@@ -682,7 +769,7 @@ app.get('/api/admin/products', authenticateUser, (req, res) => {
 
 // Cadastrar nova trufa vinculada ao vendedor logado
 app.post('/api/admin/products', authenticateUser, (req, res) => {
-    const { flavor, price, weight, size, stock, category, description, icon, sellerId } = req.body;
+    const { flavor, price, cost, weight, size, stock, category, description, icon, sellerId } = req.body;
 
     if (!flavor || price === undefined) {
         return res.status(400).json({ error: 'Sabor e preço são obrigatórios.' });
@@ -708,6 +795,7 @@ app.post('/api/admin/products', authenticateUser, (req, res) => {
         sellerName: assignedSellerName,
         flavor: flavor.trim(),
         price: Number(price),
+        cost: cost !== undefined && !isNaN(parseFloat(cost)) ? Number(parseFloat(cost).toFixed(2)) : 1.50,
         weight: weight ? weight.trim() : '45g',
         size: size ? size.trim() : 'Médio',
         stock: parseInt(stock, 10) >= 0 ? parseInt(stock, 10) : 0,
@@ -720,14 +808,14 @@ app.post('/api/admin/products', authenticateUser, (req, res) => {
     products.push(newProduct);
     saveProducts(products);
 
-    console.log(`[PRODUTOS] Nova trufa: "${newProduct.flavor}" adicionada ao estoque de ${assignedSellerName}`);
+    console.log(`[PRODUTOS] Nova trufa: "${newProduct.flavor}" (Custo R$ ${newProduct.cost}, Venda R$ ${newProduct.price}) adicionada ao estoque de ${assignedSellerName}`);
     res.status(201).json({ success: true, product: newProduct });
 });
 
 // Editar trufa
 app.put('/api/admin/products/:id', authenticateUser, (req, res) => {
     const { id } = req.params;
-    const { flavor, price, weight, size, stock, category, description, icon, active, sellerId } = req.body;
+    const { flavor, price, cost, weight, size, stock, category, description, icon, active, sellerId } = req.body;
 
     const products = getProducts();
     const index = products.findIndex(p => p.id === id);
@@ -759,6 +847,7 @@ app.put('/api/admin/products/:id', authenticateUser, (req, res) => {
         sellerName: updatedSellerName,
         flavor: flavor !== undefined ? flavor.trim() : products[index].flavor,
         price: price !== undefined ? Number(price) : products[index].price,
+        cost: cost !== undefined && !isNaN(parseFloat(cost)) ? Number(parseFloat(cost).toFixed(2)) : (products[index].cost !== undefined ? products[index].cost : 1.50),
         weight: weight !== undefined ? weight.trim() : products[index].weight,
         size: size !== undefined ? size.trim() : products[index].size,
         stock: stock !== undefined ? parseInt(stock, 10) : products[index].stock,
@@ -1352,51 +1441,199 @@ app.post('/api/admin/orders/:id/approve-manual', authenticateUser, (req, res) =>
     res.json({ success: true, message: 'Pagamento confirmado e registrado com sucesso!', order });
 });
 
-// Estatísticas e Relatórios (Separados por Vendedor ou Geral)
+// Estatísticas, Relatórios e BI Completo (Multi-Perfil, Custo, Lucro Real e Séries Temporais para Gráficos)
 app.get('/api/admin/stats', authenticateUser, (req, res) => {
     const orders = getOrders();
     const products = getProducts();
-    const { sellerId } = req.query;
+    const users = getUsers();
+    const { sellerId, period } = req.query;
 
     const targetSellerId = (req.user.role === 'admin' && sellerId && sellerId !== 'all') 
         ? sellerId 
         : (req.user.role !== 'admin' ? req.user.id : null);
 
-    const approvedOrders = orders.filter(o => o.status === 'approved');
+    // Mapeamento de custo dos produtos por ID ou por sabor
+    const productCostMap = {};
+    for (const p of products) {
+        if (p.id) productCostMap[p.id] = (p.cost !== undefined ? Number(p.cost) : 1.50);
+        if (p.flavor) productCostMap[p.flavor.toLowerCase()] = (p.cost !== undefined ? Number(p.cost) : 1.50);
+    }
+
+    // Filtrar por período de tempo (hoje, 7 dias, mês, tudo)
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const startOfMonthStr = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+
+    let dateFilteredOrders = orders;
+    if (period === 'today') {
+        dateFilteredOrders = orders.filter(o => (o.createdAt || '').startsWith(todayStr));
+    } else if (period === '7days') {
+        dateFilteredOrders = orders.filter(o => (o.createdAt || '') >= sevenDaysAgo);
+    } else if (period === 'month') {
+        dateFilteredOrders = orders.filter(o => (o.createdAt || '') >= startOfMonthStr);
+    }
+
+    const approvedOrders = dateFilteredOrders.filter(o => o.status === 'approved');
+    const pendingOrders = dateFilteredOrders.filter(o => o.status === 'pending');
+    const cancelledOrders = dateFilteredOrders.filter(o => o.status === 'cancelled');
 
     let totalRevenue = 0;
+    let totalCost = 0;
     let totalTrufflesSold = 0;
     const flavorCounts = {};
+    const flavorRevenues = {};
 
     for (const order of approvedOrders) {
         for (const item of order.items || []) {
             if (!targetSellerId || item.sellerId === targetSellerId) {
-                totalRevenue += (Number(item.subtotal) || (item.unitPrice * item.quantity));
-                totalTrufflesSold += Number(item.quantity);
-                flavorCounts[item.flavor] = (flavorCounts[item.flavor] || 0) + Number(item.quantity);
+                const subtotal = (Number(item.subtotal) || (Number(item.unitPrice) * Number(item.quantity)));
+                const qty = Number(item.quantity) || 0;
+                const unitCost = productCostMap[item.id] || productCostMap[(item.flavor || '').toLowerCase()] || 1.50;
+                const itemCost = unitCost * qty;
+
+                totalRevenue += subtotal;
+                totalCost += itemCost;
+                totalTrufflesSold += qty;
+
+                const flv = item.flavor || 'Outros';
+                flavorCounts[flv] = (flavorCounts[flv] || 0) + qty;
+                flavorRevenues[flv] = (flavorRevenues[flv] || 0) + subtotal;
             }
         }
     }
 
+    const netProfit = Number((totalRevenue - totalCost).toFixed(2));
+    const profitMargin = totalRevenue > 0 ? Number(((netProfit / totalRevenue) * 100).toFixed(1)) : 0;
+    const totalApprovedOrders = approvedOrders.length;
+    const averageTicket = totalApprovedOrders > 0 ? Number((totalRevenue / totalApprovedOrders).toFixed(2)) : 0;
+
+    // Sabores Mais Vendidos
     const topFlavors = Object.entries(flavorCounts)
-        .map(([flavor, count]) => ({ flavor, count }))
+        .map(([flavor, count]) => ({
+            flavor,
+            count,
+            revenue: Number((flavorRevenues[flavor] || 0).toFixed(2)),
+            percentage: totalTrufflesSold > 0 ? Number(((count / totalTrufflesSold) * 100).toFixed(1)) : 0
+        }))
         .sort((a, b) => b.count - a.count);
 
-    const filteredProducts = targetSellerId 
-        ? products.filter(p => p.active !== false && p.sellerId === targetSellerId)
-        : products.filter(p => p.active !== false);
+    // Identificar produto menos vendido (entre os produtos ativos)
+    const activeProducts = products.filter(p => p.active !== false && (!targetSellerId || p.sellerId === targetSellerId));
+    let leastSoldFlavor = null;
+    if (activeProducts.length > 0) {
+        const sortedLeast = [...activeProducts].map(p => ({
+            flavor: p.flavor,
+            count: flavorCounts[p.flavor] || 0
+        })).sort((a, b) => a.count - b.count);
+        leastSoldFlavor = sortedLeast[0];
+    }
 
-    const lowStockAlerts = filteredProducts.filter(p => p.stock <= 3);
-    const totalCurrentStock = filteredProducts.reduce((sum, p) => sum + (p.stock || 0), 0);
+    // 1. Série Diária de Vendas (Últimos 14 dias para o gráfico de Linha)
+    const dailySalesSeries = [];
+    for (let i = 13; i >= 0; i--) {
+        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateKey = `${y}-${m}-${day}`;
+        const dateLabel = `${day}/${m}`;
+
+        let dayRevenue = 0;
+        let dayCost = 0;
+        let dayTruffles = 0;
+
+        for (const order of orders.filter(o => o.status === 'approved' && (o.createdAt || '').startsWith(dateKey))) {
+            for (const item of order.items || []) {
+                if (!targetSellerId || item.sellerId === targetSellerId) {
+                    const subtotal = (Number(item.subtotal) || (Number(item.unitPrice) * Number(item.quantity)));
+                    const qty = Number(item.quantity) || 0;
+                    const unitCost = productCostMap[item.id] || productCostMap[(item.flavor || '').toLowerCase()] || 1.50;
+                    dayRevenue += subtotal;
+                    dayCost += unitCost * qty;
+                    dayTruffles += qty;
+                }
+            }
+        }
+
+        dailySalesSeries.push({
+            date: dateKey,
+            dateLabel,
+            revenue: Number(dayRevenue.toFixed(2)),
+            profit: Number((dayRevenue - dayCost).toFixed(2)),
+            truffles: dayTruffles
+        });
+    }
+
+    // 2. Série de Vendas por Vendedor (Para o gráfico de Barras comparativo)
+    const salesBySellerSeries = users.map(u => {
+        let sellerRev = 0;
+        let sellerCost = 0;
+        let sellerTruffles = 0;
+
+        for (const order of approvedOrders) {
+            for (const item of order.items || []) {
+                if (item.sellerId === u.id) {
+                    const subtotal = (Number(item.subtotal) || (Number(item.unitPrice) * Number(item.quantity)));
+                    const qty = Number(item.quantity) || 0;
+                    const unitCost = productCostMap[item.id] || productCostMap[(item.flavor || '').toLowerCase()] || 1.50;
+                    sellerRev += subtotal;
+                    sellerCost += unitCost * qty;
+                    sellerTruffles += qty;
+                }
+            }
+        }
+
+        return {
+            sellerId: u.id,
+            sellerName: u.name,
+            avatar: u.avatar || '🍫',
+            revenue: Number(sellerRev.toFixed(2)),
+            profit: Number((sellerRev - sellerCost).toFixed(2)),
+            truffles: sellerTruffles
+        };
+    });
+
+    // 3. Série de Distribuição por Sabor (Para o gráfico de Rosca)
+    const flavorDistributionSeries = topFlavors.slice(0, 6);
+
+    // Estoques e Alertas
+    const lowStockAlerts = activeProducts.filter(p => p.stock <= 5);
+    const totalCurrentStock = activeProducts.reduce((sum, p) => sum + (p.stock || 0), 0);
+
+    // Pedidos Pendentes e Conversão
+    let pendingRevenue = 0;
+    for (const order of pendingOrders) {
+        for (const item of order.items || []) {
+            if (!targetSellerId || item.sellerId === targetSellerId) {
+                pendingRevenue += (Number(item.subtotal) || (Number(item.unitPrice) * Number(item.quantity)));
+            }
+        }
+    }
+
+    const totalOrdersCount = approvedOrders.length + pendingOrders.length + cancelledOrders.length;
+    const conversionRate = totalOrdersCount > 0 ? Number(((approvedOrders.length / totalOrdersCount) * 100).toFixed(1)) : 100;
 
     res.json({
-        totalRevenue,
+        totalRevenue: Number(totalRevenue.toFixed(2)),
+        totalCost: Number(totalCost.toFixed(2)),
+        netProfit,
+        profitMargin,
         totalTrufflesSold,
-        totalApprovedOrders: approvedOrders.length,
-        totalCurrentStock,
+        totalApprovedOrders,
+        averageTicket,
         topFlavors,
+        leastSoldFlavor,
+        dailySalesSeries,
+        salesBySellerSeries,
+        flavorDistributionSeries,
+        totalCurrentStock,
         lowStockAlerts,
-        productsCount: filteredProducts.length,
+        productsCount: activeProducts.length,
+        pendingOrdersCount: pendingOrders.length,
+        pendingRevenue: Number(pendingRevenue.toFixed(2)),
+        conversionRate,
+        period: period || 'all',
         sellerFilter: targetSellerId || 'all'
     });
 });
@@ -1668,9 +1905,765 @@ app.delete('/api/admin/notes/:id', authenticateUser, (req, res) => {
     res.json({ success: true, message: 'Anotação removida com sucesso.' });
 });
 
+// ==========================================
+// ROTAS DE AGENDAMENTOS DE PEDIDOS & ENCOMENDAS (SCHEDULES)
+// ==========================================
+
+// Listar agendamentos com filtros, métricas e consolidação de sabores para produção
+// Compartilhado entre Fernando e Luana por padrão
+app.get('/api/admin/schedules', authenticateUser, (req, res) => {
+    const schedules = getSchedules();
+    const { sellerId, status, dateFilter } = req.query;
+
+    // Se houver filtro explícito por vendedor (ex: só Fernando ou só Luana), filtra; caso contrário, exibe os 2 perfis
+    const targetSellerId = (sellerId && sellerId !== 'all') ? sellerId : null;
+
+    let filteredSchedules = schedules;
+
+    if (targetSellerId) {
+        filteredSchedules = filteredSchedules.filter(s => s.sellerId === targetSellerId);
+    }
+
+    if (status && status !== 'all') {
+        filteredSchedules = filteredSchedules.filter(s => s.status === status);
+    }
+
+    // Filtro rápido de data (Hoje, Próximos 7 dias, etc.)
+    if (dateFilter && dateFilter !== 'all') {
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (dateFilter === 'today') {
+            filteredSchedules = filteredSchedules.filter(s => s.scheduleDate === todayStr);
+        } else if (dateFilter === 'upcoming7') {
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            const nextWeekStr = nextWeek.toISOString().split('T')[0];
+            filteredSchedules = filteredSchedules.filter(s => s.scheduleDate >= todayStr && s.scheduleDate <= nextWeekStr);
+        }
+    }
+
+    // Ordenação: 
+    // 1. Status ativos primeiro (producing, pending, ready) antes de (delivered, cancelled)
+    // 2. Data do agendamento (mais próximos primeiro)
+    const statusPriority = { 'producing': 1, 'pending': 2, 'ready': 3, 'delivered': 4, 'cancelled': 5 };
+    filteredSchedules.sort((a, b) => {
+        const pA = statusPriority[a.status] || 99;
+        const pB = statusPriority[b.status] || 99;
+        if (pA !== pB) return pA - pB;
+        if (a.scheduleDate !== b.scheduleDate) return (a.scheduleDate || '').localeCompare(b.scheduleDate || '');
+        return (a.scheduleTime || '').localeCompare(b.scheduleTime || '');
+    });
+
+    // Calcular estatísticas e totais para a base compartilhada ou filtrada
+    const allForStats = targetSellerId ? schedules.filter(s => s.sellerId === targetSellerId) : schedules;
+
+    let countPending = 0;
+    let countProducing = 0;
+    let countReady = 0;
+    let countDelivered = 0;
+    let countCancelled = 0;
+    let totalScheduledAmount = 0;
+    let totalPendingAmount = 0;
+    let totalPaidAmount = 0;
+
+    // Consolidação de Sabores para o Lote de Produção (Apenas agendamentos ativos: pending, producing, ready)
+    const flavorTotalsMap = {};
+    let totalTrufflesToProduce = 0;
+
+    for (const s of allForStats) {
+        const val = Number(s.totalAmount) || 0;
+        const dep = Number(s.depositAmount) || 0;
+
+        if (s.status === 'pending') countPending++;
+        else if (s.status === 'producing') countProducing++;
+        else if (s.status === 'ready') countReady++;
+        else if (s.status === 'delivered') countDelivered++;
+        else if (s.status === 'cancelled') countCancelled++;
+
+        if (s.status !== 'cancelled') {
+            totalScheduledAmount += val;
+            if (s.paymentStatus === 'paid') {
+                totalPaidAmount += val;
+            } else if (s.paymentStatus === 'deposit_paid') {
+                totalPaidAmount += dep;
+                totalPendingAmount += Math.max(0, val - dep);
+            } else {
+                totalPendingAmount += val;
+            }
+        }
+
+        // Se o agendamento está ativo (aguardando confecção ou entrega)
+        if (['pending', 'producing', 'ready'].includes(s.status) && Array.isArray(s.items)) {
+            for (const item of s.items) {
+                const flavorName = (item.flavor || 'Sabor Indefinido').trim();
+                const qty = parseInt(item.quantity, 10) || 0;
+                if (qty > 0) {
+                    flavorTotalsMap[flavorName] = (flavorTotalsMap[flavorName] || 0) + qty;
+                    totalTrufflesToProduce += qty;
+                }
+            }
+        }
+    }
+
+    // Transformar o mapa em array ordenado pela maior quantidade
+    const flavorProductionTotals = Object.entries(flavorTotalsMap)
+        .map(([flavor, quantity]) => ({ flavor, quantity }))
+        .sort((a, b) => b.quantity - a.quantity);
+
+    res.json({
+        schedules: filteredSchedules,
+        stats: {
+            countPending,
+            countProducing,
+            countReady,
+            countDelivered,
+            countCancelled,
+            totalSchedules: allForStats.length,
+            totalScheduledAmount,
+            totalPendingAmount,
+            totalPaidAmount
+        },
+        flavorProductionTotals,
+        totalTrufflesToProduce
+    });
+});
+
+// Criar novo agendamento / encomenda (salva quem cadastrou e permite escolher vendedor)
+app.post('/api/admin/schedules', authenticateUser, (req, res) => {
+    const { 
+        customerName, 
+        customerPhone, 
+        deliveryType, 
+        deliveryAddress, 
+        scheduleDate, 
+        scheduleTime, 
+        items, 
+        totalAmount, 
+        depositAmount, 
+        paymentStatus, 
+        paymentMethod, 
+        status, 
+        notes, 
+        sellerId 
+    } = req.body;
+
+    if (!customerName || !customerName.trim()) {
+        return res.status(400).json({ error: 'O nome do cliente é obrigatório.' });
+    }
+
+    if (!scheduleDate) {
+        return res.status(400).json({ error: 'A data do agendamento é obrigatória.' });
+    }
+
+    const cleanItems = Array.isArray(items) ? items.filter(i => (parseInt(i.quantity, 10) || 0) > 0).map(i => ({
+        id: i.id || ('item-' + crypto.randomBytes(3).toString('hex')),
+        flavor: (i.flavor || '').trim() || 'Trufa Sortida',
+        quantity: parseInt(i.quantity, 10) || 1,
+        unitPrice: parseFloat(i.unitPrice) || 0
+    })) : [];
+
+    const numTotal = parseFloat(totalAmount);
+    const numDeposit = parseFloat(depositAmount) || 0;
+
+    const users = getUsers();
+    let assignedSellerId = req.user.id;
+    let assignedSellerName = req.user.name;
+
+    if (sellerId) {
+        const found = users.find(u => u.id === sellerId);
+        if (found) {
+            assignedSellerId = found.id;
+            assignedSellerName = found.name;
+        }
+    }
+
+    const newSchedule = {
+        id: 'sched-' + Date.now() + '-' + crypto.randomBytes(3).toString('hex'),
+        customerName: customerName.trim(),
+        customerPhone: (customerPhone || '').trim(),
+        deliveryType: deliveryType === 'delivery' ? 'delivery' : 'pickup',
+        deliveryAddress: (deliveryAddress || '').trim(),
+        scheduleDate,
+        scheduleTime: (scheduleTime || '').trim(),
+        items: cleanItems,
+        totalItems: cleanItems.reduce((acc, i) => acc + i.quantity, 0),
+        totalAmount: isNaN(numTotal) ? 0 : numTotal,
+        depositAmount: numDeposit,
+        paymentStatus: ['paid', 'deposit_paid', 'pending'].includes(paymentStatus) ? paymentStatus : 'pending',
+        paymentMethod: (paymentMethod || 'Pix').trim(),
+        status: ['pending', 'producing', 'ready', 'delivered', 'cancelled'].includes(status) ? status : 'pending',
+        notes: (notes || '').trim(),
+        sellerId: assignedSellerId,
+        sellerName: assignedSellerName,
+        createdBy: req.user.name,
+        createdById: req.user.id,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+
+    const schedules = getSchedules();
+    schedules.push(newSchedule);
+    saveSchedules(schedules);
+
+    console.log(`[AGENDAMENTO] Novo agendamento para "${newSchedule.customerName}" por ${req.user.name} em ${newSchedule.scheduleDate} (${newSchedule.totalItems} trufas)`);
+    res.status(201).json({ success: true, message: 'Agendamento salvo com sucesso!', schedule: newSchedule });
+});
+
+// Atualizar agendamento existente (compartilhado entre perfis)
+app.put('/api/admin/schedules/:id', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    const schedules = getSchedules();
+    const index = schedules.findIndex(s => s.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ error: 'Agendamento não encontrado.' });
+    }
+
+    const current = schedules[index];
+
+    const { 
+        customerName, 
+        customerPhone, 
+        deliveryType, 
+        deliveryAddress, 
+        scheduleDate, 
+        scheduleTime, 
+        items, 
+        totalAmount, 
+        depositAmount, 
+        paymentStatus, 
+        paymentMethod, 
+        status, 
+        notes, 
+        sellerId 
+    } = req.body;
+
+    if (!customerName || !customerName.trim()) {
+        return res.status(400).json({ error: 'O nome do cliente é obrigatório.' });
+    }
+
+    if (!scheduleDate) {
+        return res.status(400).json({ error: 'A data do agendamento é obrigatória.' });
+    }
+
+    const cleanItems = Array.isArray(items) ? items.filter(i => (parseInt(i.quantity, 10) || 0) > 0).map(i => ({
+        id: i.id || ('item-' + crypto.randomBytes(3).toString('hex')),
+        flavor: (i.flavor || '').trim() || 'Trufa Sortida',
+        quantity: parseInt(i.quantity, 10) || 1,
+        unitPrice: parseFloat(i.unitPrice) || 0
+    })) : current.items;
+
+    const numTotal = parseFloat(totalAmount);
+    const numDeposit = parseFloat(depositAmount) || 0;
+
+    let assignedSellerId = current.sellerId;
+    let assignedSellerName = current.sellerName;
+
+    if (sellerId) {
+        const users = getUsers();
+        const found = users.find(u => u.id === sellerId);
+        if (found) {
+            assignedSellerId = found.id;
+            assignedSellerName = found.name;
+        }
+    }
+
+    const updated = {
+        ...current,
+        customerName: customerName.trim(),
+        customerPhone: (customerPhone || '').trim(),
+        deliveryType: deliveryType === 'delivery' ? 'delivery' : 'pickup',
+        deliveryAddress: (deliveryAddress || '').trim(),
+        scheduleDate,
+        scheduleTime: (scheduleTime || '').trim(),
+        items: cleanItems,
+        totalItems: cleanItems.reduce((acc, i) => acc + i.quantity, 0),
+        totalAmount: isNaN(numTotal) ? current.totalAmount : numTotal,
+        depositAmount: numDeposit,
+        paymentStatus: paymentStatus || current.paymentStatus,
+        paymentMethod: paymentMethod || current.paymentMethod,
+        status: status || current.status,
+        notes: (notes !== undefined) ? notes.trim() : current.notes,
+        sellerId: assignedSellerId,
+        sellerName: assignedSellerName,
+        updatedBy: req.user.name,
+        updatedById: req.user.id,
+        updatedAt: new Date().toISOString()
+    };
+
+    if (updated.status === 'delivered' && !current.deliveredAt) {
+        updated.deliveredAt = new Date().toISOString();
+    }
+
+    schedules[index] = updated;
+    saveSchedules(schedules);
+
+    console.log(`[AGENDAMENTO] Agendamento atualizado por ${req.user.name}: "${updated.customerName}"`);
+    res.json({ success: true, message: 'Agendamento atualizado com sucesso!', schedule: updated });
+});
+
+// Alterar Status Rápido (Ex: Pendente -> Em Produção -> Pronto -> Entregue)
+app.patch('/api/admin/schedules/:id/status', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const schedules = getSchedules();
+    const schedule = schedules.find(s => s.id === id);
+
+    if (!schedule) {
+        return res.status(404).json({ error: 'Agendamento não encontrado.' });
+    }
+
+    if (!['pending', 'producing', 'ready', 'delivered', 'cancelled'].includes(status)) {
+        return res.status(400).json({ error: 'Status inválido.' });
+    }
+
+    schedule.status = status;
+    schedule.updatedBy = req.user.name;
+    schedule.updatedById = req.user.id;
+    schedule.updatedAt = new Date().toISOString();
+    if (status === 'delivered') {
+        schedule.deliveredAt = new Date().toISOString();
+    }
+
+    saveSchedules(schedules);
+
+    res.json({ 
+        success: true, 
+        message: `Status atualizado com sucesso!`,
+        schedule 
+    });
+});
+
+// Excluir um agendamento
+app.delete('/api/admin/schedules/:id', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    let schedules = getSchedules();
+    const schedule = schedules.find(s => s.id === id);
+
+    if (!schedule) {
+        return res.status(404).json({ error: 'Agendamento não encontrado.' });
+    }
+
+    schedules = schedules.filter(s => s.id !== id);
+    saveSchedules(schedules);
+
+    console.log(`[AGENDAMENTO] Agendamento excluído por ${req.user.name}: "${schedule.customerName}"`);
+    res.json({ success: true, message: 'Agendamento removido com sucesso.' });
+});
+
+// ==========================================
+// 🧪 CONFEITARIA: INSUMOS, FICHAS TÉCNICAS & LISTA DE COMPRAS
+// ==========================================
+
+// Listar Insumos
+app.get('/api/admin/ingredients', authenticateUser, (req, res) => {
+    const ingredients = getIngredients();
+    res.json(ingredients);
+});
+
+// Cadastrar Insumo
+app.post('/api/admin/ingredients', authenticateUser, (req, res) => {
+    const { name, category, unit, packageSize, packagePrice, unitDisplay } = req.body;
+    if (!name || !packageSize || !packagePrice) {
+        return res.status(400).json({ error: 'Nome, tamanho da embalagem e preço são obrigatórios.' });
+    }
+
+    const ingredients = getIngredients();
+    const pkgSizeNum = parseFloat(packageSize) || 1;
+    const pkgPriceNum = parseFloat(packagePrice) || 0;
+    const unitCost = pkgSizeNum > 0 ? (pkgPriceNum / pkgSizeNum) : 0;
+
+    const newIng = {
+        id: 'ing-' + Date.now(),
+        name: name.trim(),
+        category: category || 'Outros',
+        unit: unit || 'g',
+        packageSize: pkgSizeNum,
+        packagePrice: pkgPriceNum,
+        unitCost: unitCost,
+        unitDisplay: unitDisplay || `${pkgSizeNum}${unit || 'g'}`
+    };
+
+    ingredients.push(newIng);
+    saveIngredients(ingredients);
+
+    res.status(201).json({ success: true, ingredient: newIng, message: 'Insumo cadastrado com sucesso!' });
+});
+
+// Atualizar Insumo
+app.put('/api/admin/ingredients/:id', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    const { name, category, unit, packageSize, packagePrice, unitDisplay } = req.body;
+
+    const ingredients = getIngredients();
+    const ingIndex = ingredients.findIndex(i => i.id === id);
+    if (ingIndex === -1) {
+        return res.status(404).json({ error: 'Insumo não encontrado.' });
+    }
+
+    const pkgSizeNum = parseFloat(packageSize) || ingredients[ingIndex].packageSize;
+    const pkgPriceNum = parseFloat(packagePrice) || ingredients[ingIndex].packagePrice;
+    const unitCost = pkgSizeNum > 0 ? (pkgPriceNum / pkgSizeNum) : 0;
+
+    ingredients[ingIndex] = {
+        ...ingredients[ingIndex],
+        name: name !== undefined ? name.trim() : ingredients[ingIndex].name,
+        category: category !== undefined ? category : ingredients[ingIndex].category,
+        unit: unit !== undefined ? unit : ingredients[ingIndex].unit,
+        packageSize: pkgSizeNum,
+        packagePrice: pkgPriceNum,
+        unitCost: unitCost,
+        unitDisplay: unitDisplay || `${pkgSizeNum}${unit || 'g'}`
+    };
+
+    saveIngredients(ingredients);
+    res.json({ success: true, ingredient: ingredients[ingIndex], message: 'Insumo atualizado com sucesso!' });
+});
+
+// Excluir Insumo
+app.delete('/api/admin/ingredients/:id', authenticateUser, (req, res) => {
+    const { id } = req.params;
+    let ingredients = getIngredients();
+    ingredients = ingredients.filter(i => i.id !== id);
+    saveIngredients(ingredients);
+    res.json({ success: true, message: 'Insumo removido com sucesso.' });
+});
+
+// Listar Fichas Técnicas / Receitas
+app.get('/api/admin/recipes', authenticateUser, (req, res) => {
+    const recipes = getRecipes();
+    const ingredients = getIngredients();
+
+    // Recalcular custos com base nos preços atuais dos insumos
+    const recipesWithCurrentCosts = recipes.map(recipe => {
+        let totalCost = 0;
+        const details = (recipe.ingredients || []).map(item => {
+            const ing = ingredients.find(i => i.id === item.ingredientId);
+            const ingCost = ing ? (ing.unitCost * item.amount) : 0;
+            totalCost += ingCost;
+            return {
+                ...item,
+                ingredientName: ing?.name || 'Insumo',
+                ingredientUnit: ing?.unit || item.unit || 'g',
+                itemCost: Number(ingCost.toFixed(2))
+            };
+        });
+
+        return {
+            ...recipe,
+            ingredientsDetails: details,
+            calculatedCost: Number(totalCost.toFixed(2))
+        };
+    });
+
+    res.json(recipesWithCurrentCosts);
+});
+
+// Salvar / Atualizar Ficha Técnica
+app.post('/api/admin/recipes', authenticateUser, (req, res) => {
+    const { flavor, icon, description, ingredients: recipeItems } = req.body;
+    if (!flavor || !Array.isArray(recipeItems)) {
+        return res.status(400).json({ error: 'Sabor e itens da receita são obrigatórios.' });
+    }
+
+    const recipes = getRecipes();
+    const allIngredients = getIngredients();
+
+    let totalCost = 0;
+    recipeItems.forEach(item => {
+        const ing = allIngredients.find(i => i.id === item.ingredientId);
+        if (ing) totalCost += (ing.unitCost * item.amount);
+    });
+
+    const existingIndex = recipes.findIndex(r => r.flavor.toLowerCase().trim() === flavor.toLowerCase().trim());
+    const recipeObj = {
+        flavor: flavor.trim(),
+        icon: icon || '🍫',
+        description: description || '',
+        ingredients: recipeItems,
+        estimatedCost: Number(totalCost.toFixed(2))
+    };
+
+    if (existingIndex >= 0) {
+        recipes[existingIndex] = recipeObj;
+    } else {
+        recipes.push(recipeObj);
+    }
+    saveRecipes(recipes);
+
+    // Atualizar automaticamente o custo do produto correspondente em products.json
+    const products = getProducts();
+    let updatedProducts = false;
+    products.forEach(p => {
+        if (p.flavor.toLowerCase().trim() === flavor.toLowerCase().trim()) {
+            p.cost = recipeObj.estimatedCost;
+            updatedProducts = true;
+        }
+    });
+    if (updatedProducts) saveProducts(products);
+
+    res.json({ success: true, recipe: recipeObj, message: 'Ficha técnica salva e custo unitário atualizado!' });
+});
+
+// Calculadora de Produção & Lista de Compras Inteligente
+app.post('/api/admin/production/calculate', authenticateUser, (req, res) => {
+    let { items } = req.body; // array de { flavor, quantity }
+
+    // Se items não for fornecido, puxa automaticamente todas as encomendas agendadas (status: pending ou producing)
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        const schedules = getSchedules();
+        const activeSchedules = schedules.filter(s => s.status === 'pending' || s.status === 'producing');
+        const flavorCounts = {};
+
+        activeSchedules.forEach(s => {
+            (s.items || []).forEach(item => {
+                const flv = (item.flavor || '').trim();
+                if (flv) {
+                    flavorCounts[flv] = (flavorCounts[flv] || 0) + (parseInt(item.quantity, 10) || 0);
+                }
+            });
+        });
+
+        items = Object.entries(flavorCounts).map(([flavor, quantity]) => ({ flavor, quantity }));
+    }
+
+    const recipes = getRecipes();
+    const ingredients = getIngredients();
+
+    let totalTruffles = 0;
+    const requiredIngsMap = {}; // ingredientId -> { totalAmount, unit }
+    const itemsSummary = [];
+
+    items.forEach(item => {
+        const qty = parseInt(item.quantity, 10) || 0;
+        if (qty <= 0) return;
+        totalTruffles += qty;
+
+        const recipe = recipes.find(r => r.flavor.toLowerCase().trim() === (item.flavor || '').toLowerCase().trim());
+        itemsSummary.push({
+            flavor: item.flavor,
+            quantity: qty,
+            hasRecipe: !!recipe
+        });
+
+        if (recipe && Array.isArray(recipe.ingredients)) {
+            recipe.ingredients.forEach(ri => {
+                const totalItemAmount = ri.amount * qty;
+                if (!requiredIngsMap[ri.ingredientId]) {
+                    requiredIngsMap[ri.ingredientId] = {
+                        amount: 0,
+                        unit: ri.unit || 'g'
+                    };
+                }
+                requiredIngsMap[ri.ingredientId].amount += totalItemAmount;
+            });
+        }
+    });
+
+    let totalProductionCost = 0;
+    const shoppingList = [];
+
+    Object.entries(requiredIngsMap).forEach(([ingId, data]) => {
+        const ing = ingredients.find(i => i.id === ingId);
+        if (ing) {
+            const cost = data.amount * ing.unitCost;
+            totalProductionCost += cost;
+            const packagesNeeded = ing.packageSize > 0 ? Math.ceil(data.amount / ing.packageSize) : 1;
+
+            shoppingList.push({
+                ingredientId: ing.id,
+                name: ing.name,
+                category: ing.category,
+                totalAmountRequired: Number(data.amount.toFixed(1)),
+                unit: ing.unit,
+                packageSize: ing.packageSize,
+                packagePrice: ing.packagePrice,
+                packagesNeeded: packagesNeeded,
+                unitDisplay: ing.unitDisplay,
+                estimatedCost: Number(cost.toFixed(2)),
+                buyCost: Number((packagesNeeded * ing.packagePrice).toFixed(2))
+            });
+        }
+    });
+
+    // Gerar texto formatado para envio no WhatsApp
+    let waText = `🛒 *LISTA DE COMPRAS - CONFEITARIA DE TRUFAS* 🛒\n`;
+    waText += `🍫 *Lote Total:* ${totalTruffles} trufas\n`;
+    waText += `📅 *Gerado em:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+    waText += `📦 *ITENS A PRODUZIR:*\n`;
+    itemsSummary.forEach(i => {
+        waText += `• ${i.quantity}x Trufas de ${i.flavor}\n`;
+    });
+    waText += `\n🛍️ *INGREDIENTES NECESSÁRIOS NO MERCADO:*\n`;
+    shoppingList.forEach(s => {
+        waText += `▫️ *${s.name}:* ${s.totalAmountRequired} ${s.unit} ➔ *Comprar ${s.packagesNeeded} un.* (${s.unitDisplay})\n`;
+    });
+    waText += `\n💰 *Custo Estimado Insumos:* R$ ${totalProductionCost.toFixed(2).replace('.', ',')}\n`;
+
+    res.json({
+        success: true,
+        totalTruffles,
+        itemsSummary,
+        shoppingList,
+        totalProductionCost: Number(totalProductionCost.toFixed(2)),
+        whatsappShoppingList: waText
+    });
+});
+
+// ==========================================
+// 📱 PORTAL DO CLIENTE PARA ENCOMENDAS ONLINE
+// ==========================================
+
+// Cardápio público para o cliente
+app.get('/api/client/menu', (req, res) => {
+    const products = getProducts().filter(p => p.active !== false);
+    const availableFlavors = products.map(p => ({
+        id: p.id,
+        flavor: p.flavor,
+        price: Number(p.price) || 4.00,
+        weight: p.weight || '45g',
+        size: p.size || 'Médio',
+        category: p.category || 'Gourmet',
+        description: p.description || '',
+        icon: p.icon || '🍫',
+        stock: p.stock || 0
+    }));
+    res.json(availableFlavors);
+});
+
+// Criar Encomenda pelo Cliente via WhatsApp
+app.post('/api/client/orders', (req, res) => {
+    const {
+        customerName,
+        customerPhone,
+        deliveryType,
+        deliveryAddress,
+        scheduleDate,
+        scheduleTime,
+        items,
+        paymentStatus,
+        paymentMethod,
+        depositAmount,
+        notes
+    } = req.body;
+
+    const cleanPhone = (customerPhone || '').replace(/\D/g, '');
+    if (!customerPhone || cleanPhone.length < 10) {
+        return res.status(400).json({ error: 'WhatsApp obrigatório com DDD (mínimo 10 dígitos).' });
+    }
+
+    if (!customerName || customerName.trim().length < 2) {
+        return res.status(400).json({ error: 'Nome completo é obrigatório.' });
+    }
+
+    if (!scheduleDate) {
+        return res.status(400).json({ error: 'A data da encomenda (Sexta-feira) é obrigatória.' });
+    }
+
+    if (deliveryType === 'delivery' && (!deliveryAddress || deliveryAddress.trim().length < 3)) {
+        return res.status(400).json({ error: 'Endereço de entrega é obrigatório.' });
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'Selecione pelo menos 1 trufa no cardápio.' });
+    }
+
+    const totalItems = items.reduce((sum, item) => sum + (parseInt(item.quantity, 10) || 0), 0);
+    const totalAmount = items.reduce((sum, item) => sum + ((parseFloat(item.unitPrice) || 4.00) * (parseInt(item.quantity, 10) || 0)), 0);
+
+    const schedules = getSchedules();
+
+    const newSchedule = {
+        id: 'sched-' + Date.now(),
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+        cleanPhone: cleanPhone,
+        deliveryType: deliveryType || 'delivery',
+        deliveryAddress: deliveryAddress ? deliveryAddress.trim() : '',
+        scheduleDate: scheduleDate,
+        scheduleTime: scheduleTime || '15:00',
+        items: items.map(i => ({
+            id: i.id || `trufa-${Date.now()}`,
+            flavor: i.flavor,
+            quantity: parseInt(i.quantity, 10) || 1,
+            unitPrice: parseFloat(i.unitPrice) || 4.00
+        })),
+        totalItems,
+        totalAmount: Number(totalAmount.toFixed(2)),
+        depositAmount: parseFloat(depositAmount) || 0.00,
+        paymentStatus: paymentStatus || 'pending',
+        paymentMethod: paymentMethod || 'Pix',
+        status: 'pending',
+        notes: notes ? notes.trim() : '',
+        sellerId: 'user-luana',
+        sellerName: 'Luana Menato',
+        origin: 'client_portal',
+        createdAt: new Date().toISOString()
+    };
+
+    schedules.push(newSchedule);
+    saveSchedules(schedules);
+
+    // Gerar mensagem de WhatsApp para o cliente enviar
+    const itemsDesc = newSchedule.items.map(i => `• ${i.quantity}x Trufa ${i.flavor} (R$ ${(i.quantity * i.unitPrice).toFixed(2).replace('.', ',')})`).join('\n');
+    let dateFormatted = newSchedule.scheduleDate;
+    const parts = newSchedule.scheduleDate.split('-');
+    if (parts.length === 3) dateFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+    let waText = `🍫 *NOVA ENCOMENDA - TRUFAS GOURMET* 🍫\n\n`;
+    waText += `Olá Luana & Fernando! Fiz uma encomenda pelo site:\n\n`;
+    waText += `👤 *Cliente:* ${newSchedule.customerName}\n`;
+    waText += `📱 *WhatsApp:* ${newSchedule.customerPhone}\n`;
+    waText += `📅 *Data Desejada:* ${dateFormatted} às ${newSchedule.scheduleTime}\n`;
+    waText += `🛵 *Tipo:* ${newSchedule.deliveryType === 'delivery' ? 'Entrega em ' + newSchedule.deliveryAddress : 'Retirada no Local'}\n\n`;
+    waText += `📦 *PEDIDO:*\n${itemsDesc}\n`;
+    waText += `👉 *Total de Trufas:* ${newSchedule.totalItems} un.\n`;
+    waText += `💰 *Valor Total:* R$ ${newSchedule.totalAmount.toFixed(2).replace('.', ',')}\n`;
+    if (newSchedule.depositAmount > 0) {
+        waText += `💳 *Sinal Adiantado:* R$ ${newSchedule.depositAmount.toFixed(2).replace('.', ',')}\n`;
+    }
+    if (newSchedule.notes) {
+        waText += `📝 *Observações:* ${newSchedule.notes}\n`;
+    }
+    waText += `\nPodem me confirmar por favor? Muito obrigado(a)! ✨`;
+
+    console.log(`[PORTAL CLIENTE] Nova encomenda recebida de ${newSchedule.customerName} (${newSchedule.totalItems} trufas)`);
+
+    res.status(201).json({
+        success: true,
+        schedule: newSchedule,
+        message: 'Sua encomenda foi registrada com sucesso!',
+        whatsappMessageText: waText
+    });
+});
+
+// Consultar encomendas anteriores do cliente pelo WhatsApp
+app.get('/api/client/orders/:phone', (req, res) => {
+    const { phone } = req.params;
+    const cleanPhone = (phone || '').replace(/\D/g, '');
+
+    if (!cleanPhone || cleanPhone.length < 8) {
+        return res.status(400).json({ error: 'Número de WhatsApp inválido.' });
+    }
+
+    const schedules = getSchedules();
+    const clientOrders = schedules.filter(s => {
+        const sPhone = (s.cleanPhone || s.customerPhone || '').replace(/\D/g, '');
+        return sPhone.endsWith(cleanPhone) || cleanPhone.endsWith(sPhone);
+    });
+
+    const clientName = clientOrders.length > 0 ? clientOrders[clientOrders.length - 1].customerName : '';
+
+    res.json({
+        success: true,
+        clientName,
+        totalOrders: clientOrders.length,
+        orders: clientOrders
+    });
+});
+
 // Zerar / Limpar Dados do Sistema (Admin)
 app.post('/api/admin/reset-all-data', authenticateUser, (req, res) => {
-    const { target } = req.body; // 'all' | 'products' | 'orders' | 'transfers' | 'notes'
+    const { target } = req.body; // 'all' | 'products' | 'orders' | 'transfers' | 'notes' | 'schedules'
 
     if (req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Apenas o administrador pode zerar os dados do sistema.' });
@@ -1696,10 +2689,15 @@ app.post('/api/admin/reset-all-data', authenticateUser, (req, res) => {
         console.log('[RESET] Caderno de anotações zerado.');
     }
 
+    if (target === 'schedules' || target === 'all') {
+        saveSchedules([]);
+        console.log('[RESET] Agendamentos de pedidos zerados.');
+    }
+
     res.json({
         success: true,
         message: target === 'all' 
-            ? 'Todos os dados (produtos, pedidos, transferências e anotações) foram zerados com sucesso!' 
+            ? 'Todos os dados (produtos, pedidos, transferências, anotações e agendamentos) foram zerados com sucesso!' 
             : `Dados de ${target} zerados com sucesso!`
     });
 });
@@ -1714,6 +2712,19 @@ app.get('/check-payment/:id', (req, res) => {
     res.redirect(`/api/check-payment/${id}`);
 });
 
-app.listen(port, () => {
-    console.log(`🍫 Servidor Trufas Luana & Fernando rodando em http://localhost:${port}`);
-});
+function startServer(p) {
+    const srv = app.listen(p, () => {
+        console.log(`🍫 Servidor Trufas Luana & Fernando rodando em http://localhost:${p}`);
+    });
+    srv.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            const nextP = Number(p) + 1;
+            console.log(`⚠️ Porta ${p} em uso. Tentando porta ${nextP}...`);
+            startServer(nextP);
+        } else {
+            console.error('Erro no servidor:', err);
+        }
+    });
+}
+
+startServer(port);

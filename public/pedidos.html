@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trufas Artesanais Gourmet • Luana Menato & Fernando</title>
+    <meta name="description" content="Encomendas de Trufas Artesanais Gourmet. Peça online de forma rápida com entrega, retirada e pagamento seguro via Pix!">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 & Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0f0a07;
+            --bg-card: #1c130e;
+            --bg-card-hover: #261b14;
+            --amber-gold: #f59e0b;
+            --amber-light: #fbbf24;
+            --amber-glow: rgba(245, 158, 11, 0.35);
+            --chocolate-dark: #2a160d;
+            --chocolate-light: #4a2818;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(245, 158, 11, 0.2);
+            --glass-border-subtle: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 8px;
+            --font-sans: 'Outfit', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(120, 53, 15, 0.25) 0%, transparent 40%),
+                radial-gradient(circle at 90% 85%, rgba(217, 119, 6, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(38, 20, 12, 0.5) 0%, transparent 70%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 16px 100px;
+        }
+
+        /* Top Bar de Contato */
+        .top-notice-bar {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 0.82rem;
+            color: #fef3c7;
+        }
+
+        .top-notice-link {
+            color: var(--amber-gold);
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Header Hero */
+        .client-hero {
+            text-align: center;
+            padding: 10px 0 24px;
+        }
+
+        .client-logo-img {
+            width: 120px;
+            height: auto;
+            border-radius: 50%;
+            border: 2px solid var(--amber-gold);
+            box-shadow: 0 0 25px var(--amber-glow);
+            margin-bottom: 12px;
+        }
+
+        .client-title {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #fde68a 60%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .client-subtitle {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            max-width: 540px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+
+        /* Botões de Ação Principais no Topo */
+        .hero-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .btn-hero-order {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-hero-order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
+        }
+
+        .btn-hero-status {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fef3c7;
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-hero-status:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--amber-gold);
+        }
+
+        /* Categorias & Busca */
+        .catalog-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 640px) {
+            .catalog-toolbar {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+
+        .category-pills::-webkit-scrollbar { display: none; }
+
+        .category-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border-subtle);
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .category-pill.active, .category-pill:hover {
+            background: var(--amber-gold);
+            color: #000;
+            border-color: var(--amber-gold);
+            font-weight: 700;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 220px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 10px 16px 10px 38px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--amber-light);
+            box-shadow: 0 0 10px var(--amber-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Grade de Trufas */
+        .truffles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .truffle-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .truffle-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+            background: var(--bg-card-hover);
+        }
+
+        .truffle-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .truffle-icon-box {
+            font-size: 2.2rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: var(--radius-md);
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .truffle-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .truffle-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .badge-spec {
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .badge-spec.gold {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber-light);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .truffle-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin-bottom: 14px;
+            flex-grow: 1;
+        }
+
+        .truffle-card-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .truffle-price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--amber-gold);
+        }
+
+        .truffle-price small {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            display: block;
+        }
+
+        /* Steppers de Quantidade */
+        .stepper-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-step {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: var(--amber-light);
+            font-size: 1.15rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .btn-step:hover {
+            background: var(--amber-gold);
+            color: #000;
+        }
+
+        .btn-step:active {
+            transform: scale(0.9);
+        }
+
+        .input-step-val {
+            width: 38px;
+            height: 32px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        /* Barra Flutuante de Carrinho / Encomenda */
+        .floating-cart-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 500px;
+            background: linear-gradient(135deg, #1e130d 0%, #2b180e 100%);
+            border: 2px solid var(--amber-gold);
+            border-radius: 40px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8), 0 0 25px var(--amber-glow);
+            z-index: 99;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .floating-cart-bar.hidden {
+            transform: translateX(-50%) translateY(120px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .floating-cart-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-icon-badge {
+            background: var(--amber-gold);
+            color: #000;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 1px 6px;
+            border-radius: 10px;
+            border: 2px solid #1e130d;
+        }
+
+        .btn-finish-cart {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.92rem;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Modais */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #170f0b;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-close-modal {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 5px;
+        }
+
+        .input-wrapper input, .input-wrapper select, .input-wrapper textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--glass-border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            font-family: var(--font-sans);
+        }
+
+        .input-wrapper input:focus, .input-wrapper select:focus, .input-wrapper textarea:focus {
+            border-color: var(--amber-gold);
+        }
+
+        .date-quick-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .date-chip-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fef3c7;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .date-chip-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber-gold);
+            color: #fff;
+        }
+
+        .date-chip-btn.selected-friday {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            font-weight: 800;
+            border-color: #f59e0b;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
+        }
+
+        .input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4) !important;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--amber-gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Rodapé */
+        .client-footer {
+            text-align: center;
+            padding: 30px 0 10px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 40px;
+        }
+
+        .client-footer a {
+            color: var(--amber-gold);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Barra de Contato Topo -->
+        <div class="top-notice-bar">
+            <span>✨ Trufas Gourmet Artesanais Feitas com Amor</span>
+            <a href="https://wa.me/5511999999999" target="_blank" class="top-notice-link">
+                <span>📱 Falar no WhatsApp</span> ➔
+            </a>
+        </div>
+
+        <!-- Cabeçalho Principal -->
+        <header class="client-hero">
+            <img src="logo.png?v=3" alt="Logo Luana Menato" class="client-logo-img" onerror="this.style.display='none'">
+            <h1 class="client-title">Trufas Artesanais Gourmet</h1>
+            <p class="client-subtitle">
+                Chocolate nobre e recheios generosos preparados artesanalmente. Faça seu pedido com entrega ou retirada no local!
+            </p>
+
+            <div class="hero-action-buttons">
+                <button type="button" class="btn-hero-order" onclick="openClientBookingModal()">
+                    <span>📅</span> Fazer Encomenda Online
+                </button>
+                <button type="button" class="btn-hero-status" onclick="openClientMyOrdersModal()">
+                    <span>🔍</span> Minhas Encomendas
+                </button>
+            </div>
+        </header>
+
+        <!-- Barra de Categorias e Pesquisa -->
+        <div class="catalog-toolbar">
+            <div class="category-pills">
+                <button class="category-pill active" onclick="filterCategory('all', this)">✨ Todos os Sabores</button>
+                <button class="category-pill" onclick="filterCategory('Gourmet', this)">🌟 Gourmet</button>
+                <button class="category-pill" onclick="filterCategory('Tradicional', this)">🤎 Tradicional</button>
+                <button class="category-pill" onclick="filterCategory('Frutas', this)">🍓 Frutas</button>
+                <button class="category-pill" onclick="filterCategory('Especial', this)">☕ Especial</button>
+            </div>
+
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Buscar sabor favorito..." oninput="handleSearch()">
+            </div>
+        </div>
+
+        <!-- Grade de Sabores -->
+        <div class="truffles-grid" id="trufflesGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: var(--text-muted); font-size: 0.9rem;">Carregando cardápio de trufas...</p>
+            </div>
+        </div>
+
+        <!-- Rodapé do Cliente -->
+        <footer class="client-footer">
+            <p style="margin-bottom: 6px; color: #cbd5e1;">🍫 Luana Menato & Fernando • Trufas Artesanais Gourmet</p>
+            <p style="font-size: 0.75rem; color: #94a3b8;">Atendimento rápido com entrega e retirada programada.</p>
+        </footer>
+    </div>
+
+    <!-- Barra Flutuante de Pedido -->
+    <div class="floating-cart-bar hidden" id="floatingCartBar" onclick="openClientBookingModal()">
+        <div class="floating-cart-info">
+            <div class="cart-icon-badge">
+                🍫
+                <span class="cart-count" id="cartBadgeCount">0</span>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);"><span id="cartTotalItems">0 trufas</span></div>
+                <div style="font-size: 1.15rem; font-weight: 800; color: var(--amber-gold);" id="cartTotalVal">R$ 0,00</div>
+            </div>
+        </div>
+        <button class="btn-finish-cart">
+            Avançar Pedido ➔
+        </button>
+    </div>
+
+    <!-- MODAL DE ENCOMENDA ONLINE DO CLIENTE -->
+    <div class="modal-overlay" id="clientBookingModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">🍫 Finalizar Encomenda</h3>
+                <button class="btn-close-modal" onclick="closeClientBookingModal()">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- 1. Dados de Contato (Obrigatórios) -->
+                <div style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px;">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--amber-gold); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>📱 1. Seus Dados de Contato</span>
+                        <span style="font-size: 0.72rem; color: #f87171; font-weight: 700;">* Obrigatório</span>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label for="orderCustPhone" style="font-weight: 700; font-size: 0.82rem; color: #fef3c7;">
+                            Seu WhatsApp com DDD <span style="color: #f87171;">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="orderCustPhone" required placeholder="(11) 99999-9999" oninput="formatPhoneInput(this); checkReturningClient(this.value)">
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label for="orderCustName" style="font-weight: 700; font-size: 0.82rem; color: #fef3c7;">
+                            Seu Nome Completo <span style="color: #f87171;">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" id="orderCustName" required placeholder="Como devemos te chamar?">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Data e Entrega (Exclusivo Sextas-Feiras) -->
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border-subtle); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px;">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>📅 2. Data de Entrega / Retirada</span>
+                        <span style="font-size: 0.72rem; color: var(--amber-light); font-weight: 700; background: rgba(245, 158, 11, 0.15); padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                            🌟 Toda Sexta-Feira
+                        </span>
+                    </div>
+
+                    <!-- Banner de Aviso de Sexta-feira -->
+                    <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; font-size: 0.78rem; color: #fef3c7; line-height: 1.4;">
+                        🍫 <strong>Fornadas Especiais:</strong> Nossas entregas e retiradas acontecem <strong>apenas às Sextas-feiras</strong> para garantir trufas fresquinhas!
+                    </div>
+
+                    <div style="font-size: 0.78rem; color: #cbd5e1; font-weight: 600; margin-bottom: 6px;">Escolha a Sexta-Feira desejada:</div>
+                    <div class="date-quick-chips" id="fridayChipsContainer" style="margin-bottom: 10px;">
+                        <!-- Chips das próximas sextas-feiras gerados dinamicamente via JS -->
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px; margin-bottom: 8px;">
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label for="orderCustDate">Ou escolha no Calendário:</label>
+                            <div class="input-wrapper">
+                                <input type="date" id="orderCustDate" style="color: #fff; font-weight: 600;" onchange="handleDateChange(this)">
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label for="orderCustTime">Horário Previsto</label>
+                            <div class="input-wrapper">
+                                <input type="time" id="orderCustTime" value="15:00" style="color: #fff; font-weight: 600;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 8px; margin-top: 10px;">
+                        <label>Tipo de Recebimento:</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <label style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="deliveryType" value="delivery" checked onchange="toggleAddressField(true)">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: #fff;">🛵 Entrega</span>
+                            </label>
+                            <label style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="deliveryType" value="pickup" onchange="toggleAddressField(false)">
+                                <span style="font-size: 0.82rem; font-weight: 600; color: #fff;">🏪 Retirada</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="addressFieldGroup" style="margin-bottom: 0;">
+                        <label for="orderCustAddress">Endereço de Entrega (Rua, Número, Bairro) <span style="color: #f87171;">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="orderCustAddress" placeholder="Ex: Rua das Palmeiras, 250 - Centro">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Pagamento & Observação -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label for="orderPaymentPref">Forma de Pagamento:</label>
+                        <div class="input-wrapper">
+                            <select id="orderPaymentPref">
+                                <option value="pay_delivery">💵 Pagar na Entrega / Retirada</option>
+                                <option value="pix_deposit">⚡ Sinal 50% Pix (Garante produção)</option>
+                                <option value="pix_total">⚡ Total 100% Pix (Antecipado)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label for="orderCustNotes">Observação:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="orderCustNotes" placeholder="Ex: Caixa de presente...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumo Total -->
+                <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(0,0,0,0.5) 100%); border: 1px solid var(--amber-gold); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Total do Pedido:</span>
+                        <strong style="font-size: 1.35rem; color: var(--amber-gold);" id="orderModalTotalDisplay">R$ 0,00</strong>
+                    </div>
+                    <span style="font-size: 0.85rem; color: #34d399; font-weight: 700;" id="orderModalItemsSummary">0 trufas</span>
+                </div>
+
+                <button type="button" class="btn-hero-order" id="btnSubmitOrder" onclick="submitClientBookingOrder()" style="width: 100%; height: 50px; justify-content: center; font-size: 1.02rem; background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);">
+                    ✨ Confirmar Encomenda e Enviar ➔
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONSULTA DE STATUS DAS ENCOMENDAS -->
+    <div class="modal-overlay" id="clientMyOrdersModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">🔍 Minhas Encomendas</h3>
+                <button class="btn-close-modal" onclick="closeClientMyOrdersModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Digite seu número de WhatsApp para acompanhar o andamento dos seus pedidos:
+                </p>
+
+                <div class="search-box" style="margin-bottom: 12px;">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="tel" id="myOrdersPhoneInput" placeholder="(11) 99999-9999" oninput="formatPhoneInput(this); if(this.value.length >= 14) searchMyOrders(this.value)">
+                </div>
+
+                <button type="button" class="btn-hero-status" onclick="searchMyOrders()" style="width: 100%; justify-content: center; margin-bottom: 14px; background: rgba(245, 158, 11, 0.15); border-color: var(--amber-gold); color: #fbbf24;">
+                    🔍 Consultar Pedidos
+                </button>
+
+                <div id="myOrdersListContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto;">
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px 0; font-size: 0.85rem;">
+                        Digite seu WhatsApp acima.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let menuProducts = [];
+        let clientCart = {};
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        async function initClientApp() {
+            renderFridayDateChips();
+            await loadClientMenu();
+
+            // Restaura dados salvos do cliente
+            const savedPhone = localStorage.getItem('client_booking_phone');
+            const savedName = localStorage.getItem('client_booking_name');
+            if (savedPhone && document.getElementById('orderCustPhone')) document.getElementById('orderCustPhone').value = savedPhone;
+            if (savedName && document.getElementById('orderCustName')) document.getElementById('orderCustName').value = savedName;
+        }
+
+        async function loadClientMenu() {
+            try {
+                const res = await fetch(`/api/client/menu?_t=${Date.now()}`);
+                if (res.ok) {
+                    menuProducts = await res.json();
+                    renderTruffles();
+                }
+            } catch (e) {
+                console.warn('Erro ao carregar cardápio:', e);
+            }
+        }
+
+        function filterCategory(cat, el) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderTruffles();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
+            renderTruffles();
+        }
+
+        function renderTruffles() {
+            const grid = document.getElementById('trufflesGrid');
+            if (!grid) return;
+
+            let filtered = menuProducts.filter(p => {
+                const matchCat = currentCategory === 'all' || p.category === currentCategory;
+                const matchSearch = !searchQuery || p.flavor.toLowerCase().includes(searchQuery) || (p.description || '').toLowerCase().includes(searchQuery);
+                return matchCat && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">Nenhum sabor encontrado.</p>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => {
+                const qty = clientCart[p.id]?.quantity || 0;
+                const price = Number(p.price || 4.00);
+
+                return `
+                    <div class="truffle-card">
+                        <div>
+                            <div class="truffle-card-header">
+                                <div class="truffle-icon-box">${p.icon || '🍫'}</div>
+                                <div class="truffle-info">
+                                    <h3>${p.flavor}</h3>
+                                    <div class="truffle-badges">
+                                        <span class="badge-spec gold">${p.weight || '45g'}</span>
+                                        <span class="badge-spec">${p.category || 'Gourmet'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="truffle-desc">${p.description || 'Trufa artesanal preparada com chocolate nobre e recheio cremoso gourmet.'}</p>
+                        </div>
+
+                        <div class="truffle-card-footer">
+                            <div class="truffle-price">
+                                R$ ${price.toFixed(2).replace('.', ',')}
+                                <small>unidade</small>
+                            </div>
+
+                            <div class="stepper-wrap">
+                                <button type="button" class="btn-step" onclick="updateItemQty('${p.id}', -1)">-</button>
+                                <input type="number" class="input-step-val" id="stepInput_${p.id}" value="${qty}" min="0" onchange="setItemQty('${p.id}', this.value)">
+                                <button type="button" class="btn-step" onclick="updateItemQty('${p.id}', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateItemQty(productId, delta) {
+            const p = menuProducts.find(item => item.id === productId);
+            if (!p) return;
+
+            if (!clientCart[productId]) {
+                clientCart[productId] = {
+                    id: p.id,
+                    flavor: p.flavor,
+                    unitPrice: Number(p.price || 4.00),
+                    quantity: 0
+                };
+            }
+
+            clientCart[productId].quantity = Math.max(0, (clientCart[productId].quantity || 0) + delta);
+            
+            const input = document.getElementById(`stepInput_${productId}`);
+            if (input) input.value = clientCart[productId].quantity;
+
+            updateCartBar();
+        }
+
+        function setItemQty(productId, val) {
+            const p = menuProducts.find(item => item.id === productId);
+            if (!p) return;
+
+            const qty = Math.max(0, parseInt(val, 10) || 0);
+            if (!clientCart[productId]) {
+                clientCart[productId] = {
+                    id: p.id,
+                    flavor: p.flavor,
+                    unitPrice: Number(p.price || 4.00),
+                    quantity: 0
+                };
+            }
+            clientCart[productId].quantity = qty;
+            updateCartBar();
+        }
+
+        function updateCartBar() {
+            let totalQty = 0;
+            let totalVal = 0;
+
+            for (const key in clientCart) {
+                const item = clientCart[key];
+                if (item.quantity > 0) {
+                    totalQty += item.quantity;
+                    totalVal += item.quantity * item.unitPrice;
+                }
+            }
+
+            const bar = document.getElementById('floatingCartBar');
+            const badgeCount = document.getElementById('cartBadgeCount');
+            const totalItemsEl = document.getElementById('cartTotalItems');
+            const totalValEl = document.getElementById('cartTotalVal');
+
+            const modalTotalDisplay = document.getElementById('orderModalTotalDisplay');
+            const modalItemsSummary = document.getElementById('orderModalItemsSummary');
+
+            if (totalQty > 0) {
+                bar.classList.remove('hidden');
+                badgeCount.innerText = totalQty;
+                totalItemsEl.innerText = `${totalQty} trufa${totalQty === 1 ? '' : 's'}`;
+                totalValEl.innerText = `R$ ${totalVal.toFixed(2).replace('.', ',')}`;
+            } else {
+                bar.classList.add('hidden');
+            }
+
+            if (modalTotalDisplay) modalTotalDisplay.innerText = `R$ ${totalVal.toFixed(2).replace('.', ',')}`;
+            if (modalItemsSummary) modalItemsSummary.innerText = `${totalQty} trufa${totalQty === 1 ? '' : 's'} selecionada${totalQty === 1 ? '' : 's'}`;
+        }
+
+        function openClientBookingModal() {
+            let totalQty = 0;
+            for (const key in clientCart) {
+                totalQty += (clientCart[key].quantity || 0);
+            }
+
+            if (totalQty === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Escolha seus Sabores',
+                    text: 'Selecione pelo menos 1 trufa no cardápio usando os botões (+) antes de avançar.',
+                    background: '#170f0b',
+                    color: '#fff',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            document.getElementById('clientBookingModal').classList.add('active');
+        }
+
+        function closeClientBookingModal() {
+            document.getElementById('clientBookingModal').classList.remove('active');
+        }
+
+        function getUpcomingFridays(count = 4) {
+            const fridays = [];
+            let current = new Date();
+            
+            // Sexta-feira = 5 (0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab)
+            let daysUntilFriday = (5 - current.getDay() + 7) % 7;
+            // Se hoje já for sexta e for após 18h, pula para a próxima semana
+            if (daysUntilFriday === 0 && current.getHours() >= 18) {
+                daysUntilFriday = 7;
+            }
+            current.setDate(current.getDate() + daysUntilFriday);
+
+            for (let i = 0; i < count; i++) {
+                const d = new Date(current);
+                d.setDate(d.getDate() + (i * 7));
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const dayNum = String(d.getDate()).padStart(2, '0');
+                
+                let label = `Sexta (${dayNum}/${m})`;
+                if (i === 0) label = `Sexta Próxima (${dayNum}/${m})`;
+                else if (i === 1) label = `Sexta Seguinte (${dayNum}/${m})`;
+
+                fridays.push({
+                    dateIso: `${y}-${m}-${dayNum}`,
+                    label,
+                    display: `${dayNum}/${m}/${y}`
+                });
+            }
+            return fridays;
+        }
+
+        function renderFridayDateChips() {
+            const container = document.getElementById('fridayChipsContainer');
+            if (!container) return;
+            const fridays = getUpcomingFridays(4);
+
+            container.innerHTML = fridays.map((f, idx) => `
+                <button type="button" class="date-chip-btn ${idx === 0 ? 'selected-friday' : ''}" onclick="selectFridayDate('${f.dateIso}', this)">
+                    📅 ${f.label}
+                </button>
+            `).join('');
+
+            const dateInput = document.getElementById('orderCustDate');
+            if (dateInput && fridays.length > 0) {
+                dateInput.value = fridays[0].dateIso;
+                dateInput.min = fridays[0].dateIso; // Não permite selecionar datas passadas
+            }
+        }
+
+        function selectFridayDate(isoDate, btnEl) {
+            const dateInput = document.getElementById('orderCustDate');
+            if (dateInput) {
+                dateInput.value = isoDate;
+                dateInput.classList.remove('input-error');
+            }
+            document.querySelectorAll('#fridayChipsContainer .date-chip-btn').forEach(b => b.classList.remove('selected-friday'));
+            if (btnEl) btnEl.classList.add('selected-friday');
+        }
+
+        function handleDateChange(input) {
+            const val = input.value;
+            if (!val) return;
+            input.classList.remove('input-error');
+            
+            const [y, m, d] = val.split('-').map(Number);
+            const chosenDate = new Date(y, m - 1, d);
+            const dayOfWeek = chosenDate.getDay(); // 5 = Sexta
+
+            if (dayOfWeek !== 5) {
+                // Ajustar automaticamente para a próxima sexta-feira
+                let diff = (5 - dayOfWeek + 7) % 7;
+                if (diff === 0) diff = 7;
+                chosenDate.setDate(chosenDate.getDate() + diff);
+                const ny = chosenDate.getFullYear();
+                const nm = String(chosenDate.getMonth() + 1).padStart(2, '0');
+                const nd = String(chosenDate.getDate()).padStart(2, '0');
+                input.value = `${ny}-${nm}-${nd}`;
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Entregas apenas às Sextas-feiras',
+                    html: `
+                        <p>Nossas fornadas e entregas acontecem <strong>exclusivamente às sextas-feiras</strong>.</p>
+                        <p style="margin-top: 8px; color: #f59e0b; font-weight: 700;">Ajustamos sua data para Sexta-feira, ${nd}/${nm}/${ny}!</p>
+                    `,
+                    background: '#170f0b',
+                    color: '#fff',
+                    confirmButtonColor: '#f59e0b'
+                });
+            }
+
+            // Atualiza destaque dos chips se corresponder
+            document.querySelectorAll('#fridayChipsContainer .date-chip-btn').forEach(b => {
+                if (b.getAttribute('onclick')?.includes(input.value)) {
+                    b.classList.add('selected-friday');
+                } else {
+                    b.classList.remove('selected-friday');
+                }
+            });
+        }
+
+        function toggleAddressField(isDelivery) {
+            const group = document.getElementById('addressFieldGroup');
+            if (group) group.style.display = isDelivery ? 'block' : 'none';
+        }
+
+        function formatPhoneInput(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 10) {
+                input.value = `(${v.substring(0, 2)}) ${v.substring(2, 7)}-${v.substring(7)}`;
+            } else if (v.length > 6) {
+                input.value = `(${v.substring(0, 2)}) ${v.substring(2, 6)}-${v.substring(6)}`;
+            } else if (v.length > 2) {
+                input.value = `(${v.substring(0, 2)}) ${v.substring(2)}`;
+            } else if (v.length > 0) {
+                input.value = `(${v}`;
+            }
+        }
+
+        async function checkReturningClient(phone) {
+            const clean = phone.replace(/\D/g, '');
+            if (clean.length >= 10) {
+                try {
+                    const res = await fetch(`/api/client/orders/${clean}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.clientName && !document.getElementById('orderCustName').value) {
+                            document.getElementById('orderCustName').value = data.clientName;
+                        }
+                    }
+                } catch (e) {}
+            }
+        }
+
+        async function submitClientBookingOrder() {
+            const phoneInput = document.getElementById('orderCustPhone');
+            const nameInput = document.getElementById('orderCustName');
+            const dateInput = document.getElementById('orderCustDate');
+            const addrInput = document.getElementById('orderCustAddress');
+
+            // Limpa erros visuais anteriores
+            phoneInput?.classList.remove('input-error');
+            nameInput?.classList.remove('input-error');
+            dateInput?.classList.remove('input-error');
+            addrInput?.classList.remove('input-error');
+
+            const customerPhone = phoneInput ? phoneInput.value.trim() : '';
+            const customerName = nameInput ? nameInput.value.trim() : '';
+            const scheduleDate = dateInput ? dateInput.value : '';
+            const scheduleTime = document.getElementById('orderCustTime')?.value || '15:00';
+            const deliveryType = document.querySelector('input[name="deliveryType"]:checked')?.value || 'delivery';
+            const deliveryAddress = addrInput ? addrInput.value.trim() : '';
+            const paymentPref = document.getElementById('orderPaymentPref')?.value || 'pay_delivery';
+            const notes = document.getElementById('orderCustNotes')?.value.trim() || '';
+
+            // 1. Validação Obrigatória de Telefone / WhatsApp
+            const cleanPhone = customerPhone.replace(/\D/g, '');
+            if (!customerPhone || cleanPhone.length < 10) {
+                if (phoneInput) {
+                    phoneInput.classList.add('input-error');
+                    phoneInput.focus();
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'WhatsApp Obrigatório',
+                    text: 'Por favor, informe seu número de WhatsApp com DDD para confirmarmos a encomenda.',
+                    background: '#170f0b',
+                    color: '#fff',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            // 2. Validação Obrigatória de Nome
+            if (!customerName || customerName.length < 2) {
+                if (nameInput) {
+                    nameInput.classList.add('input-error');
+                    nameInput.focus();
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Nome Obrigatório',
+                    text: 'Por favor, digite seu nome completo.',
+                    background: '#170f0b',
+                    color: '#fff',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            // 3. Validação de Data (Apenas Sexta-Feira)
+            if (!scheduleDate) {
+                if (dateInput) {
+                    dateInput.classList.add('input-error');
+                    dateInput.focus();
+                }
+                Swal.fire({ icon: 'warning', title: 'Data da Encomenda', text: 'Escolha a sexta-feira desejada.', background: '#170f0b', color: '#fff' });
+                return;
+            }
+
+            const [sy, sm, sd] = scheduleDate.split('-').map(Number);
+            const dateObj = new Date(sy, sm - 1, sd);
+            if (dateObj.getDay() !== 5) {
+                handleDateChange(dateInput);
+                return;
+            }
+
+            // 4. Validação de Endereço se for Entrega
+            if (deliveryType === 'delivery' && (!deliveryAddress || deliveryAddress.length < 3)) {
+                if (addrInput) {
+                    addrInput.classList.add('input-error');
+                    addrInput.focus();
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Endereço de Entrega',
+                    text: 'Por favor, informe seu endereço completo (rua, número e bairro) para a entrega.',
+                    background: '#170f0b',
+                    color: '#fff',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+
+            const items = Object.values(clientCart).filter(i => (i.quantity || 0) > 0);
+            const totalAmount = items.reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+
+            let depositAmount = 0;
+            let paymentStatus = 'pending';
+            let paymentMethodLabel = 'Na Entrega / Retirada';
+
+            if (paymentPref === 'pix_deposit') {
+                depositAmount = totalAmount / 2;
+                paymentStatus = 'deposit_paid';
+                paymentMethodLabel = 'Sinal 50% Pix';
+            } else if (paymentPref === 'pix_total') {
+                depositAmount = totalAmount;
+                paymentStatus = 'paid';
+                paymentMethodLabel = 'Total 100% Pix';
+            }
+
+            localStorage.setItem('client_booking_phone', customerPhone);
+            localStorage.setItem('client_booking_name', customerName);
+
+            const btn = document.getElementById('btnSubmitOrder');
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '⏳ Enviando Pedido...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/client/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customerName,
+                        customerPhone,
+                        deliveryType,
+                        deliveryAddress,
+                        scheduleDate,
+                        scheduleTime,
+                        items,
+                        paymentStatus,
+                        paymentMethod: paymentMethodLabel,
+                        depositAmount,
+                        notes
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    closeClientBookingModal();
+                    confetti({ particleCount: 160, spread: 90, origin: { y: 0.6 } });
+
+                    clientCart = {};
+                    updateCartBar();
+                    renderTruffles();
+
+                    const waText = data.whatsappMessageText || '';
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '🎉 Encomenda Realizada!',
+                        html: `
+                            <div style="text-align: left; font-size: 0.95rem; line-height: 1.5; color: #ddd;">
+                                <p>Muito obrigado, <strong>${customerName}</strong>!</p>
+                                <p style="margin-top: 6px;">Recebemos sua encomenda para <strong>Sexta-feira</strong> com sucesso.</p>
+                                <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 10px; margin: 12px 0;">
+                                    <p style="color: #34d399; font-weight: 700; margin: 0;">📲 Clique abaixo para enviar a confirmação no WhatsApp de Luana & Fernando:</p>
+                                </div>
+                            </div>
+                        `,
+                        background: '#170f0b',
+                        color: '#fff',
+                        showCancelButton: true,
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: '📲 Enviar no WhatsApp Agora',
+                        cancelButtonText: 'Concluir'
+                    }).then((r) => {
+                        if (r.isConfirmed) {
+                            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`;
+                            window.open(waUrl, '_blank');
+                        }
+                    });
+                } else {
+                    throw new Error(data.error || 'Erro ao registrar encomenda.');
+                }
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Erro', text: e.message, background: '#170f0b', color: '#fff' });
+            } finally {
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        }
+
+        function openClientMyOrdersModal() {
+            const modal = document.getElementById('clientMyOrdersModal');
+            if (!modal) return;
+            const savedPhone = localStorage.getItem('client_booking_phone');
+            if (savedPhone) {
+                document.getElementById('myOrdersPhoneInput').value = savedPhone;
+                searchMyOrders(savedPhone);
+            }
+            modal.classList.add('active');
+        }
+
+        function closeClientMyOrdersModal() {
+            document.getElementById('clientMyOrdersModal').classList.remove('active');
+        }
+
+        async function searchMyOrders(customPhone = null) {
+            const phone = customPhone || document.getElementById('myOrdersPhoneInput')?.value || '';
+            const clean = phone.replace(/\D/g, '');
+            const list = document.getElementById('myOrdersListContainer');
+
+            if (!clean || clean.length < 8) {
+                if (list) list.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px 0;">Digite um número de WhatsApp válido.</p>`;
+                return;
+            }
+
+            if (list) list.innerHTML = `<div style="text-align: center; padding: 20px;"><div class="spinner"></div><p style="margin-top: 8px; color: var(--text-muted);">Buscando pedidos...</p></div>`;
+
+            try {
+                const res = await fetch(`/api/client/orders/${clean}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (!data.orders || data.orders.length === 0) {
+                        list.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px 0;">Nenhuma encomenda encontrada para este número.</div>`;
+                        return;
+                    }
+
+                    const statusLabels = {
+                        pending: '🟡 Agendado',
+                        producing: '🟠 Em Produção',
+                        ready: '🔵 Pronto para Entrega / Retirada',
+                        delivered: '🟢 Entregue / Concluído',
+                        cancelled: '⚪ Cancelado'
+                    };
+
+                    list.innerHTML = data.orders.map(s => {
+                        let dateDisplay = s.scheduleDate;
+                        if (s.scheduleDate && s.scheduleDate.includes('-')) {
+                            const [y, m, d] = s.scheduleDate.split('-');
+                            dateDisplay = `${d}/${m}/${y}`;
+                        }
+
+                        const itemsText = (s.items || []).map(i => `${i.quantity}x ${i.flavor}`).join(', ');
+
+                        return `
+                            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <strong style="color: #fff;">📅 ${dateDisplay} às ${s.scheduleTime || '15:00'}</strong>
+                                    <span style="font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: rgba(245,158,11,0.15); color: var(--amber-light);">
+                                        ${statusLabels[s.status] || s.status}
+                                    </span>
+                                </div>
+                                <p style="font-size: 0.85rem; color: #fef3c7; margin-bottom: 6px;">📦 ${itemsText} (${s.totalItems} trufas)</p>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px;">
+                                    <span>${s.deliveryType === 'delivery' ? '🛵 Entrega' : '🏪 Retirada'}</span>
+                                    <strong style="color: var(--amber-gold);">Total: R$ ${Number(s.totalAmount || 0).toFixed(2).replace('.', ',')}</strong>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                if (list) list.innerHTML = `<p style="text-align: center; color: #f87171;">Erro ao buscar pedidos.</p>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initClientApp();
+        });
+    </script>
+</body>
+</html>
