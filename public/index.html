@@ -4544,8 +4544,10 @@
             await loadUsersList();
             await loadProducts();
 
-            // Validação de autenticação se já houver sessão salva
-            if (currentUser && adminToken) {
+            // Ao acessar a página de admin, exige autenticação com senha imediatamente
+            if (!currentUser || !adminToken) {
+                openLoginModal(true);
+            } else {
                 try {
                     const authRes = await fetch(`/api/auth/me?_t=${Date.now()}`, {
                         headers: { 'authorization': adminToken }
@@ -4554,15 +4556,12 @@
                         const authData = await authRes.json();
                         currentUser = authData.user;
                         localStorage.setItem('trufas_current_user', JSON.stringify(currentUser));
+                        openAdminModal();
                     } else {
-                        // Se o token expirou, limpa silenciosamente sem interromper o cliente
-                        currentUser = null;
-                        adminToken = '';
-                        localStorage.removeItem('trufas_admin_token');
-                        localStorage.removeItem('trufas_current_user');
+                        adminLogout();
                     }
                 } catch (e) {
-                    console.warn('Sessão admin não pôde ser validada:', e);
+                    openLoginModal(true);
                 }
             }
         }
